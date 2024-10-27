@@ -2,6 +2,14 @@ import React from 'react';
 import { View, Text, Image, StyleSheet, FlatList } from 'react-native';
 
 const Items = ({ title, data }) => {
+  // Utility function to truncate text
+  const truncateText = (text) => {
+    if (text.length > 10) {
+      return text.slice(0, 10) + '...'; // Truncate and add ellipsis
+    }
+    return text;
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{title}</Text>
@@ -13,8 +21,8 @@ const Items = ({ title, data }) => {
           <View style={styles.itemContainer}>
             <Image source={item.image} style={styles.image} />
             <View>
-              <Text style={styles.name}>{item.name}</Text>
-              {item.subtitle && <Text style={styles.subtitle}>{item.subtitle}</Text>}
+              <Text style={styles.name}>{truncateText(item.name)}</Text>
+              {item.subtitle && <Text style={styles.subtitle}>{truncateText(item.subtitle)}</Text>}
             </View>
           </View>
         )}
