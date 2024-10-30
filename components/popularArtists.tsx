@@ -1,18 +1,19 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, FlatList } from 'react-native';
 
-const Items = ({ title, data }) => {
-  // Utility function to truncate text
-  const truncateText = (text) => {
-    if (text.length > 10) {
-      return text.slice(0, 10) + '...'; // Truncate and add ellipsis
-    }
-    return text;
-  };
+interface ArtistItemProps {
+  maintitle?: string;
+  subtitle?: string;
+  data: Array<{ id: string; image: any; name: string; subtitle?: string }>;
+}
 
+const PopularArtists: React.FC<ArtistItemProps> = ({ maintitle, subtitle, data }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{title}</Text>
+      <Text className="font-semibold text-2xl mb-5 text-white">
+        {maintitle}
+        <Text className="text-primaryColorPink"> {subtitle}</Text>
+      </Text>
       <FlatList
         data={data}
         horizontal
@@ -21,8 +22,8 @@ const Items = ({ title, data }) => {
           <View style={styles.itemContainer}>
             <Image source={item.image} style={styles.image} />
             <View>
-              <Text style={styles.name}>{truncateText(item.name)}</Text>
-              {item.subtitle && <Text style={styles.subtitle}>{truncateText(item.subtitle)}</Text>}
+              <Text style={styles.name}>{item.name}</Text>
+              {item.subtitle && <Text style={styles.subtitle}>{item.subtitle}</Text>}
             </View>
           </View>
         )}
@@ -37,6 +38,7 @@ const Items = ({ title, data }) => {
 const styles = StyleSheet.create({
   container: {
     marginBottom: 16,
+    color: 'white'
   },
   title: {
     fontSize: 18,
@@ -47,13 +49,13 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     marginRight: 16,
-    width: 100, // Adjust this value for item width
+    width: 100,
   },
   image: {
     width: 80,
     height: 80,
     marginBottom: 8,
-    borderRadius: 8,
+    borderRadius: 40,
   },
   name: {
     fontSize: 16,
@@ -67,4 +69,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Items;
+export default PopularArtists;

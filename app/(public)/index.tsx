@@ -1,7 +1,5 @@
 import React from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
-import Items from '../layouts/Items';
-import ArtistItems from '../layouts/ArtistItems';
+import { ScrollView, StyleSheet, Text } from 'react-native';
 import {
   SongImage1,
   SongImage2,
@@ -13,7 +11,9 @@ import {
   AlbumImage1,
   AlbumImage2,
   AlbumImage3,
-} from '../images';
+} from '../../assets/images';
+import ListSong from '@/components/listSong';
+import PopularArtists from '@/components/popularArtists';
 
 const HomeScreen: React.FC = () => {
   const songs = [
@@ -40,9 +40,9 @@ const HomeScreen: React.FC = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <Items title="Weekly Top Songs" data={songs} />
-      <ArtistItems title="Popular Artists" data={artists} />
-      <Items title="Top Albums" data={albums} />
+      <ListSong maintitle="Weekly Top" subtitle="Songs" data={songs} />
+      <PopularArtists maintitle="Popular" subtitle="Artists" data={artists} />
+      <ListSong maintitle="Top" subtitle="Albums" data={albums} />
     </ScrollView>
   );
 };
@@ -52,6 +52,9 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
+  text: {
+    color: 'red',
+  }
 });
 
 export default HomeScreen;
