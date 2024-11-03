@@ -11,6 +11,9 @@ const AlbumImage1 = require('./image1.jpg');
 const AlbumImage2 = require('./image1.jpg');
 const AlbumImage3 = require('./image1.jpg');
 
+const bgImage = require('./bg.png');
+const logoImage = require('./logo.png');
+
 export {
   SongImage1,
   SongImage2,
@@ -22,4 +25,6 @@ export {
   AlbumImage1,
   AlbumImage2,
   AlbumImage3,
+  bgImage,
+  logoImage,
 };
