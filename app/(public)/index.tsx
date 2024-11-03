@@ -14,6 +14,7 @@ import {
 } from '../../assets/images';
 import ListSong from '@/components/listSong';
 import PopularArtists from '@/components/popularArtists';
+import ArtistPopularSong from '@/components/ArtistPopularSong';
 
 const HomeScreen: React.FC = () => {
   const songs = [
@@ -40,6 +41,7 @@ const HomeScreen: React.FC = () => {
 
   return (
     <ScrollView style={styles.container}>
+      <ArtistPopularSong />
       <ListSong maintitle="Weekly Top" subtitle="Songs" data={songs} />
       <PopularArtists maintitle="Popular" subtitle="Artists" data={artists} />
       <ListSong maintitle="Top" subtitle="Albums" data={albums} />
