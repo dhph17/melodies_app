@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'; 
+import React, { useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -20,16 +20,23 @@ import google from '../../assets/images/google.png';
 
 const LoginPage = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [isAnimationComplete, setIsAnimationComplete] = useState(true);
   const animatedPosition = useRef(new Animated.Value(0)).current;
 
   const toggleForm = () => {
+    // Set isAnimationComplete to false at the start of the animation
+    setIsAnimationComplete(false);
     setIsLogin(!isLogin);
+
     Animated.timing(animatedPosition, {
       toValue: isLogin ? -330 : 0,
       duration: 500,
       easing: Easing.inOut(Easing.ease),
       useNativeDriver: true,
-    }).start();
+    }).start(() => {
+      // Set isAnimationComplete to true after the animation completes
+      setIsAnimationComplete(true);
+    });
   };
 
   return (
@@ -45,7 +52,7 @@ const LoginPage = () => {
         </View>
 
         <Animated.View style={[styles.panel, { transform: [{ translateY: animatedPosition }] }]}>
-          {isLogin && (
+          {isLogin && isAnimationComplete && (
             <View style={styles.formContainer}>
               <Text style={styles.headerText}>Login To Continue</Text>
               <View style={styles.inputContainer}>
@@ -80,7 +87,7 @@ const LoginPage = () => {
           )}
         </Animated.View>
 
-        {!isLogin && (
+        {!isLogin && isAnimationComplete && (
           <View style={styles.signUpForm}>
             <Text style={styles.headerText}>Create An Account</Text>
 
@@ -108,16 +115,16 @@ const LoginPage = () => {
             </View>
 
             <View style={styles.socialButtonsContainer}>
-                <TouchableOpacity style={styles.socialButton}>
-                  <Image source={google} style={styles.icon} />
-                  <Text style={styles.socialButtonText}>Google Login</Text>
-                </TouchableOpacity>
-                
-                <TouchableOpacity style={styles.socialButton}>
-                  <Image source={facebook} style={styles.icon} />
-                  <Text style={styles.socialButtonText}>Facebook Login</Text>
-                </TouchableOpacity>
-              </View>
+              <TouchableOpacity style={styles.socialButton}>
+                <Image source={google} style={styles.icon} />
+                <Text style={styles.socialButtonText}>Google Login</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={styles.socialButton}>
+                <Image source={facebook} style={styles.icon} />
+                <Text style={styles.socialButtonText}>Facebook Login</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         )}
 
@@ -140,6 +147,7 @@ const LoginPage = () => {
     </KeyboardAvoidingView>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
@@ -171,7 +179,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    bottom: 250,
+    bottom: 300,
     backgroundColor: '#181818',
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
@@ -228,8 +236,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   forgotPasswordContainer: {
-    width: '100%', // Take full width of the parent
-    alignItems: 'flex-start', // Align content to the left
+    width: '100%', 
+    alignItems: 'flex-start', 
     marginBottom: 20,
   },
   forgotPasswordText: {
