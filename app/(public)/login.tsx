@@ -9,10 +9,14 @@ import {
   Animated,
   Easing,
   ImageBackground,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 
 import bgImage from '../../assets/images/bg.png';
 import logoImage from '../../assets/images/logo.png';
+import facebook from '../../assets/images/facebook.png';
+import google from '../../assets/images/google.png';
 
 const LoginPage = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -21,7 +25,7 @@ const LoginPage = () => {
   const toggleForm = () => {
     setIsLogin(!isLogin);
     Animated.timing(animatedPosition, {
-      toValue: isLogin ? -350 : 0, 
+      toValue: isLogin ? -330 : 0,
       duration: 500,
       easing: Easing.inOut(Easing.ease),
       useNativeDriver: true,
@@ -29,17 +33,57 @@ const LoginPage = () => {
   };
 
   return (
-    <ImageBackground source={bgImage} style={styles.background}>
-      <View style={styles.logoContainer}>
-        <Image source={logoImage} style={styles.logo} />
-        <Text style={styles.title}>Melodies</Text>
-      </View>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -200}
+    >
+      <ImageBackground source={bgImage} style={styles.background}>
+        <View style={styles.logoContainer}>
+          <Image source={logoImage} style={styles.logo} />
+          <Text style={styles.title}>Melodies</Text>
+        </View>
 
-      <Animated.View style={[styles.panel, { transform: [{ translateY: animatedPosition }] }]}>
-        {isLogin && (
-          <View style={styles.formContainer}>
-            <Text style={styles.headerText}>Login To Continue</Text>
-            
+        <Animated.View style={[styles.panel, { transform: [{ translateY: animatedPosition }] }]}>
+          {isLogin && (
+            <View style={styles.formContainer}>
+              <Text style={styles.headerText}>Login To Continue</Text>
+              <View style={styles.inputContainer}>
+                <TextInput placeholder="Enter Your Name or E-Mail" placeholderTextColor="#ccc" style={styles.input} />
+              </View>
+              <View style={styles.inputContainer}>
+                <TextInput placeholder="Enter Your Password" placeholderTextColor="#ccc" style={styles.input} secureTextEntry />
+              </View>
+
+              <TouchableOpacity style={styles.loginButton}>
+                <Text style={styles.loginButtonText}>Login</Text>
+              </TouchableOpacity>
+
+              <View style={styles.forgotPasswordContainer}>
+                <TouchableOpacity>
+                  <Text style={styles.forgotPasswordText}>Forgot password? {'>'}</Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.socialButtonsContainer}>
+                <TouchableOpacity style={styles.socialButton}>
+                  <Image source={google} style={styles.icon} />
+                  <Text style={styles.socialButtonText}>Google Login</Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity style={styles.socialButton}>
+                  <Image source={facebook} style={styles.icon} />
+                  <Text style={styles.socialButtonText}>Facebook Login</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
+        </Animated.View>
+
+        {!isLogin && (
+          <View style={styles.signUpForm}>
+            <Text style={styles.headerText}>Create An Account</Text>
+
             <View style={styles.inputContainer}>
               <TextInput placeholder="Enter Your Name" placeholderTextColor="#ccc" style={styles.input} />
             </View>
@@ -49,67 +93,58 @@ const LoginPage = () => {
             <View style={styles.inputContainer}>
               <TextInput placeholder="Enter Your Password" placeholderTextColor="#ccc" style={styles.input} secureTextEntry />
             </View>
+            <View style={styles.inputContainer}>
+              <TextInput placeholder="Confirm Your Password" placeholderTextColor="#ccc" style={styles.input} secureTextEntry />
+            </View>
 
             <TouchableOpacity style={styles.loginButton}>
-              <Text style={styles.loginButtonText}>Login</Text>
+              <Text style={styles.loginButtonText}>Sign Up</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity>
-              <Text style={styles.forgotPasswordText}>Forgot password</Text>
-            </TouchableOpacity>
-
-            <View style={styles.socialButtonsContainer}>
-              <TouchableOpacity style={styles.socialButton}>
-                <Text style={styles.socialButtonText}>Google Login</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.socialButton}>
-                <Text style={styles.socialButtonText}>Facebook Login</Text>
+            <View style={styles.forgotPasswordContainer}>
+              <TouchableOpacity>
+                <Text style={styles.forgotPasswordText}>Forgot password? {'>'}</Text>
               </TouchableOpacity>
             </View>
+
+            <View style={styles.socialButtonsContainer}>
+                <TouchableOpacity style={styles.socialButton}>
+                  <Image source={google} style={styles.icon} />
+                  <Text style={styles.socialButtonText}>Google Login</Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity style={styles.socialButton}>
+                  <Image source={facebook} style={styles.icon} />
+                  <Text style={styles.socialButtonText}>Facebook Login</Text>
+                </TouchableOpacity>
+              </View>
           </View>
         )}
-      </Animated.View>
 
-      {/* Sign-Up Form (Remains visible when Login form slides up) */}
-      {!isLogin && (
-        <View style={styles.signUpForm}>
-          <Text style={styles.headerText}>Create An Account</Text>
-          
-          <View style={styles.inputContainer}>
-            <TextInput placeholder="Enter Your Name" placeholderTextColor="#ccc" style={styles.input} />
+        <View style={styles.bottomContainer}>
+          <View style={styles.textContainer}>
+            <Text style={styles.mainText}>
+              {isLogin ? "Don't Have An Account?" : "Already have an account?"}
+            </Text>
+            <Text style={styles.subText}>
+              {isLogin ? "Sign Up Here" : "Login Here"}
+            </Text>
           </View>
-          <View style={styles.inputContainer}>
-            <TextInput placeholder="Enter Your E-Mail" placeholderTextColor="#ccc" style={styles.input} />
-          </View>
-          <View style={styles.inputContainer}>
-            <TextInput placeholder="Enter Your Password" placeholderTextColor="#ccc" style={styles.input} secureTextEntry />
-          </View>
-          <View style={styles.inputContainer}>
-            <TextInput placeholder="Confirm Your Password" placeholderTextColor="#ccc" style={styles.input} secureTextEntry />
-          </View>
-
-          <TouchableOpacity style={styles.loginButton}>
-            <Text style={styles.loginButtonText}>Sign Up</Text>
+          <TouchableOpacity onPress={toggleForm} style={styles.actionButton}>
+            <Text style={styles.actionButtonText}>
+              {isLogin ? 'Sign Up' : 'Login'}
+            </Text>
           </TouchableOpacity>
         </View>
-      )}
-
-      {/* Toggle Button */}
-      <View style={styles.bottomContainer}>
-        <Text style={styles.toggleText}>
-          {isLogin ? "Don't Have An Account?" : "Already have an account?"}
-        </Text>
-        <TouchableOpacity onPress={toggleForm}>
-          <Text style={[styles.toggleButtonText, !isLogin && styles.signUpButtonText]}>
-            {isLogin ? 'Sign Up' : 'Login Here'}
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </ImageBackground>
+      </ImageBackground>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   background: {
     flex: 1,
     justifyContent: 'center',
@@ -136,8 +171,8 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    bottom: 200,
-    backgroundColor: '#333',
+    bottom: 250,
+    backgroundColor: '#181818',
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
     alignItems: 'center',
@@ -152,7 +187,7 @@ const styles = StyleSheet.create({
   },
   signUpForm: {
     position: 'absolute',
-    bottom: 200,
+    bottom: 100,
     paddingHorizontal: 20,
     paddingBottom: 30,
     alignItems: 'center',
@@ -180,7 +215,7 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   loginButton: {
-    backgroundColor: '#ff00ff',
+    backgroundColor: '#EE10B0',
     width: '100%',
     padding: 12,
     borderRadius: 5,
@@ -192,12 +227,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  forgotPasswordContainer: {
+    width: '100%', // Take full width of the parent
+    alignItems: 'flex-start', // Align content to the left
+    marginBottom: 20,
+  },
   forgotPasswordText: {
     color: '#fff',
     fontSize: 14,
-    marginBottom: 20,
-    alignSelf: 'flex-end',
   },
+  
   socialButtonsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -205,13 +244,21 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   socialButton: {
-    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 5,
+    borderRadius: 25, 
     paddingVertical: 10,
-    alignItems: 'center',
+    paddingHorizontal: 15,
+    flex: 1,
     marginHorizontal: 5,
+    justifyContent: 'center',
+  },
+  icon: {
+    width: 20,
+    height: 20,
+    marginRight: 10, 
   },
   socialButtonText: {
     color: '#fff',
@@ -220,19 +267,34 @@ const styles = StyleSheet.create({
   bottomContainer: {
     position: 'absolute',
     bottom: 30,
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    paddingHorizontal: 20,
   },
-  toggleText: {
+  textContainer: {
+    flexDirection: 'column',
+  },
+  mainText: {
     color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  subText: {
+    color: '#ccc',
     fontSize: 14,
   },
-  toggleButtonText: {
-    color: '#00f',
-    fontSize: 16,
-    marginTop: 8,
+  actionButton: {
+    backgroundColor: '#007bff',
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 5,
   },
-  signUpButtonText: {
-    color: '#ff00ff',
+  actionButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 

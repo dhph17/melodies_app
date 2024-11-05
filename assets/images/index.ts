@@ -13,6 +13,8 @@ const AlbumImage3 = require('./image1.jpg');
 
 const bgImage = require('./bg.png');
 const logoImage = require('./logo.png');
+const facebook = require('./facebook.png');
+const google = require('./google.png');
 
 export {
   SongImage1,
@@ -27,4 +29,6 @@ export {
   AlbumImage3,
   bgImage,
   logoImage,
+  google,
+  facebook,
 };
