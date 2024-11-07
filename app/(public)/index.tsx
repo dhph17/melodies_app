@@ -18,14 +18,17 @@ import {
 
 import bgImage from '../../assets/images/bg.png';
 import logoImage from '../../assets/images/logo.png';
-import facebook from '../../assets/images/facebook.png';
 import google from '../../assets/images/google.png';
+import back from '../../assets/images/back.png';
 
 const LoginPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [isAnimationComplete, setIsAnimationComplete] = useState(true);
   const [isOTP, setIsOTP] = useState(false);
   const animatedPosition = useRef(new Animated.Value(0)).current;
+  const [otpValues, setOtpValues] = useState(Array(5).fill(''));
+
+  const otpInputs = useRef<(TextInput | null)[]>([]);
 
   const toggleForm = () => {
     setIsAnimationComplete(false);
@@ -42,8 +45,32 @@ const LoginPage = () => {
     });
   };
 
-  const handleLogin = () => {
-    setIsOTP(true);
+  const handleOTPInputChange = (index: number, value: string) => {
+    const newOtpValues = [...otpValues];
+    newOtpValues[index] = value;
+    setOtpValues(newOtpValues);
+  
+    if (value === '') {
+      if (index > 0) {
+        otpInputs.current[index - 1]?.focus();
+      }
+    } else {
+      if (index < otpInputs.current.length - 1) {
+        otpInputs.current[index + 1]?.focus();
+      }
+    }
+  };
+
+  const handleKeyPress = (index: number, event: any) => {
+    if (event.nativeEvent.key === 'Backspace') {
+      if (index > 0 && otpValues[index] === '') {
+        otpInputs.current[index - 1]?.focus();
+      }
+    }
+  };
+
+  const handleSignUp = () => {
+    setIsOTP(true); // Show OTP form after signing up
   };
 
   return (
@@ -71,7 +98,7 @@ const LoginPage = () => {
             </View>
 
             <Animated.View style={[styles.panel, { transform: [{ translateY: animatedPosition }] }]}>
-              {isLogin && isAnimationComplete && !isOTP && (
+              {isLogin && isAnimationComplete && (
                 <View style={styles.formContainer}>
                   <Text style={styles.headerText}>Login To Continue</Text>
                   <View style={styles.inputContainer}>
@@ -81,13 +108,13 @@ const LoginPage = () => {
                     <TextInput placeholder="Enter Your Password" placeholderTextColor="#ccc" style={styles.input} secureTextEntry />
                   </View>
 
-                  <TouchableOpacity onPress={handleLogin} style={styles.loginButton}>
+                  <TouchableOpacity onPress={() => console.log('Perform Login Logic')} style={styles.loginButton}>
                     <Text style={styles.loginButtonText}>Login</Text>
                   </TouchableOpacity>
 
                   <View style={styles.forgotPasswordContainer}>
                     <TouchableOpacity>
-                      <Text style={styles.forgotPasswordText}>Forgot password? {'>'}</Text>
+                      <Text style={styles.forgotPasswordText}>Forgot password?</Text>
                     </TouchableOpacity>
                   </View>
 
@@ -99,34 +126,10 @@ const LoginPage = () => {
                   </View>
                 </View>
               )}
-              {isOTP && isAnimationComplete && (
-                <View style={styles.otpFormContainer}>
-                  <TouchableOpacity onPress={() => setIsOTP(false)} style={styles.backButton}>
-                    <Text style={styles.backButtonText}>← Back to login</Text>
-                  </TouchableOpacity>
-                  <Text style={styles.otpHeaderText}>Verify OTP</Text>
-                  <Text style={styles.otpDescription}>An authentication code has been sent to your email.</Text>
-                  <View style={styles.otpInputContainer}>
-                    <TextInput placeholder="" style={styles.otpInput} keyboardType="numeric" maxLength={1} />
-                    <TextInput placeholder="" style={styles.otpInput} keyboardType="numeric" maxLength={1} />
-                    <TextInput placeholder="" style={styles.otpInput} keyboardType="numeric" maxLength={1} />
-                    <TextInput placeholder="" style={styles.otpInput} keyboardType="numeric" maxLength={1} />
-                    <TextInput placeholder="" style={styles.otpInput} keyboardType="numeric" maxLength={1} />
-                  </View>
-                  <Text style={styles.otpValidity}>The OTP is valid for 1:59 minutes.</Text>
-
-                  <TouchableOpacity style={styles.submitButton}>
-                    <Text style={styles.submitButtonText}>Submit</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity onPress={() => console.log('Resend OTP')} style={styles.resendButton}>
-                    <Text style={styles.resendButtonText}>Haven't got the email yet? Resend</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
             </Animated.View>
 
-            {!isLogin && isAnimationComplete && (
+            {/* Sign Up Form */}
+            {!isLogin && isAnimationComplete && !isOTP && (
               <View style={styles.signUpForm}>
                 <Text style={styles.headerText}>Create An Account</Text>
                 <View style={styles.inputContainer}>
@@ -142,13 +145,13 @@ const LoginPage = () => {
                   <TextInput placeholder="Confirm Your Password" placeholderTextColor="#ccc" style={styles.input} secureTextEntry />
                 </View>
 
-                <TouchableOpacity style={styles.loginButton}>
+                <TouchableOpacity onPress={handleSignUp} style={styles.loginButton}>
                   <Text style={styles.loginButtonText}>Sign Up</Text>
                 </TouchableOpacity>
 
                 <View style={styles.forgotPasswordContainer}>
                   <TouchableOpacity>
-                    <Text style={styles.forgotPasswordText}>Forgot password? {'>'}</Text>
+                    <Text style={styles.forgotPasswordText}>Forgot password?</Text>
                   </TouchableOpacity>
                 </View>
 
@@ -157,14 +160,43 @@ const LoginPage = () => {
                     <Image source={google} style={styles.icon} />
                     <Text style={styles.socialButtonText}>Google Login</Text>
                   </TouchableOpacity>
-
-                  <TouchableOpacity style={styles.socialButton}>
-                    <Image source={facebook} style={styles.icon} />
-                    <Text style={styles.socialButtonText}>Facebook Login</Text>
-                  </TouchableOpacity>
                 </View>
               </View>
             )}
+
+              {isOTP && isAnimationComplete && (
+                <View style={styles.otpFormContainer}>
+                  <TouchableOpacity onPress={() => setIsOTP(false)} style={styles.backButton}>
+                    <Image source={back} style={styles.backImage} />
+                  </TouchableOpacity>
+                  <Text style={styles.otpHeaderText}>Verify OTP</Text>
+                  <Text style={styles.otpDescription}>An authentication code has been sent to your email.</Text>
+                  <View style={styles.otpInputContainer}>
+                    {[0, 1, 2, 3, 4].map((index) => (
+                      <TextInput
+                        key={index}
+                        placeholder=""
+                        style={styles.otpInput}
+                        keyboardType="numeric"
+                        maxLength={1}
+                        value={otpValues[index]}
+                        onChangeText={(value) => handleOTPInputChange(index, value)}
+                        onKeyPress={(event) => handleKeyPress(index, event)}
+                        ref={(ref) => (otpInputs.current[index] = ref)}
+                      />
+                    ))}
+                  </View>
+                  <Text style={styles.otpValidity}>The OTP is valid for 1:59 minutes.</Text>
+
+                  <TouchableOpacity style={styles.submitButton}>
+                    <Text style={styles.submitButtonText}>Submit</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity onPress={() => console.log('Resend OTP')} style={styles.resendButton}>
+                    <Text style={styles.resendButtonText}>Haven't got the email yet? Resend</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
 
             <View style={styles.bottomContainer}>
               <View style={styles.textContainer}>
@@ -239,11 +271,19 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
     alignItems: 'center',
   },
-  otpFormContainer: {
-    width: '100%',
+  signUpForm: {
     paddingHorizontal: 20,
     paddingBottom: 30,
     alignItems: 'center',
+    width: '100%',
+    top: 80,
+  },
+  otpFormContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 30,
+    alignItems: 'center',
+    width: '100%',
+    top: 70,
   },
   otpHeaderText: {
     fontSize: 24,
@@ -261,7 +301,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
     marginBottom: 20,
-    paddingHorizontal: 20, 
   },
   otpInput: {
     width: 50, 
@@ -289,14 +328,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  signUpForm: {
-    position: 'absolute',
-    bottom: 100,
-    paddingHorizontal: 20,
-    paddingBottom: 30,
-    alignItems: 'center',
-    width: '100%',
-  },
   input: {
     flex: 1,
     color: '#fff',
@@ -322,11 +353,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   backButton: {
-    marginBottom: 20,
+    position: 'absolute',
+    left: 20,
+    backgroundColor: '#EE10B0',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 5,
+    alignItems: 'center',
   },
-  backButtonText: {
-    color: '#fff',
-    fontSize: 14,
+  backImage:{
+    width: 20,
+    height: 20,
   },
   resendButton: {
     marginTop: 10,
@@ -354,6 +391,10 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   forgotPasswordText: {
+    color: '#EE10B0',
+    fontSize: 14,
+  },
+  socialButtonText: {
     color: '#fff',
     fontSize: 14,
   },
@@ -379,10 +420,6 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     marginRight: 10,
-  },
-  socialButtonText: {
-    color: '#fff',
-    fontSize: 14,
   },
   bottomContainer: {
     position: 'absolute',

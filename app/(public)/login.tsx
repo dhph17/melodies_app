@@ -18,17 +18,21 @@ import {
 
 import bgImage from '../../assets/images/bg.png';
 import logoImage from '../../assets/images/logo.png';
-import facebook from '../../assets/images/facebook.png';
 import google from '../../assets/images/google.png';
 
 const LoginPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [isAnimationComplete, setIsAnimationComplete] = useState(true);
+  const [isOTP, setIsOTP] = useState(false);
   const animatedPosition = useRef(new Animated.Value(0)).current;
+  const [otpValues, setOtpValues] = useState(Array(5).fill(''));
+
+  const otpInputs = useRef<(TextInput | null)[]>([]);
 
   const toggleForm = () => {
     setIsAnimationComplete(false);
     setIsLogin(!isLogin);
+    setIsOTP(false);
 
     Animated.timing(animatedPosition, {
       toValue: isLogin ? -330 : 0,
@@ -40,6 +44,34 @@ const LoginPage = () => {
     });
   };
 
+  const handleOTPInputChange = (index: number, value: string) => {
+    const newOtpValues = [...otpValues];
+    newOtpValues[index] = value;
+    setOtpValues(newOtpValues);
+  
+    if (value === '') {
+      if (index > 0) {
+        otpInputs.current[index - 1]?.focus();
+      }
+    } else {
+      if (index < otpInputs.current.length - 1) {
+        otpInputs.current[index + 1]?.focus();
+      }
+    }
+  };
+
+  const handleKeyPress = (index: number, event: any) => {
+    if (event.nativeEvent.key === 'Backspace') {
+      if (index > 0 && otpValues[index] === '') {
+        otpInputs.current[index - 1]?.focus();
+      }
+    }
+  };
+
+  const handleLogin = () => {
+    setIsOTP(true);
+  };
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -47,17 +79,17 @@ const LoginPage = () => {
       keyboardVerticalOffset={0}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <ScrollView 
-        contentContainerStyle={{ flexGrow: 1 }} 
-        keyboardShouldPersistTaps="handled" 
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-        }}
-      >
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+          }}
+        >
           <ImageBackground source={bgImage} style={styles.background}>
             <View style={[styles.logoContainer, isLogin ? styles.logoTop : styles.logoInPanel]}>
               <Image source={logoImage} style={styles.logo} />
@@ -65,7 +97,7 @@ const LoginPage = () => {
             </View>
 
             <Animated.View style={[styles.panel, { transform: [{ translateY: animatedPosition }] }]}>
-              {isLogin && isAnimationComplete && (
+              {isLogin && isAnimationComplete && !isOTP && (
                 <View style={styles.formContainer}>
                   <Text style={styles.headerText}>Login To Continue</Text>
                   <View style={styles.inputContainer}>
@@ -75,7 +107,7 @@ const LoginPage = () => {
                     <TextInput placeholder="Enter Your Password" placeholderTextColor="#ccc" style={styles.input} secureTextEntry />
                   </View>
 
-                  <TouchableOpacity style={styles.loginButton}>
+                  <TouchableOpacity onPress={handleLogin} style={styles.loginButton}>
                     <Text style={styles.loginButtonText}>Login</Text>
                   </TouchableOpacity>
 
@@ -93,12 +125,44 @@ const LoginPage = () => {
                   </View>
                 </View>
               )}
+              {isOTP && isAnimationComplete && (
+                <View style={styles.otpFormContainer}>
+                  <TouchableOpacity onPress={() => setIsOTP(false)} style={styles.backButton}>
+                    <Text style={styles.backButtonText}>← Back to login</Text>
+                  </TouchableOpacity>
+                  <Text style={styles.otpHeaderText}>Verify OTP</Text>
+                  <Text style={styles.otpDescription}>An authentication code has been sent to your email.</Text>
+                  <View style={styles.otpInputContainer}>
+                  {[0, 1, 2, 3, 4].map((index) => (
+                  <TextInput
+                    key={index}
+                    placeholder=""
+                    style={styles.otpInput}
+                    keyboardType="numeric"
+                    maxLength={1}
+                    value={otpValues[index]} 
+                    onChangeText={(value) => handleOTPInputChange(index, value)}
+                    onKeyPress={(event) => handleKeyPress(index, event)}
+                    ref={(ref) => (otpInputs.current[index] = ref)}
+                  />
+                ))}
+                  </View>
+                  <Text style={styles.otpValidity}>The OTP is valid for 1:59 minutes.</Text>
+
+                  <TouchableOpacity style={styles.submitButton}>
+                    <Text style={styles.submitButtonText}>Submit</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity onPress={() => console.log('Resend OTP')} style={styles.resendButton}>
+                    <Text style={styles.resendButtonText}>Haven't got the email yet? Resend</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
             </Animated.View>
 
-            {!isLogin && isAnimationComplete && (
+            {!isLogin && isAnimationComplete && !isOTP && (
               <View style={styles.signUpForm}>
                 <Text style={styles.headerText}>Create An Account</Text>
-
                 <View style={styles.inputContainer}>
                   <TextInput placeholder="Enter Your Name" placeholderTextColor="#ccc" style={styles.input} />
                 </View>
@@ -126,11 +190,6 @@ const LoginPage = () => {
                   <TouchableOpacity style={styles.socialButton}>
                     <Image source={google} style={styles.icon} />
                     <Text style={styles.socialButtonText}>Google Login</Text>
-                  </TouchableOpacity>
-                  
-                  <TouchableOpacity style={styles.socialButton}>
-                    <Image source={facebook} style={styles.icon} />
-                    <Text style={styles.socialButtonText}>Facebook Login</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -206,23 +265,48 @@ const styles = StyleSheet.create({
   formContainer: {
     width: '100%',
     paddingHorizontal: 20,
-    paddingBottom: 30, 
+    paddingBottom: 30,
     alignItems: 'center',
   },
-  signUpForm: {
-    position: 'absolute',
-    bottom: 100,
+  otpFormContainer: {
+    width: '100%',
     paddingHorizontal: 20,
     paddingBottom: 30,
     alignItems: 'center',
-    width: '100%',
   },
-  headerText: {
-    fontSize: 18,
-    color: '#fff',
+  otpHeaderText: {
+    fontSize: 24,
+    color: '#EE10B0',
     fontWeight: 'bold',
     marginBottom: 20,
+  },
+  otpDescription: {
+    color: '#fff',
     textAlign: 'center',
+    marginBottom: 20,
+  },
+  otpInputContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginBottom: 20,
+    paddingHorizontal: 20, 
+  },
+  otpInput: {
+    width: 50, 
+    height: 50, 
+    backgroundColor: '#444',
+    borderRadius: 5,
+    paddingVertical: 10,
+    textAlign: 'center',
+    color: '#fff',
+    fontSize: 18,
+    marginHorizontal: 5,
+  },
+  otpValidity: {
+    color: '#ccc',
+    fontSize: 14,
+    marginBottom: 20,
   },
   inputContainer: {
     width: '100%',
@@ -234,9 +318,51 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  signUpForm: {
+    position: 'absolute',
+    bottom: 100,
+    paddingHorizontal: 20,
+    paddingBottom: 30,
+    alignItems: 'center',
+    width: '100%',
+  },
   input: {
     flex: 1,
     color: '#fff',
+  },
+  headerText: {
+    fontSize: 18,
+    color: '#fff',
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  submitButton: {
+    backgroundColor: '#EE10B0',
+    width: '100%',
+    padding: 12,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  submitButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  backButton: {
+    marginBottom: 20,
+  },
+  backButtonText: {
+    color: '#fff',
+    fontSize: 14,
+  },
+  resendButton: {
+    marginTop: 10,
+  },
+  resendButtonText: {
+    color: '#EE10B0',
+    fontSize: 14,
   },
   loginButton: {
     backgroundColor: '#EE10B0',
@@ -252,15 +378,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   forgotPasswordContainer: {
-    width: '100%', 
-    alignItems: 'flex-start', 
+    width: '100%',
+    alignItems: 'flex-start',
     marginBottom: 20,
   },
   forgotPasswordText: {
     color: '#fff',
     fontSize: 14,
   },
-  
   socialButtonsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -272,7 +397,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 25, 
+    borderRadius: 25,
     paddingVertical: 10,
     paddingHorizontal: 15,
     flex: 1,
@@ -282,7 +407,7 @@ const styles = StyleSheet.create({
   icon: {
     width: 20,
     height: 20,
-    marginRight: 10, 
+    marginRight: 10,
   },
   socialButtonText: {
     color: '#fff',
