@@ -90,11 +90,6 @@ const LoginPage = () => {
                       <Image source={google} style={styles.icon} />
                       <Text style={styles.socialButtonText}>Google Login</Text>
                     </TouchableOpacity>
-                    
-                    <TouchableOpacity style={styles.socialButton}>
-                      <Image source={facebook} style={styles.icon} />
-                      <Text style={styles.socialButtonText}>Facebook Login</Text>
-                    </TouchableOpacity>
                   </View>
                 </View>
               )}
