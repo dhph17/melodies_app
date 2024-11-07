@@ -10,6 +10,9 @@ import {
   Easing,
   ImageBackground,
   KeyboardAvoidingView,
+  ScrollView,
+  Keyboard,
+  TouchableWithoutFeedback,
   Platform,
 } from 'react-native';
 
@@ -24,7 +27,6 @@ const LoginPage = () => {
   const animatedPosition = useRef(new Animated.Value(0)).current;
 
   const toggleForm = () => {
-    // Set isAnimationComplete to false at the start of the animation
     setIsAnimationComplete(false);
     setIsLogin(!isLogin);
 
@@ -34,7 +36,6 @@ const LoginPage = () => {
       easing: Easing.inOut(Easing.ease),
       useNativeDriver: true,
     }).start(() => {
-      // Set isAnimationComplete to true after the animation completes
       setIsAnimationComplete(true);
     });
   };
@@ -43,111 +44,124 @@ const LoginPage = () => {
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -200}
+      keyboardVerticalOffset={0}
     >
-      <ImageBackground source={bgImage} style={styles.background}>
-        <View style={styles.logoContainer}>
-          <Image source={logoImage} style={styles.logo} />
-          <Text style={styles.title}>Melodies</Text>
-        </View>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <ScrollView 
+        contentContainerStyle={{ flexGrow: 1 }} 
+        keyboardShouldPersistTaps="handled" 
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+        }}
+      >
+          <ImageBackground source={bgImage} style={styles.background}>
+            <View style={[styles.logoContainer, isLogin ? styles.logoTop : styles.logoInPanel]}>
+              <Image source={logoImage} style={styles.logo} />
+              <Text style={styles.title}>Melodies</Text>
+            </View>
 
-        <Animated.View style={[styles.panel, { transform: [{ translateY: animatedPosition }] }]}>
-          {isLogin && isAnimationComplete && (
-            <View style={styles.formContainer}>
-              <Text style={styles.headerText}>Login To Continue</Text>
-              <View style={styles.inputContainer}>
-                <TextInput placeholder="Enter Your Name or E-Mail" placeholderTextColor="#ccc" style={styles.input} />
-              </View>
-              <View style={styles.inputContainer}>
-                <TextInput placeholder="Enter Your Password" placeholderTextColor="#ccc" style={styles.input} secureTextEntry />
-              </View>
+            <Animated.View style={[styles.panel, { transform: [{ translateY: animatedPosition }] }]}>
+              {isLogin && isAnimationComplete && (
+                <View style={styles.formContainer}>
+                  <Text style={styles.headerText}>Login To Continue</Text>
+                  <View style={styles.inputContainer}>
+                    <TextInput placeholder="Enter Your Name or E-Mail" placeholderTextColor="#ccc" style={styles.input} />
+                  </View>
+                  <View style={styles.inputContainer}>
+                    <TextInput placeholder="Enter Your Password" placeholderTextColor="#ccc" style={styles.input} secureTextEntry />
+                  </View>
 
-              <TouchableOpacity style={styles.loginButton}>
-                <Text style={styles.loginButtonText}>Login</Text>
-              </TouchableOpacity>
+                  <TouchableOpacity style={styles.loginButton}>
+                    <Text style={styles.loginButtonText}>Login</Text>
+                  </TouchableOpacity>
 
-              <View style={styles.forgotPasswordContainer}>
-                <TouchableOpacity>
-                  <Text style={styles.forgotPasswordText}>Forgot password? {'>'}</Text>
+                  <View style={styles.forgotPasswordContainer}>
+                    <TouchableOpacity>
+                      <Text style={styles.forgotPasswordText}>Forgot password? {'>'}</Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  <View style={styles.socialButtonsContainer}>
+                    <TouchableOpacity style={styles.socialButton}>
+                      <Image source={google} style={styles.icon} />
+                      <Text style={styles.socialButtonText}>Google Login</Text>
+                    </TouchableOpacity>
+                    
+                    <TouchableOpacity style={styles.socialButton}>
+                      <Image source={facebook} style={styles.icon} />
+                      <Text style={styles.socialButtonText}>Facebook Login</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              )}
+            </Animated.View>
+
+            {!isLogin && isAnimationComplete && (
+              <View style={styles.signUpForm}>
+                <Text style={styles.headerText}>Create An Account</Text>
+
+                <View style={styles.inputContainer}>
+                  <TextInput placeholder="Enter Your Name" placeholderTextColor="#ccc" style={styles.input} />
+                </View>
+                <View style={styles.inputContainer}>
+                  <TextInput placeholder="Enter Your E-Mail" placeholderTextColor="#ccc" style={styles.input} />
+                </View>
+                <View style={styles.inputContainer}>
+                  <TextInput placeholder="Enter Your Password" placeholderTextColor="#ccc" style={styles.input} secureTextEntry />
+                </View>
+                <View style={styles.inputContainer}>
+                  <TextInput placeholder="Confirm Your Password" placeholderTextColor="#ccc" style={styles.input} secureTextEntry />
+                </View>
+
+                <TouchableOpacity style={styles.loginButton}>
+                  <Text style={styles.loginButtonText}>Sign Up</Text>
                 </TouchableOpacity>
+
+                <View style={styles.forgotPasswordContainer}>
+                  <TouchableOpacity>
+                    <Text style={styles.forgotPasswordText}>Forgot password? {'>'}</Text>
+                  </TouchableOpacity>
+                </View>
+
+                <View style={styles.socialButtonsContainer}>
+                  <TouchableOpacity style={styles.socialButton}>
+                    <Image source={google} style={styles.icon} />
+                    <Text style={styles.socialButtonText}>Google Login</Text>
+                  </TouchableOpacity>
+                  
+                  <TouchableOpacity style={styles.socialButton}>
+                    <Image source={facebook} style={styles.icon} />
+                    <Text style={styles.socialButtonText}>Facebook Login</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
+            )}
 
-              <View style={styles.socialButtonsContainer}>
-                <TouchableOpacity style={styles.socialButton}>
-                  <Image source={google} style={styles.icon} />
-                  <Text style={styles.socialButtonText}>Google Login</Text>
-                </TouchableOpacity>
-                
-                <TouchableOpacity style={styles.socialButton}>
-                  <Image source={facebook} style={styles.icon} />
-                  <Text style={styles.socialButtonText}>Facebook Login</Text>
-                </TouchableOpacity>
+            <View style={styles.bottomContainer}>
+              <View style={styles.textContainer}>
+                <Text style={styles.mainText}>
+                  {isLogin ? "Don't Have An Account?" : "Already have an account?"}
+                </Text>
+                <Text style={styles.subText}>
+                  {isLogin ? "Sign Up Here" : "Login Here"}
+                </Text>
               </View>
-            </View>
-          )}
-        </Animated.View>
-
-        {!isLogin && isAnimationComplete && (
-          <View style={styles.signUpForm}>
-            <Text style={styles.headerText}>Create An Account</Text>
-
-            <View style={styles.inputContainer}>
-              <TextInput placeholder="Enter Your Name" placeholderTextColor="#ccc" style={styles.input} />
-            </View>
-            <View style={styles.inputContainer}>
-              <TextInput placeholder="Enter Your E-Mail" placeholderTextColor="#ccc" style={styles.input} />
-            </View>
-            <View style={styles.inputContainer}>
-              <TextInput placeholder="Enter Your Password" placeholderTextColor="#ccc" style={styles.input} secureTextEntry />
-            </View>
-            <View style={styles.inputContainer}>
-              <TextInput placeholder="Confirm Your Password" placeholderTextColor="#ccc" style={styles.input} secureTextEntry />
-            </View>
-
-            <TouchableOpacity style={styles.loginButton}>
-              <Text style={styles.loginButtonText}>Sign Up</Text>
-            </TouchableOpacity>
-
-            <View style={styles.forgotPasswordContainer}>
-              <TouchableOpacity>
-                <Text style={styles.forgotPasswordText}>Forgot password? {'>'}</Text>
+              <TouchableOpacity onPress={toggleForm} style={styles.actionButton}>
+                <Text style={styles.actionButtonText}>
+                  {isLogin ? 'Sign Up' : 'Login'}
+                </Text>
               </TouchableOpacity>
             </View>
-
-            <View style={styles.socialButtonsContainer}>
-              <TouchableOpacity style={styles.socialButton}>
-                <Image source={google} style={styles.icon} />
-                <Text style={styles.socialButtonText}>Google Login</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity style={styles.socialButton}>
-                <Image source={facebook} style={styles.icon} />
-                <Text style={styles.socialButtonText}>Facebook Login</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
-
-        <View style={styles.bottomContainer}>
-          <View style={styles.textContainer}>
-            <Text style={styles.mainText}>
-              {isLogin ? "Don't Have An Account?" : "Already have an account?"}
-            </Text>
-            <Text style={styles.subText}>
-              {isLogin ? "Sign Up Here" : "Login Here"}
-            </Text>
-          </View>
-          <TouchableOpacity onPress={toggleForm} style={styles.actionButton}>
-            <Text style={styles.actionButtonText}>
-              {isLogin ? 'Sign Up' : 'Login'}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </ImageBackground>
+          </ImageBackground>
+        </ScrollView>
+      </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {
@@ -160,10 +174,16 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   logoContainer: {
-    position: 'absolute',
-    top: 50,
     alignItems: 'center',
     zIndex: 2,
+  },
+  logoTop: {
+    position: 'absolute',
+    top: 50,
+  },
+  logoInPanel: {
+    position: 'absolute',
+    top: 50,
   },
   logo: {
     width: 80,
@@ -180,7 +200,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    bottom: 300,
+    bottom: 250,
     backgroundColor: '#181818',
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
