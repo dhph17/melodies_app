@@ -32,6 +32,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ toggleForm }) => {
 
 const styles = StyleSheet.create({
     formContainer: {
+        top: 30,
         paddingHorizontal: 20,
         paddingBottom: 30,
         alignItems: 'center',

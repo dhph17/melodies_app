@@ -13,16 +13,15 @@ import {
   ScrollView,
   Keyboard,
   TouchableWithoutFeedback,
-  Platform,
+  Dimensions
 } from 'react-native';
 
 import bgImage from '../../assets/images/bg.png';
 import logoImage from '../../assets/images/logo.png';
-import google from '../../assets/images/google.png';
-import back from '../../assets/images/back.png';
 import LoginForm from '@/app/authenticate/login';
 import SignUpForm from '@/app/authenticate/signup';
 import OTPForm from '@/app/authenticate/verify';
+
 
 const LoginPage = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -30,16 +29,18 @@ const LoginPage = () => {
   const [isOTP, setIsOTP] = useState(false);
   const animatedPosition = useRef(new Animated.Value(0)).current;
   const [otpValues, setOtpValues] = useState(Array(5).fill(''));
-
+  const { height } = Dimensions.get('window');
   const otpInputs = useRef<(TextInput | null)[]>([]);
 
   const toggleForm = () => {
     setIsAnimationComplete(false);
     setIsLogin(!isLogin);
     setIsOTP(false);
-
+  
+    const offset = height * 0.47; // Adjust this multiplier as needed for responsiveness
+  
     Animated.timing(animatedPosition, {
-      toValue: isLogin ? -330 : 0,
+      toValue: isLogin ? -offset : 0, // Use dynamic offset based on screen height
       duration: 500,
       easing: Easing.inOut(Easing.ease),
       useNativeDriver: true,
