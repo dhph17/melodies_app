@@ -1,20 +1,16 @@
+import { DataSong } from '@/types/interfaces';
+import { getMainArtistName, getPosterSong } from '@/utils/utils';
 import React from 'react';
-import { View, Text, Image, StyleSheet, FlatList } from 'react-native';
-
-interface Item {
-  id: string;
-  name: string;
-  subtitle?: string;
-  image: any;
-}
+import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { Image } from 'expo-image';
 
 interface ItemsProps {
   maintitle?: string;
   subtitle?: string;
-  data: Item[];
+  data?: DataSong[];
 }
 
-const ListSpng: React.FC<ItemsProps> = ({ maintitle, subtitle, data }) => {
+const ListSong: React.FC<ItemsProps> = ({ maintitle, subtitle, data }) => {
   // Utility function to truncate text
   const truncateText = (text: string) => {
     if (text.length > 10) {
@@ -33,15 +29,19 @@ const ListSpng: React.FC<ItemsProps> = ({ maintitle, subtitle, data }) => {
         data={data}
         horizontal
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.itemContainer}>
-            <Image source={item.image} style={styles.image} />
-            <View>
-              <Text style={styles.name}>{truncateText(item.name)}</Text>
-              {item.subtitle && <Text style={styles.subtitle}>{truncateText(item.subtitle)}</Text>}
+        renderItem={({ item }) => {
+          return (
+            <View style={styles.itemContainer}>
+              <Image
+                source={getPosterSong(item?.album).image}
+                style={styles.image} />
+              <View>
+                <Text style={styles.name} className='line-clamp-3'>{item.title}</Text>
+                <Text style={styles.artist} className='line-clamp-2'>{getMainArtistName(item?.artists)}</Text>
+              </View>
             </View>
-          </View>
-        )}
+          )
+        }}
         showsHorizontalScrollIndicator={false}
         snapToAlignment="start"
         decelerationRate="fast"
@@ -54,16 +54,13 @@ const styles = StyleSheet.create({
   container: {
     marginBottom: 16,
   },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
   itemContainer: {
+    borderRadius: 8,
     flexDirection: 'column',
-    alignItems: 'center',
     marginRight: 16,
-    width: 100, // Adjust this value for item width
+    width: 100,
+    backgroundColor: '#1F1F1F',
+    padding: 10
   },
   image: {
     width: 80,
@@ -72,15 +69,14 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   name: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  subtitle: {
     fontSize: 14,
+    fontWeight: 'bold',
+    color: 'white'
+  },
+  artist: {
+    fontSize: 11,
     color: '#666',
-    textAlign: 'center',
   },
 });
 
-export default ListSpng;
+export default ListSong;

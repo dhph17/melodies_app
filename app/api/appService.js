@@ -1,17 +1,23 @@
+// src/utils/apiService.ts
 import { PUBLIC_API_ENDPOINT } from '@/app/config'
-export const fetchApiData = async (endpoint, method, body, token, offset, page) => {
-  let url = `${PUBLIC_API_ENDPOINT}${endpoint}`;
-  console.log(url);
-  if (offset !== undefined && offset !== null) {
-    url += `?offset=${offset}`;
-  }
 
-  if (page !== undefined && page !== null) {
-    url += `?page=${page}`;
+export const fetchApiData = async (endpoint, method, body, token, params) => {
+  let url = `${PUBLIC_API_ENDPOINT}${endpoint}`;
+
+  const urlParams = new URLSearchParams();
+  if (params) {
+    Object.keys(params).forEach(key => {
+      if (params[key] !== undefined && params[key] !== null) {
+        urlParams.append(key, params[key]);
+      }
+    });
+  }
+  if (urlParams.toString()) {
+    url += `?${urlParams.toString()}`;
   }
 
   const headers = {
-    'Content-Type': 'application/json',
+    // 'Content-Type': 'application/json',
     ...(token && { 'Authorization': `Bearer ${token}` }),
   };
 
@@ -20,6 +26,12 @@ export const fetchApiData = async (endpoint, method, body, token, offset, page) 
     headers,
     ...(body && { body }),
   };
+
+  if (body instanceof FormData) {
+    delete headers['Content-Type'];
+  } else {
+    headers['Content-Type'] = 'application/json';
+  }
 
   try {
     const response = await fetch(url, options);

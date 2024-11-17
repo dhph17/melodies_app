@@ -1,102 +1,58 @@
-import React, { useEffect, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from "expo-router";
-import { Text, View, TouchableOpacity, StyleSheet } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import ListSong from '@/components/listSong';
 import { fetchApiData } from '@/app/api/appService';
-import { User } from "@/types/interfaces";
-import { useFocusEffect } from '@react-navigation/native';
 
 const Main = () => {
     const router = useRouter();
-    const [user, setUser] = useState<User | null>()
-
-    useFocusEffect(
-        React.useCallback(() => {
-            const fetchData = async () => {
-                const accessToken = await AsyncStorage.getItem('accessToken');
-                const result = await fetchApiData(`/api/user/info`, "GET", null, accessToken ?? null);
-                if (result.success) {
-                    setUser(result.data.user);
-                } else {
-                    console.error("Login error:", result.error);
-                }
-            };
-
-            fetchData();
-        }, [])
-    );
-
-    async function handleLogout() {
-        try {
-            const accessToken = await AsyncStorage.getItem('accessToken')
-            const result = await fetchApiData(
-                "/api/auth/logout",
-                "POST",
-                null,
-                accessToken
-            );
-
-            if (result.success) {
-                await AsyncStorage.clear()
-                setUser(null)
-            } else {
-                console.error("Logout error:", result.error);
+    const [weekSong, setWeekSong] = useState()
+    const [newReleaseSong, setNewReleaseSong] = useState()
+    const [trendSong, setTrendSong] = useState()
+    const [popularArtist, setPopularArtist] = useState()
+    useEffect(() => {
+        const fetchSong = async () => {
+            try {
+                const responses = await Promise.all([
+                    fetchApiData("/api/songs/weeklytopsongs", "GET", null, null, { page: 1 }),
+                    fetchApiData("/api/songs/newRaleaseSong", "GET", null, null, { page: 1 }),
+                    fetchApiData("/api/songs/trending", "GET", null, null, { page: 1 }),
+                    fetchApiData("/api/artist/popular", "GET", null, null, { page: 1 })
+                ]);
+                if (responses[0].success) setWeekSong(responses[0].data.weeklyTopSongs);
+                if (responses[1].success) setNewReleaseSong(responses[1].data.newReleaseSongs);
+                if (responses[2].success) setTrendSong(responses[2].data.trendingSongs);
+                if (responses[3].success) setPopularArtist(responses[3].data.popularArtist);
+            } catch (error) {
+                console.error("Error fetching songs:", error);
+            } finally {
             }
-        } catch (error) {
-            console.error("Logout error:", error);
-        }
-    }
+        };
+        fetchSong();
+    }, []);
 
     return (
-        <View style={styles.container}>
-            {user ? (
-                <View>
-                    <Text>Welcome, your name is: {user?.username}</Text>
-                    <TouchableOpacity
-                        onPress={handleLogout}
-                        style={styles.button}
-                    >
-                        <Text style={styles.buttonText}>Logout</Text>
-                    </TouchableOpacity>
-                </View>
-            ) : (
-                <View>
-                    <TouchableOpacity
-                        onPress={() => router.push('/authenticate')}
-                        style={styles.button}
-                    >
-                        <Text style={styles.buttonText}>Login</Text>
-                    </TouchableOpacity>
-                    <Text style={styles.primaryText}>You are not logged in</Text>
-                </View>
-            )
-            }
-        </View >
+        <View style={styles.container} className="flex flex-col gap-5 mb-20 relative">
+            {/* <Banner /> */}
+            <View className="">
+                <ListSong maintitle="Weekly Top" subtitle="Songs" data={weekSong} />
+            </View>
+            <View className="mt-4">
+                <ListSong maintitle="New Releases" subtitle="Songs" data={newReleaseSong} />
+            </View>
+            {/* <View className="">
+                <TrendingSongs maintitle="Trending" subtitle="Songs" data={trendSong} />
+            </View>
+            <View className="">
+                <PopularArtists maintitle="Popular" subtitle="Artists" data={popularArtist} />
+            </View> */}
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
-    loadingContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
     container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    button: {
-        backgroundColor: '#3b82f6', // Tailwind color for "bg-blue-500"
-        padding: 12,
-        borderRadius: 8,
-        marginVertical: 10,
-    },
-    buttonText: {
-        color: '#fff',
-    },
-    primaryText: {
-        color: '#e11d48', // Tailwind color for "text-primaryColorPink"
+        paddingHorizontal: 10,
     },
 });
 

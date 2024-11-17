@@ -1,1 +1,1 @@
-export const PUBLIC_API_ENDPOINT = 'http://localhost:3001'
+export const PUBLIC_API_ENDPOINT = 'http://192.168.20.65:20099'

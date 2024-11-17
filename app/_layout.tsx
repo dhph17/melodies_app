@@ -7,11 +7,9 @@ import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import LoginForm from '@/app/authenticate/login';
+import '../global.css'
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
-
 export default function RootLayout() {
     const colorScheme = useColorScheme();
     const [loaded] = useFonts({
@@ -30,7 +28,7 @@ export default function RootLayout() {
 
     return (
         <SafeAreaView style={styles.container}>
-            <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+            <ThemeProvider value={DarkTheme}>
                 <Stack initialRouteName="(public)">
                     <Stack.Screen name="(public)" options={{ headerShown: false }} />
                     <Stack.Screen name="authenticate" options={{ headerShown: false }} />
@@ -43,6 +41,6 @@ export default function RootLayout() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff'
+        backgroundColor: 'gray'
     },
 });

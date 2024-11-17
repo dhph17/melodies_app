@@ -36,9 +36,9 @@ const LoginPage = () => {
     setIsAnimationComplete(false);
     setIsLogin(!isLogin);
     setIsOTP(false);
-  
+
     const offset = height * 0.47; // Adjust this multiplier as needed for responsiveness
-  
+
     Animated.timing(animatedPosition, {
       toValue: isLogin ? -offset : 0, // Use dynamic offset based on screen height
       duration: 500,
@@ -107,7 +107,7 @@ const LoginPage = () => {
             </Animated.View>
 
             {!isLogin && isAnimationComplete && !isOTP && (
-              <SignUpForm toggleForm={toggleForm} />
+              <SignUpForm toggleForm={toggleForm} setIsOTP={setIsOTP} />
             )}
 
             {isOTP && isAnimationComplete && (
