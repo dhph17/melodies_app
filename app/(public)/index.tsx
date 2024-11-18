@@ -1,8 +1,11 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, FlatList } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from "expo-router";
 import ListSong from '@/components/listSong';
 import { fetchApiData } from '@/app/api/appService';
+import ArtistPopularSong from '@/components/ArtistPopularSong';
+import PopularArtists from '@/components/popularArtists';
+import Banner from '@/components/banner';
 
 const Main = () => {
     const router = useRouter();
@@ -31,28 +34,37 @@ const Main = () => {
         fetchSong();
     }, []);
 
-    return (
-        <View style={styles.container} className="flex flex-col gap-5 mb-20 relative">
-            {/* <Banner /> */}
-            <View className="">
+    const renderContent = () => (
+        <View style={styles.container} className="flex flex-col gap-4">
+            <Banner />
+            <View>
                 <ListSong maintitle="Weekly Top" subtitle="Songs" data={weekSong} />
             </View>
-            <View className="mt-4">
+            <View>
                 <ListSong maintitle="New Releases" subtitle="Songs" data={newReleaseSong} />
             </View>
-            {/* <View className="">
-                <TrendingSongs maintitle="Trending" subtitle="Songs" data={trendSong} />
+            <View>
+                <ArtistPopularSong maintitle="Trending" subtitle="Songs" data={trendSong} />
             </View>
-            <View className="">
+            <View>
                 <PopularArtists maintitle="Popular" subtitle="Artists" data={popularArtist} />
-            </View> */}
+            </View>
         </View>
+    );
+
+    return (
+        <FlatList
+            data={[]}
+            renderItem={null}
+            ListHeaderComponent={renderContent}
+        />
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         paddingHorizontal: 10,
+        paddingBottom: 100
     },
 });
 

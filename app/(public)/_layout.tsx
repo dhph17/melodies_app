@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router'
 import TabBar from '@/app/layouts/TabBar/TabBar';
-import { Text, View } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import Header from '@/app/layouts/header/header';
 
 export default function PublicLayout() {

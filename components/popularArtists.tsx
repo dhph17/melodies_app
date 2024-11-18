@@ -1,10 +1,12 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { User } from '@/types/interfaces';
+import { Image } from 'expo-image';
 
 interface ArtistItemProps {
   maintitle?: string;
   subtitle?: string;
-  data: Array<{ id: string; image: any; name: string; subtitle?: string }>;
+  data?: User[];
 }
 
 const PopularArtists: React.FC<ArtistItemProps> = ({ maintitle, subtitle, data }) => {
@@ -20,10 +22,9 @@ const PopularArtists: React.FC<ArtistItemProps> = ({ maintitle, subtitle, data }
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.itemContainer}>
-            <Image source={item.image} style={styles.image} />
+            <Image source={item.avatar} style={styles.image} />
             <View>
-              <Text style={styles.name}>{item.name}</Text>
-              {item.subtitle && <Text style={styles.subtitle}>{item.subtitle}</Text>}
+              <Text style={styles.name} className='line-clamp-2'>{item.name}</Text>
             </View>
           </View>
         )}
@@ -59,6 +60,7 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 16,
+    color: 'white',
     fontWeight: 'bold',
     textAlign: 'center',
   },

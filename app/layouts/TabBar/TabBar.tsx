@@ -6,7 +6,7 @@ import TabBarButton from './TabbarButton';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 
 const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
-    const primaryColor = '#0891b2';
+    const primaryColor = '#69BFFF';
     const greyColor = '#fde7f7';
     return (
         <View style={styles.tabbar}>
@@ -65,17 +65,17 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        backgroundColor: '#8f0a6a',
+        backgroundColor: '#fc0094',
 
         marginHorizontal: 20,
         paddingVertical: 15,
         borderRadius: 25,
         borderCurve: 'continuous',
         shadowColor: '#0e9eef',
-        shadowOffset: { width: 10, height: 10 }, // Dịch xuống dưới
-        shadowOpacity: 0.7, // Độ mờ bóng
-        shadowRadius: 6,
-        elevation: 10,
+        shadowOffset: { width: 0, height: -22 }, // Dịch xuống dưới
+        shadowOpacity: 0.4, // Độ mờ bóng
+        shadowRadius: 0,
+        elevation: 5,
     },
     tabbarItem: {
         flex: 1,

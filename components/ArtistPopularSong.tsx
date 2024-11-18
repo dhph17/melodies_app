@@ -1,78 +1,76 @@
-import React from 'react';
-import { View, Text, Image, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
-import { SongImage1, SongImage2, SongImage3, ArtistImage1 } from '../assets/images';
+import React, { useState } from 'react';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { Image } from 'expo-image';
+import { DataSong } from '@/types/interfaces';
+import EvilIcons from '@expo/vector-icons/EvilIcons';
+import { formatTime, getMainArtistName, getPosterSong } from '@/utils/utils';
 
-interface SongItem {
-  id: string;
-  title: string;
-  artist: string;
-  time: string;
-  image: any; 
+interface ArtistPopularSongProps {
+  maintitle?: string;
+  subtitle?: string;
+  data?: DataSong[];
 }
 
-const ArtistPopularSong = () => {
-  const songs: SongItem[] = [
-    { id: '1', title: 'Without Me', artist: 'Eminem', time: '4:50', image: SongImage1 },
-    { id: '2', title: 'Mockingbird', artist: 'Eminem', time: '4:10', image: SongImage2 },
-    { id: '3', title: 'The Real Slim Shady', artist: 'Eminem', time: '4:44', image: SongImage3 },
-    { id: '4', title: 'Lose Yourself', artist: 'Eminem', time: '5:22', image: SongImage1 },
-    { id: '5', title: 'Godzilla', artist: 'Eminem', time: '3:30', image: SongImage2 },
-  ];
+const ArtistPopularSong: React.FC<ArtistPopularSongProps> = ({ maintitle, subtitle, data }) => {
+  const [pressedItemId, setPressedItemId] = useState<string | null>(null);
+  const [showAll, setShowAll] = useState(false);
 
-  const renderSong = ({ item }: { item: SongItem }) => (
-    <View style={styles.songContainer}>
-      <Image source={item.image} style={styles.songImage} />
-      <View style={styles.songDetails}>
-        <Text style={styles.songTitle}>{item.title}</Text>
-        <Text style={styles.songArtist}>{item.artist}</Text>
-      </View>
-      <Text style={styles.songTime}>{item.time}</Text>
-    </View>
-  );
+  const renderSong = ({ item }: { item: DataSong }) => {
+    const isPressed = pressedItemId === item.id;
+
+    return (
+      <TouchableOpacity
+        activeOpacity={0.7}
+        onPressIn={() => setPressedItemId(item.id)}
+        onPressOut={() => setPressedItemId(null)}
+        style={[
+          styles.songContainer,
+          isPressed && styles.songContainerPressed,
+        ]}
+      >
+        <View style={styles.songHeader}>
+          <Image source={getPosterSong(item?.album).image} style={styles.songImage} />
+          <View style={styles.songDetails}>
+            <Text style={styles.songTitle} numberOfLines={2}>
+              {item.title}
+            </Text>
+            <Text style={styles.songArtist} numberOfLines={1}>
+              {getMainArtistName(item.artists)}
+            </Text>
+          </View>
+        </View>
+        <Text style={styles.songTime}>{formatTime(item.duration)}</Text>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <View style={styles.container}>
-      <View style={styles.artistHeader}>
-        <Image source={ArtistImage1} style={styles.artistImage} />
-        <Text style={styles.artistName}>Eminem</Text>
-      </View>
-      
-      <Text style={styles.popularSongsTitle}>Popular Songs</Text>
+      <Text className="font-semibold text-2xl mb-5 text-white">
+        {maintitle}
+        <Text className="text-primaryColorPink"> {subtitle}</Text>
+      </Text>
       <FlatList
-        data={songs}
+        data={showAll ? data : data?.slice(0, 5)}
         renderItem={renderSong}
         keyExtractor={(item) => item.id}
       />
-      <TouchableOpacity style={styles.showAllButton}>
-        <Text style={styles.showAllText}>Show All</Text>
-      </TouchableOpacity>
+      {data && data.length > 5 && (
+        <TouchableOpacity
+          style={styles.showAllButton}
+          onPress={() => setShowAll(!showAll)}
+        >
+          <Text style={styles.showAllText}>{showAll ? "Show Less" : "Show All"}</Text>
+          <EvilIcons name={showAll ? "chevron-up" : "chevron-down"} size={20} color="white" />
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    backgroundColor: '#1c1c1c',
     borderRadius: 8,
-  },
-  artistHeader: {
-    position: 'relative',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  artistImage: {
-    width: '100%',
-    height: 200,
-    borderRadius: 8,
-  },
-  artistName: {
-    position: 'absolute',
-    bottom: 16,
-    left: 16,
-    color: '#fff',
-    fontSize: 24,
-    fontWeight: 'bold',
   },
   popularSongsTitle: {
     color: '#ff00ff',
@@ -80,9 +78,21 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   songContainer: {
+    width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    justifyContent: 'space-between',
+    backgroundColor: '#262626',
+    marginBottom: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 6
+  },
+  songContainerPressed: {
+    backgroundColor: '#374151',
+  },
+  songHeader: {
+    flexDirection: 'row'
   },
   songImage: {
     width: 50,
@@ -90,31 +100,40 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   songDetails: {
-    flex: 1,
-    marginLeft: 12,
+    width: '60%',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    marginLeft: 12
   },
   songTitle: {
     color: '#fff',
+    fontWeight: 500,
     fontSize: 16,
   },
   songArtist: {
     color: '#a0a0a0',
-    fontSize: 14,
+    fontSize: 12,
   },
   songTime: {
     color: '#a0a0a0',
-    fontSize: 14,
+    fontSize: 12,
   },
   showAllButton: {
+    width: '30%',
+    flexDirection: 'row',
+    gap: 2,
     marginTop: 16,
-    alignItems: 'center',
-    padding: 10,
+    justifyContent: 'center',
+    paddingVertical: 10,
+    marginHorizontal: 'auto',
     borderRadius: 5,
-    backgroundColor: '#ff00ff',
+    borderWidth: 1,
+    borderColor: '#EE10B0',
   },
   showAllText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 14,
+    fontWeight: 500
   },
 });
 

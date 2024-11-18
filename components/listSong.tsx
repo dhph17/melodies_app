@@ -4,13 +4,13 @@ import React from 'react';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
 import { Image } from 'expo-image';
 
-interface ItemsProps {
+interface ListSongProps {
   maintitle?: string;
   subtitle?: string;
   data?: DataSong[];
 }
 
-const ListSong: React.FC<ItemsProps> = ({ maintitle, subtitle, data }) => {
+const ListSong: React.FC<ListSongProps> = ({ maintitle, subtitle, data }) => {
   // Utility function to truncate text
   const truncateText = (text: string) => {
     if (text.length > 10) {
@@ -52,7 +52,7 @@ const ListSong: React.FC<ItemsProps> = ({ maintitle, subtitle, data }) => {
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 16,
+
   },
   itemContainer: {
     borderRadius: 8,
