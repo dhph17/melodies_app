@@ -55,7 +55,7 @@ const Profile = () => {
         <View style={styles.container}>
             {user ? (
                 <View>
-                    <Text>Welcome, your name is: {user?.username}</Text>
+                    <Text className='text-white'>Welcome, your name is: {user?.username}</Text>
                     <TouchableOpacity
                         onPress={handleLogout}
                         style={styles.button}
