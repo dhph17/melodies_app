@@ -3,11 +3,15 @@ import TabBar from '@/app/layouts/TabBar/TabBar';
 import { View, StyleSheet } from 'react-native';
 import Header from '@/app/layouts/header/header';
 import { PlaybackProvider } from '../player/PlaybackContext';
+import MainPlayer from '../player/MainPlayer';
 
 export default function PublicLayout() {
     return (
         <PlaybackProvider>
-        <Tabs
+            <View>
+                <MainPlayer/>
+            </View>
+        {/* <Tabs
             tabBar={props => <TabBar {...props} />}
             screenOptions={{
                 header: () => <Header />
@@ -43,7 +47,7 @@ export default function PublicLayout() {
                     title: "Player",
                 }}
             />
-        </Tabs>
+        </Tabs> */}
         </PlaybackProvider>
     );
 }
