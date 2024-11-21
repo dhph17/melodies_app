@@ -7,7 +7,6 @@ import getLyrics from '../../assets/tools/getLyrics';
 import Tracklist from './tracklist';
 import * as FileSystem from 'expo-file-system';
 import { Asset } from 'expo-asset';
-import { FFmpegKit, FFmpegKitConfig } from 'ffmpeg-kit-react-native';
 
 
 const { height, width } = Dimensions.get('window');
@@ -45,60 +44,43 @@ const MainPlayer = () => {
             Alert.alert('Error', 'No track to download.');
             return;
         }
-
+    
         try {
             // Resolve the local file URI using expo-asset
             const asset = Asset.fromModule(currentTrack.audio);
             await asset.downloadAsync(); // Ensure the asset is available locally
             const localUri = asset.localUri;
-
+    
             if (!localUri) {
                 Alert.alert('Error', 'Unable to resolve local audio file.');
                 return;
             }
-
-            // Create a temporary file for the compressed output
-            const compressedUri = `${FileSystem.cacheDirectory}${currentTrack.title}_compressed.mp3`;
-
-            // FFmpeg command to compress the audio to 96kbps
-            const ffmpegCommand = `-i "${localUri}" -b:a 96k "${compressedUri}"`;
-
-            // Run FFmpeg compression
-            const session = await FFmpegKit.execute(ffmpegCommand);
-            const returnCode = await session.getReturnCode();
-
-            if (returnCode.isValueSuccess()) {
-                console.log('Compression successful:', compressedUri);
-
-                // Request permission to access the "Downloads" folder
-                const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
-                if (!permissions.granted) {
-                    Alert.alert('Permission Denied', 'You must grant permission to save the file.');
-                    return;
-                }
-
-                // Create the file in the selected directory
-                const destFileName = `${currentTrack.title}_compressed.mp3`;
-                const contentUri = await FileSystem.StorageAccessFramework.createFileAsync(
-                    permissions.directoryUri,
-                    destFileName,
-                    'audio/mpeg'
-                );
-
-                // Read the compressed file and save it to the content URI
-                const fileContent = await FileSystem.readAsStringAsync(compressedUri, {
-                    encoding: FileSystem.EncodingType.Base64,
-                });
-
-                await FileSystem.StorageAccessFramework.writeAsStringAsync(contentUri, fileContent, {
-                    encoding: FileSystem.EncodingType.Base64,
-                });
-
-                Alert.alert('Download Complete', `Track saved successfully: ${destFileName}`);
-            } else {
-                console.error('Compression failed:', await session.getFailStackTrace());
-                Alert.alert('Compression Failed', 'FFmpeg compression did not complete successfully.');
+    
+            // Request permission to access the "Downloads" folder
+            const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
+            if (!permissions.granted) {
+                Alert.alert('Permission Denied', 'You must grant permission to save the file.');
+                return;
             }
+    
+            // Create the file in the selected directory
+            const destFileName = `${currentTrack.title}.mp3`;
+            const contentUri = await FileSystem.StorageAccessFramework.createFileAsync(
+                permissions.directoryUri,
+                destFileName,
+                'audio/mpeg'
+            );
+    
+            // Read the file as Base64 and write it to the content URI
+            const fileContent = await FileSystem.readAsStringAsync(localUri, {
+                encoding: FileSystem.EncodingType.Base64,
+            });
+    
+            await FileSystem.StorageAccessFramework.writeAsStringAsync(contentUri, fileContent, {
+                encoding: FileSystem.EncodingType.Base64,
+            });
+    
+            Alert.alert('Download Complete', `Track saved successfully: ${destFileName}`);
         } catch (error) {
             if (error instanceof Error) {
                 Alert.alert('Download Failed', `Could not download the track: ${error.message}`);
@@ -107,7 +89,6 @@ const MainPlayer = () => {
             }
         }
     };
-
 
     if (!currentTrack) {
         return <Text>Loading...</Text>;
