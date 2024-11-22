@@ -1,3 +1,6 @@
+import { DataSong } from '@/types/interfaces';
+import { getMainArtistName, getPosterSong } from '@/utils/utils';
+import { Image } from 'expo-image';
 import React from 'react';
 import {
     View,
@@ -6,20 +9,13 @@ import {
     StyleSheet,
     Modal,
     FlatList,
-    Image,
     TouchableWithoutFeedback,
 } from 'react-native';
-
-interface Track {
-    title: string;
-    artist: string;
-    image: any;
-}
 
 interface TracklistProps {
     visible: boolean;
     onClose: () => void;
-    tracks: Track[];
+    tracks: DataSong[];
     currentTrackIndex: number;
     onSelectTrack: (index: number) => void;
 }
@@ -31,7 +27,7 @@ const Tracklist: React.FC<TracklistProps> = ({
     currentTrackIndex,
     onSelectTrack,
 }) => {
-    const renderTrack = ({ item, index }: { item: Track; index: number }) => {
+    const renderTrack = ({ item, index }: { item: DataSong; index: number }) => {
         const isCurrent = index === currentTrackIndex;
 
         return (
@@ -39,13 +35,13 @@ const Tracklist: React.FC<TracklistProps> = ({
                 style={[styles.trackItem, isCurrent && styles.currentTrack]}
                 onPress={() => onSelectTrack(index)}
             >
-                <Image source={item.image} style={styles.trackImage} />
+                <Image source={getPosterSong(item.album).image} style={styles.trackImage} />
                 <View style={styles.trackInfo}>
                     <Text style={[styles.trackTitle, isCurrent && styles.currentTrackText]}>
                         {item.title}
                     </Text>
                     <Text style={[styles.trackArtist, isCurrent && styles.currentTrackText]}>
-                        {item.artist}
+                        {getMainArtistName(item.artists)}
                     </Text>
                 </View>
             </TouchableOpacity>

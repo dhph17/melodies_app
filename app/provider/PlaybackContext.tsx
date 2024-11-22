@@ -1,25 +1,18 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { Audio } from 'expo-av';
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
-import trackList from '../../assets/tracklist';
+import trackList from '@/assets/tracklist';
+import { DataSong } from '@/types/interfaces';
+import { getMainArtistName } from '@/utils/utils';
 
-// Define the Track type
-interface Track {
-    title: string;
-    artist: string;
-    audio: any;
-    image: any;
-}
-
-// Define the props for PlaybackProvider
 interface PlaybackProviderProps {
     children: ReactNode;
 }
 
-// Define the context type
 interface PlaybackContextType {
-    currentTrack: Track | null;
+    currentTrack: DataSong | null;
+    setCurrentSong: (song: DataSong) => void;
     isPlaying: boolean;
     positionMillis: number;
     durationMillis: number;
@@ -30,13 +23,13 @@ interface PlaybackContextType {
     setRepeatMode: () => void;
     seekTo: (position: number) => void;
     setTrack: (index: number) => void;
-    trackList: Track[];
 }
 
 // Create the context
 const PlaybackContext = createContext<PlaybackContextType | undefined>(undefined);
 
 export const PlaybackProvider: React.FC<PlaybackProviderProps> = ({ children }) => {
+    const [currentTrack, setCurrentTrackState] = useState<DataSong | null>(null);
     const [sound, setSound] = useState<Audio.Sound | null>(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
@@ -44,7 +37,9 @@ export const PlaybackProvider: React.FC<PlaybackProviderProps> = ({ children }) 
     const [durationMillis, setDurationMillis] = useState(0);
     const [repeatMode, setRepeatModeState] = useState<'off' | 'all' | 'single'>('off');
 
-    const currentTrack = trackList[currentTrackIndex];
+    const setCurrentSong = useCallback((song: DataSong) => {
+        setCurrentTrackState(song);
+    }, []);
 
     useEffect(() => {
         const configureAudio = async () => {
@@ -66,7 +61,7 @@ export const PlaybackProvider: React.FC<PlaybackProviderProps> = ({ children }) 
             }
             if (currentTrack) {
                 const { sound: newSound } = await Audio.Sound.createAsync(
-                    currentTrack.audio,
+                    { uri: currentTrack.filePathAudio },
                     { shouldPlay: isPlaying },
                     (status) => {
                         if (status.isLoaded) {
@@ -85,7 +80,6 @@ export const PlaybackProvider: React.FC<PlaybackProviderProps> = ({ children }) 
                 );
                 setSound(newSound);
 
-                // Update notification when track changes
                 updateNotification();
             }
         };
@@ -107,8 +101,6 @@ export const PlaybackProvider: React.FC<PlaybackProviderProps> = ({ children }) 
                 await sound.playAsync();
             }
             setIsPlaying(!isPlaying);
-
-            // Update notification playback state
             updateNotification();
         }
     };
@@ -147,7 +139,7 @@ export const PlaybackProvider: React.FC<PlaybackProviderProps> = ({ children }) 
             await Notifications.scheduleNotificationAsync({
                 content: {
                     title: currentTrack.title,
-                    body: `${currentTrack.artist} - ${isPlaying ? 'Playing' : 'Paused'}`,
+                    body: `${getMainArtistName(currentTrack.artists)} - ${isPlaying ? 'Playing' : 'Paused'}`,
                 },
                 trigger: null,
             });
@@ -158,6 +150,7 @@ export const PlaybackProvider: React.FC<PlaybackProviderProps> = ({ children }) 
         <PlaybackContext.Provider
             value={{
                 currentTrack,
+                setCurrentSong,
                 isPlaying,
                 positionMillis,
                 durationMillis,
@@ -168,7 +161,6 @@ export const PlaybackProvider: React.FC<PlaybackProviderProps> = ({ children }) 
                 setRepeatMode,
                 seekTo,
                 setTrack,
-                trackList,
             }}
         >
             {children}

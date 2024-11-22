@@ -1,6 +1,8 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import { usePlayback } from '../player/PlaybackContext';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { usePlayback } from '../../provider/PlaybackContext';
+import { getMainArtistName, getPosterSong } from '@/utils/utils';
+import { Image } from 'expo-image';
 
 const MiniPlayer: React.FC = () => {
     const {
@@ -16,7 +18,7 @@ const MiniPlayer: React.FC = () => {
     return (
         <View style={styles.container}>
             {/* Album Art */}
-            <Image source={currentTrack.image} style={styles.albumArt} />
+            <Image source={getPosterSong(currentTrack.album).image} style={styles.albumArt} />
 
             {/* Song and Artist Info */}
             <View style={styles.trackInfo}>
@@ -24,27 +26,27 @@ const MiniPlayer: React.FC = () => {
                     {currentTrack.title}
                 </Text>
                 <Text style={styles.trackArtist} numberOfLines={1}>
-                    {currentTrack.artist}
+                    {getMainArtistName(currentTrack.artists)}
                 </Text>
             </View>
 
             {/* Control Buttons */}
             <View style={styles.controls}>
                 <TouchableOpacity onPress={skipToPrevious} style={styles.controlButton}>
-                    <Image source={require('../../assets/icons/backward.png')} style={styles.controlIcon} />
+                    <Image source={require('@/assets/icons/backward.png')} style={styles.controlIcon} />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={togglePlayPause} style={styles.controlButton}>
                     <Image
                         source={
                             isPlaying
-                                ? require('../../assets/icons/pause.png')
-                                : require('../../assets/icons/play.png')
+                                ? require('@/assets/icons/pause.png')
+                                : require('@/assets/icons/play.png')
                         }
                         style={styles.controlIcon}
                     />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={skipToNext} style={styles.controlButton}>
-                    <Image source={require('../../assets/icons/forward.png')} style={styles.controlIcon} />
+                    <Image source={require('@/assets/icons/forward.png')} style={styles.controlIcon} />
                 </TouchableOpacity>
             </View>
         </View>

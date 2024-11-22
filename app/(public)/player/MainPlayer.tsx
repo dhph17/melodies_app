@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, ImageBackground, Dimensions, ScrollView, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ImageBackground, Dimensions, ScrollView, Alert } from 'react-native';
 import Slider from '@react-native-community/slider';
-import { usePlayback } from './PlaybackContext';
+import { usePlayback } from '../../provider/PlaybackContext';
 import { useRouter } from 'expo-router';
-import getLyrics from '../../assets/tools/getLyrics';
+import getLyrics from '@/assets/tools/getLyrics';
 import Tracklist from './tracklist';
 import * as FileSystem from 'expo-file-system';
 import { Asset } from 'expo-asset';
+import { getMainArtistName, getPosterSong } from '@/utils/utils';
+import { Image } from 'expo-image';
 
 
 const { height, width } = Dimensions.get('window');
@@ -24,7 +26,6 @@ const MainPlayer = () => {
         repeatMode,
         setRepeatMode,
         seekTo,
-        trackList,
         setTrack,
     } = usePlayback();
 
@@ -40,29 +41,29 @@ const MainPlayer = () => {
     };
 
     const downloadCurrentTrack = async () => {
-        if (!currentTrack || !currentTrack.audio) {
+        if (!currentTrack || !currentTrack.filePathAudio) {
             Alert.alert('Error', 'No track to download.');
             return;
         }
-    
+
         try {
             // Resolve the local file URI using expo-asset
-            const asset = Asset.fromModule(currentTrack.audio);
+            const asset = Asset.fromModule(currentTrack.filePathAudio);
             await asset.downloadAsync(); // Ensure the asset is available locally
             const localUri = asset.localUri;
-    
+
             if (!localUri) {
                 Alert.alert('Error', 'Unable to resolve local audio file.');
                 return;
             }
-    
+
             // Request permission to access the "Downloads" folder
             const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
             if (!permissions.granted) {
                 Alert.alert('Permission Denied', 'You must grant permission to save the file.');
                 return;
             }
-    
+
             // Create the file in the selected directory
             const destFileName = `${currentTrack.title}.mp3`;
             const contentUri = await FileSystem.StorageAccessFramework.createFileAsync(
@@ -70,16 +71,16 @@ const MainPlayer = () => {
                 destFileName,
                 'audio/mpeg'
             );
-    
+
             // Read the file as Base64 and write it to the content URI
             const fileContent = await FileSystem.readAsStringAsync(localUri, {
                 encoding: FileSystem.EncodingType.Base64,
             });
-    
+
             await FileSystem.StorageAccessFramework.writeAsStringAsync(contentUri, fileContent, {
                 encoding: FileSystem.EncodingType.Base64,
             });
-    
+
             Alert.alert('Download Complete', `Track saved successfully: ${destFileName}`);
         } catch (error) {
             if (error instanceof Error) {
@@ -95,38 +96,38 @@ const MainPlayer = () => {
     }
 
     return (
-        <ImageBackground source={currentTrack.image} style={styles.background} blurRadius={20}>
+        <ImageBackground source={getPosterSong(currentTrack.album).image} style={styles.background} blurRadius={20}>
             <View style={styles.overlay}>
                 <View style={styles.topNav}>
-                <TouchableOpacity onPress={() => router.push('/')}>
-                        <Image source={require('../../assets/icons/back.png')} style={styles.icon} />
+                    <TouchableOpacity onPress={() => router.push('/')}>
+                        <Image source={require('@/assets/icons/back.png')} style={styles.icon} />
                     </TouchableOpacity>
                     <Text style={styles.title}>Music</Text>
                     <TouchableOpacity></TouchableOpacity>
                 </View>
 
-                <Image source={currentTrack.image} style={isLyrics ? styles.albumCoverSmall : styles.albumCoverLarge} />
+                <Image source={getPosterSong(currentTrack.album).image} style={isLyrics ? styles.albumCoverSmall : styles.albumCoverLarge} />
 
                 <View style={styles.toggleContainer}>
                     <TouchableOpacity
                         onPress={() => setIsLyrics(false)}
                         style={[styles.toggleButton, !isLyrics && styles.activeButton]}
                     >
-                        <Image source={require('../../assets/icons/note.png')} style={styles.toggleIcon} />
+                        <Image source={require('@/assets/icons/note.png')} style={styles.toggleIcon} />
                         <Text style={[styles.toggleText, !isLyrics && styles.activeText]}>Song</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                         onPress={() => setIsLyrics(true)}
                         style={[styles.toggleButton, isLyrics && styles.activeButton]}
                     >
-                        <Image source={require('../../assets/icons/lyrics.png')} style={styles.toggleIcon} />
+                        <Image source={require('@/assets/icons/lyrics.png')} style={styles.toggleIcon} />
                         <Text style={[styles.toggleText, isLyrics && styles.activeText]}>Lyrics</Text>
                     </TouchableOpacity>
                 </View>
 
                 <View style={styles.songInfoCenter}>
                     <Text style={styles.songTitle}>{currentTrack.title}</Text>
-                    <Text style={styles.artist}>{currentTrack.artist}</Text>
+                    <Text style={styles.artist}>{getMainArtistName(currentTrack.artists)}</Text>
                 </View>
 
                 {isLyrics ? (
@@ -159,45 +160,45 @@ const MainPlayer = () => {
                         <Image
                             source={
                                 repeatMode === 'off'
-                                    ? require('../../assets/icons/repeat.png')
+                                    ? require('@/assets/icons/repeat.png')
                                     : repeatMode === 'all'
-                                    ? require('../../assets/icons/repeatall.png')
-                                    : require('../../assets/icons/repeatsingle.png')
+                                        ? require('@/assets/icons/repeatall.png')
+                                        : require('@/assets/icons/repeatsingle.png')
                             }
                             style={styles.controlIcon}
                         />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={skipToPrevious} style={styles.controlButton}>
-                        <Image source={require('../../assets/icons/backward.png')} style={styles.controlIcon} />
+                        <Image source={require('@/assets/icons/backward.png')} style={styles.controlIcon} />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={togglePlayPause} style={[styles.controlButton, styles.playButton]}>
                         <Image
                             source={
                                 isPlaying
-                                    ? require('../../assets/icons/pause.png')
-                                    : require('../../assets/icons/play.png')
+                                    ? require('@/assets/icons/pause.png')
+                                    : require('@/assets/icons/play.png')
                             }
                             style={styles.controlIcon}
                         />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={skipToNext} style={styles.controlButton}>
-                        <Image source={require('../../assets/icons/forward.png')} style={styles.controlIcon} />
+                        <Image source={require('@/assets/icons/forward.png')} style={styles.controlIcon} />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => setIsPlaylistVisible(true)} style={styles.controlButton}>
-                        <Image source={require('../../assets/icons/playlist.png')} style={styles.controlIcon} />
+                        <Image source={require('@/assets/icons/playlist.png')} style={styles.controlIcon} />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={downloadCurrentTrack} style={styles.controlButton}>
-                        <Image source={require('../../assets/icons/download.webp')} style={styles.controlIcon} />
+                        <Image source={require('@/assets/icons/download.webp')} style={styles.controlIcon} />
                     </TouchableOpacity>
                 </View>
             </View>
-            <Tracklist
+            {/* <Tracklist
                 visible={isPlaylistVisible}
                 onClose={() => setIsPlaylistVisible(false)}
                 tracks={trackList}
                 currentTrackIndex={trackList.indexOf(currentTrack)}
                 onSelectTrack={setTrack}
-            />
+            /> */}
         </ImageBackground>
     );
 };
