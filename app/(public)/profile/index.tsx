@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from "expo-router";
-import { Text, View, TouchableOpacity, StyleSheet } from 'react-native';
+import { Text, View, TouchableOpacity, StyleSheet, Image, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetchApiData } from '@/app/api/appService';
 import { User } from "@/types/interfaces";
 import { useFocusEffect } from '@react-navigation/native';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 const Profile = () => {
     const router = useRouter();
-    const [user, setUser] = useState<User | null>()
+    const [user, setUser] = useState<User | null>(null);
 
     useFocusEffect(
         React.useCallback(() => {
@@ -28,20 +29,14 @@ const Profile = () => {
         }, [])
     );
 
-    async function handleLogout() {
-        const accessToken = await AsyncStorage.getItem('accessToken')
+    const handleLogout = async () => {
+        const accessToken = await AsyncStorage.getItem('accessToken');
         if (accessToken) {
             try {
-                const result = await fetchApiData(
-                    "/api/auth/logout",
-                    "POST",
-                    null,
-                    accessToken
-                );
-
+                const result = await fetchApiData("/api/auth/logout", "POST", null, accessToken);
                 if (result.success) {
-                    await AsyncStorage.clear()
-                    setUser(null)
+                    await AsyncStorage.clear();
+                    setUser(null);
                 } else {
                     console.error("Logout error:", result.error);
                 }
@@ -49,58 +44,142 @@ const Profile = () => {
                 console.error("Logout error:", error);
             }
         }
-    }
+    };
+
+    const SectionItem = ({ iconName, title, onPress }: { iconName: string; title: string; onPress?: () => void }) => (
+        <TouchableOpacity style={styles.sectionItem} onPress={onPress}>
+            <FontAwesome name={iconName} size={20} color="#fff" style={styles.icon} />
+            <Text style={styles.sectionText}>{title}</Text>
+            <FontAwesome name="chevron-right" size={20} color="#fff" style={styles.chevronIcon} />
+        </TouchableOpacity>
+    );
+    
 
     return (
         <View style={styles.container}>
-            {user ? (
-                <View>
-                    <Text className='text-white'>Welcome, your name is: {user?.username}</Text>
-                    <TouchableOpacity
-                        onPress={handleLogout}
-                        style={styles.button}
-                    >
-                        <Text style={styles.buttonText}>Logout</Text>
-                    </TouchableOpacity>
+            <ScrollView contentContainerStyle={styles.scrollContent}>
+                <View style={styles.avatarContainer}>
+                    <Image
+                        source={{ uri: user?.avatar || 'https://via.placeholder.com/150' }}
+                        style={styles.avatar}
+                    />
+                    {user ? (
+                        <Text style={styles.username}>{user.username}</Text>
+                    ) : (
+                        <TouchableOpacity
+                            onPress={() => router.push('/authenticate')}
+                            style={styles.loginButton}
+                        >
+                            <Text style={styles.loginText}>Login</Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
-            ) : (
-                <View>
-                    <TouchableOpacity
-                        onPress={() => router.push('/authenticate')}
-                        style={styles.button}
-                    >
-                        <Text style={styles.buttonText}>Login</Text>
-                    </TouchableOpacity>
-                    <Text style={styles.primaryText}>You are not logged in</Text>
+
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Tài khoản</Text>
+                    <SectionItem iconName="user" title="Chỉnh sửa hồ sơ" />
                 </View>
-            )
-            }
-        </View >
+
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Đăng ký</Text>
+                    <SectionItem iconName="list" title="Các gói có sẵn" />
+                    <SectionItem iconName="edit" title="Quản lý gói đăng ký" />
+                    <SectionItem iconName="times" title="Hủy gói đăng ký" />
+                </View>
+
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Thanh toán</Text>
+                    <SectionItem iconName="history" title="Lịch sử đặt hàng" />
+                </View>
+
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Bảo mật</Text>
+                    <SectionItem iconName="lock" title="Đổi mật khẩu" />
+                    <SectionItem iconName="bell" title="Cài đặt thông báo" />
+                    <SectionItem iconName="sign-out" title="Đăng xuất" onPress={handleLogout} />
+                </View>
+            </ScrollView>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
-    loadingContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
     container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+        backgroundColor: '#121212',
     },
-    button: {
-        backgroundColor: '#3b82f6', // Tailwind color for "bg-blue-500"
+    scrollContent: {
+        paddingHorizontal: 20,
+        paddingTop: 30,
+        paddingBottom: 150, // Adjust to prevent overlap with the nav bar and mini-player
+    },
+    avatarContainer: {
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+    avatar: {
+        width: 100,
+        height: 100,
+        borderRadius: 50,
+        borderWidth: 2,
+        borderColor: '#3b82f6',
+    },
+    username: {
+        marginTop: 10,
+        fontSize: 18,
+        color: '#fff',
+        fontWeight: 'bold',
+    },
+    loginButton: {
+        marginTop: 10,
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        backgroundColor: '#3b82f6',
+        borderRadius: 5,
+    },
+    loginText: {
+        color: '#fff',
+        fontSize: 16,
+    },
+    section: {
+        marginBottom: 20,
+    },
+    sectionTitle: {
+        fontSize: 18,
+        color: '#fff',
+        marginBottom: 10,
+        fontWeight: 'bold',
+    },
+    sectionItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        backgroundColor: '#1e1e1e',
+        padding: 15,
+        borderRadius: 8,
+        marginBottom: 10,
+    },
+    icon: {
+        marginRight: 10,
+    },
+    sectionText: {
+        flex: 1, // Pushes the chevron to the far right
+        color: '#fff',
+        fontSize: 16,
+    },
+    chevronIcon: {
+        marginLeft: 10,
+    },
+    logoutButton: {
+        marginTop: 20,
+        backgroundColor: '#e11d48',
         padding: 12,
         borderRadius: 8,
-        marginVertical: 10,
     },
-    buttonText: {
+    logoutText: {
         color: '#fff',
-    },
-    primaryText: {
-        color: '#e11d48', // Tailwind color for "text-primaryColorPink"
+        fontSize: 16,
+        textAlign: 'center',
     },
 });
 

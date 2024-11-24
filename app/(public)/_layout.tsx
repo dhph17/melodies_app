@@ -35,6 +35,7 @@ export default function PublicLayout() {
                     name="profile/index"
                     options={{
                         title: "Profile",
+                        headerShown: false,
                     }}
                 />
             </Tabs>
