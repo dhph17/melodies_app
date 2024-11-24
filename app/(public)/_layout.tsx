@@ -29,6 +29,7 @@ export default function PublicLayout() {
                     name="playlist/index"
                     options={{
                         title: "Playlist",
+                        headerShown: false,
                     }}
                 />
                 <Tabs.Screen
@@ -38,9 +39,17 @@ export default function PublicLayout() {
                         headerShown: false,
                     }}
                 />
+                <Tabs.Screen
+                    name="playlist/ViewPlaylist"
+                    options={{
+                        title: "View",
+                        headerShown: false,
+                        href: null,
+                    }}
+                />
+                
             </Tabs>
             <MiniPlayer />
         </>
     );
 }
-
