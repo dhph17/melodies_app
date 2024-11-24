@@ -2,7 +2,6 @@ import React, { createContext, useContext, useState, useEffect, useCallback, Rea
 import { Audio } from 'expo-av';
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
-import trackList from '@/assets/tracklist';
 import { DataSong } from '@/types/interfaces';
 import { getMainArtistName } from '@/utils/utils';
 

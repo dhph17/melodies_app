@@ -3,12 +3,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from "expo-router";
 import ListSong from '@/components/listSong';
 import { fetchApiData } from '@/app/api/appService';
-import ArtistPopularSong from '@/components/ArtistPopularSong';
+import ArtistPopularSong from '@/components/trendingSong';
 import PopularArtists from '@/components/popularArtists';
 import Banner from '@/components/banner';
+import { usePlayback } from '@/app/provider/PlaybackContext';
 
 const Main = () => {
     const router = useRouter();
+    const { currentTrack } = usePlayback()
     const [weekSong, setWeekSong] = useState()
     const [newReleaseSong, setNewReleaseSong] = useState()
     const [trendSong, setTrendSong] = useState()
@@ -35,7 +37,13 @@ const Main = () => {
     }, []);
 
     const renderContent = () => (
-        <View style={styles.container} className="flex flex-col gap-4">
+        <View
+            style={[
+                styles.container,
+                { paddingBottom: currentTrack ? 150 : 70 },
+            ]}
+            className="flex flex-col gap-4"
+        >
             <Banner />
             <View>
                 <ListSong maintitle="Weekly Top" subtitle="Songs" data={weekSong} />
@@ -64,7 +72,6 @@ const Main = () => {
 const styles = StyleSheet.create({
     container: {
         paddingHorizontal: 10,
-        paddingBottom: 100
     },
 });
 

@@ -38,6 +38,13 @@ export default function PublicLayout() {
                         headerShown: false,
                     }}
                 />
+                <Tabs.Screen
+                    name="artist/[id]"
+                    options={{
+                        title: "Profile",
+                        headerShown: false,
+                    }}
+                />
             </Tabs>
             <MiniPlayer />
         </>
