@@ -8,25 +8,39 @@ import {
   FlatList,
   TextInput,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient"; 
+import { useRouter } from 'expo-router';
+import { LinearGradient } from "expo-linear-gradient";
 import { FontAwesome } from "@expo/vector-icons";
 
 const playlistData = [
   { id: "1", title: "Easy", artist: "Troye Sivan" },
   { id: "2", title: "chance with you", artist: "mehro" },
+  { id: "3", title: "Easy", artist: "Troye Sivan" },
+  { id: "4", title: "chance with you", artist: "mehro" },
+  { id: "5", title: "Easy", artist: "Troye Sivan" },
+  { id: "6", title: "chance with you", artist: "mehro" },
+  { id: "7", title: "Easy", artist: "Troye Sivan" },
+  { id: "8", title: "chance with you", artist: "mehro" },
+  { id: "9", title: "Easy", artist: "Troye Sivan" },
+  { id: "10", title: "chance with you", artist: "mehro" },
+
 ];
 
 const ViewPlaylist = () => {
+  const router = useRouter(); 
+
+  const handleBackClick = () => {
+    router.push("/playlist"); 
+  };
   return (
     <View style={styles.container}>
       {/* Header with Gradient */}
       <LinearGradient
-        colors={["#3a3a3a", "#121212"]} // Gradient colors
+        colors={["#3a3a3a", "#121212"]} 
         style={styles.headerContainer}
       >
-        {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity style={styles.iconButton}>
+          <TouchableOpacity style={styles.iconButton} onPress={() => handleBackClick()}>
             <FontAwesome name="chevron-left" size={24} color="white" />
           </TouchableOpacity>
           <TextInput
@@ -57,6 +71,7 @@ const ViewPlaylist = () => {
       <FlatList
         data={playlistData}
         keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.flatListContent}
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.songItem}
@@ -84,10 +99,10 @@ export default ViewPlaylist;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#121212", // Base background color
+    backgroundColor: "#121212",
   },
   headerContainer: {
-    paddingBottom: 20, // Gradient area
+    paddingBottom: 20,
   },
   header: {
     flexDirection: "row",
@@ -133,13 +148,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#bbb",
   },
+  flatListContent: {
+    paddingBottom: 100, 
+  },
   songItem: {
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 10,
     paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#555",
   },
   songImage: {
     width: 50,

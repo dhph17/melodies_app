@@ -52,24 +52,12 @@ const Playlist = () => {
     }
   };
 
-  const applySorting = (order: 'az' | 'recent') => {
-    setSortOrder(order);
-    const sorted = [...filteredData].sort((a, b) => {
-      if (order === 'az') {
-        return a.title.localeCompare(b.title);
-      } else {
-        return playlistData.indexOf(a) - playlistData.indexOf(b);
-      }
-    });
-    setFilteredData(sorted);
-  };
-
   const handlePlaylistClick = () => {
     router.push('./playlist/ViewPlaylist');
   };
 
   const renderItem = ({ item }: { item: PlaylistItem }) => (
-    <TouchableOpacity style={styles.item} onPress={() => handlePlaylistClick(item)}>
+    <TouchableOpacity style={styles.item} onPress={() => handlePlaylistClick()}>
       <Image source={{ uri: item.icon }} style={styles.icon} />
       <View>
         <Text style={styles.title}>{item.title}</Text>
