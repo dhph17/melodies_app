@@ -1,16 +1,15 @@
-import { Tabs } from 'expo-router'
+import { Tabs } from 'expo-router';
 import TabBar from '@/app/layouts/TabBar/TabBar';
-import { View, StyleSheet } from 'react-native';
 import Header from '@/app/layouts/header/header';
-import { PlaybackProvider } from '@/app/provider/PlaybackContext';
+import MiniPlayer from '@/app/player/MiniPlayer';
 
 export default function PublicLayout() {
     return (
-        <PlaybackProvider>
+        <>
             <Tabs
-                tabBar={props => <TabBar {...props} />}
+                tabBar={(props) => <TabBar {...props} />}
                 screenOptions={{
-                    header: () => <Header />
+                    header: () => <Header />,
                 }}
             >
                 <Tabs.Screen
@@ -20,9 +19,10 @@ export default function PublicLayout() {
                     }}
                 />
                 <Tabs.Screen
-                    name="discover/index"
+                    name="search/index"
                     options={{
-                        title: "Discover",
+                        title: "Search",
+                        headerShown: false,
                     }}
                 />
                 <Tabs.Screen
@@ -38,6 +38,8 @@ export default function PublicLayout() {
                     }}
                 />
             </Tabs>
-        </PlaybackProvider>
+            <MiniPlayer />
+        </>
     );
 }
+

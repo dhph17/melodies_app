@@ -1,3 +1,4 @@
+import { usePlayback } from '@/app/provider/PlaybackContext';
 import { DataSong } from '@/types/interfaces';
 import { getMainArtistName, getPosterSong } from '@/utils/utils';
 import { Image } from 'expo-image';
@@ -17,7 +18,6 @@ interface TracklistProps {
     onClose: () => void;
     tracks: DataSong[];
     currentTrackIndex: number;
-    onSelectTrack: (index: number) => void;
 }
 
 const Tracklist: React.FC<TracklistProps> = ({
@@ -25,15 +25,15 @@ const Tracklist: React.FC<TracklistProps> = ({
     onClose,
     tracks,
     currentTrackIndex,
-    onSelectTrack,
 }) => {
+    const { setCurrentSong } = usePlayback()
     const renderTrack = ({ item, index }: { item: DataSong; index: number }) => {
         const isCurrent = index === currentTrackIndex;
 
         return (
             <TouchableOpacity
                 style={[styles.trackItem, isCurrent && styles.currentTrack]}
-                onPress={() => onSelectTrack(index)}
+                onPress={() => { setCurrentSong(item); onClose }}
             >
                 <Image source={getPosterSong(item.album).image} style={styles.trackImage} />
                 <View style={styles.trackInfo}>

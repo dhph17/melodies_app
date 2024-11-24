@@ -1,22 +1,27 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { usePlayback } from '../../provider/PlaybackContext';
+import { usePlayback } from '../provider/PlaybackContext';
 import { getMainArtistName, getPosterSong } from '@/utils/utils';
+import Entypo from '@expo/vector-icons/Entypo';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { useRouter } from 'expo-router';
 import { Image } from 'expo-image';
 
 const MiniPlayer: React.FC = () => {
+    const router = useRouter()
     const {
         currentTrack,
         isPlaying,
         togglePlayPause,
-        skipToNext,
-        skipToPrevious,
+        nextSong,
+        previousSong
     } = usePlayback();
 
     if (!currentTrack) return null;
 
     return (
-        <View style={styles.container}>
+        <TouchableOpacity style={styles.container} onPress={() => router.push('/player/MainPlayer')}>
             {/* Album Art */}
             <Image source={getPosterSong(currentTrack.album).image} style={styles.albumArt} />
 
@@ -32,24 +37,22 @@ const MiniPlayer: React.FC = () => {
 
             {/* Control Buttons */}
             <View style={styles.controls}>
-                <TouchableOpacity onPress={skipToPrevious} style={styles.controlButton}>
-                    <Image source={require('@/assets/icons/backward.png')} style={styles.controlIcon} />
+                <TouchableOpacity onPress={previousSong} style={styles.controlButton}>
+                    <Ionicons name="play-skip-back" size={20} color="white" />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={togglePlayPause} style={styles.controlButton}>
-                    <Image
-                        source={
-                            isPlaying
-                                ? require('@/assets/icons/pause.png')
-                                : require('@/assets/icons/play.png')
-                        }
-                        style={styles.controlIcon}
-                    />
+                    {
+                        isPlaying ?
+                            <AntDesign name="pause" size={30} color="white" />
+                            :
+                            <Entypo name="controller-play" size={30} color="white" />
+                    }
                 </TouchableOpacity>
-                <TouchableOpacity onPress={skipToNext} style={styles.controlButton}>
-                    <Image source={require('@/assets/icons/forward.png')} style={styles.controlIcon} />
+                <TouchableOpacity onPress={nextSong} style={styles.controlButton}>
+                    <Ionicons name="play-skip-forward" size={20} color="white" />
                 </TouchableOpacity>
             </View>
-        </View>
+        </TouchableOpacity>
     );
 };
 
@@ -59,9 +62,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#333',
         padding: 10,
-        borderRadius: 15, // Rounded border
+        borderRadius: 15,
         position: 'absolute',
-        bottom: 10,
+        bottom: '10%',
         marginHorizontal: 10,
         width: '95%',
         shadowColor: '#000',
@@ -92,12 +95,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     controlButton: {
-        paddingHorizontal: 10,
-    },
-    controlIcon: {
-        width: 20,
-        height: 20,
-        tintColor: 'white',
+        paddingHorizontal: 4,
     },
 });
 

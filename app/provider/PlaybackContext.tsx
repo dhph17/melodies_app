@@ -13,16 +13,17 @@ interface PlaybackProviderProps {
 interface PlaybackContextType {
     currentTrack: DataSong | null;
     setCurrentSong: (song: DataSong) => void;
+    waitingList: Array<DataSong>;
+    setWaitingList: (songs: Array<DataSong>) => void;
     isPlaying: boolean;
     positionMillis: number;
     durationMillis: number;
     repeatMode: 'off' | 'all' | 'single';
     togglePlayPause: () => void;
-    skipToNext: () => void;
-    skipToPrevious: () => void;
+    nextSong: () => void;
+    previousSong: () => void;
     setRepeatMode: () => void;
     seekTo: (position: number) => void;
-    setTrack: (index: number) => void;
 }
 
 // Create the context
@@ -30,6 +31,7 @@ const PlaybackContext = createContext<PlaybackContextType | undefined>(undefined
 
 export const PlaybackProvider: React.FC<PlaybackProviderProps> = ({ children }) => {
     const [currentTrack, setCurrentTrackState] = useState<DataSong | null>(null);
+    const [waitingList, setWaitingListState] = useState<Array<DataSong>>([]);
     const [sound, setSound] = useState<Audio.Sound | null>(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
@@ -39,6 +41,10 @@ export const PlaybackProvider: React.FC<PlaybackProviderProps> = ({ children }) 
 
     const setCurrentSong = useCallback((song: DataSong) => {
         setCurrentTrackState(song);
+    }, []);
+
+    const setWaitingList = useCallback((songs: Array<DataSong>) => {
+        setWaitingListState(songs);
     }, []);
 
     useEffect(() => {
@@ -56,6 +62,7 @@ export const PlaybackProvider: React.FC<PlaybackProviderProps> = ({ children }) 
 
     useEffect(() => {
         const loadAudio = async () => {
+            setIsPlaying(true);
             if (sound) {
                 await sound.unloadAsync();
             }
@@ -72,7 +79,7 @@ export const PlaybackProvider: React.FC<PlaybackProviderProps> = ({ children }) 
                                 if (repeatMode === 'single') {
                                     sound?.replayAsync();
                                 } else {
-                                    skipToNext();
+                                    nextSong();
                                 }
                             }
                         }
@@ -105,26 +112,27 @@ export const PlaybackProvider: React.FC<PlaybackProviderProps> = ({ children }) 
         }
     };
 
-    const skipToNext = () => {
-        const nextIndex = (currentTrackIndex + 1) % trackList.length;
-        setCurrentTrackIndex(nextIndex);
-    };
+    const nextSong = useCallback(() => {
+        if (currentTrack && waitingList.length > 0) {
+            const currentIndex = waitingList.findIndex((song) => song.id === currentTrack.id);
+            const nextIndex = (currentIndex + 1) % waitingList.length;
+            setCurrentTrackState(waitingList[nextIndex]);
+        }
+    }, [currentTrack, waitingList]);
 
-    const skipToPrevious = () => {
-        const previousIndex = (currentTrackIndex - 1 + trackList.length) % trackList.length;
-        setCurrentTrackIndex(previousIndex);
-    };
+    const previousSong = useCallback(() => {
+        if (currentTrack && waitingList.length > 0) {
+            const currentIndex = waitingList.findIndex((song) => song.id === currentTrack.id);
+            const previousIndex = (currentIndex - 1 + waitingList.length) % waitingList.length;
+            setCurrentTrackState(waitingList[previousIndex]);
+        }
+    }, [currentTrack, waitingList]);
 
     const seekTo = async (position: number) => {
         if (sound) {
             await sound.setPositionAsync(position);
             setPositionMillis(position);
         }
-    };
-
-    const setTrack = (index: number) => {
-        setCurrentTrackIndex(index);
-        setIsPlaying(true);
     };
 
     const setRepeatMode = () => {
@@ -151,16 +159,17 @@ export const PlaybackProvider: React.FC<PlaybackProviderProps> = ({ children }) 
             value={{
                 currentTrack,
                 setCurrentSong,
+                waitingList,
+                setWaitingList,
                 isPlaying,
                 positionMillis,
                 durationMillis,
                 repeatMode,
                 togglePlayPause,
-                skipToNext,
-                skipToPrevious,
+                nextSong,
+                previousSong,
                 setRepeatMode,
                 seekTo,
-                setTrack,
             }}
         >
             {children}

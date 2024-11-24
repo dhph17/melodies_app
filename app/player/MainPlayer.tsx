@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ImageBackground, Dimensions, ScrollView, Alert } from 'react-native';
 import Slider from '@react-native-community/slider';
-import { usePlayback } from '../../provider/PlaybackContext';
+import { usePlayback } from '../provider/PlaybackContext';
 import { useRouter } from 'expo-router';
 import getLyrics from '@/assets/tools/getLyrics';
-import Tracklist from './tracklist';
+import Entypo from '@expo/vector-icons/Entypo';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import * as FileSystem from 'expo-file-system';
 import { Asset } from 'expo-asset';
-import { getMainArtistName, getPosterSong } from '@/utils/utils';
+import { formatTime, getMainArtistName, getPosterSong } from '@/utils/utils';
 import { Image } from 'expo-image';
+import Tracklist from '@/app/player/tracklist';
 
 
 const { height, width } = Dimensions.get('window');
@@ -20,25 +23,19 @@ const MainPlayer = () => {
         isPlaying,
         positionMillis,
         durationMillis,
+        waitingList,
         togglePlayPause,
-        skipToNext,
-        skipToPrevious,
         repeatMode,
         setRepeatMode,
         seekTo,
-        setTrack,
+        nextSong,
+        previousSong
     } = usePlayback();
 
     const [isLyrics, setIsLyrics] = useState(false);
     const [isPlaylistVisible, setIsPlaylistVisible] = useState(false);
 
     const lyrics = currentTrack ? getLyrics(currentTrack.title) : '';
-
-    const formatTime = (millis: number): string => {
-        const minutes = Math.floor(millis / 60000);
-        const seconds = Math.floor((millis % 60000) / 1000);
-        return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-    };
 
     const downloadCurrentTrack = async () => {
         if (!currentTrack || !currentTrack.filePathAudio) {
@@ -99,11 +96,10 @@ const MainPlayer = () => {
         <ImageBackground source={getPosterSong(currentTrack.album).image} style={styles.background} blurRadius={20}>
             <View style={styles.overlay}>
                 <View style={styles.topNav}>
-                    <TouchableOpacity onPress={() => router.push('/')}>
-                        <Image source={require('@/assets/icons/back.png')} style={styles.icon} />
+                    <TouchableOpacity style={styles.backNav} onPress={() => router.push('/(public)')}>
+                        <Ionicons name="arrow-back" size={24} color="#FF0099" />
                     </TouchableOpacity>
                     <Text style={styles.title}>Music</Text>
-                    <TouchableOpacity></TouchableOpacity>
                 </View>
 
                 <Image source={getPosterSong(currentTrack.album).image} style={isLyrics ? styles.albumCoverSmall : styles.albumCoverLarge} />
@@ -168,37 +164,34 @@ const MainPlayer = () => {
                             style={styles.controlIcon}
                         />
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={skipToPrevious} style={styles.controlButton}>
+                    <TouchableOpacity onPress={previousSong} style={styles.controlButton}>
                         <Image source={require('@/assets/icons/backward.png')} style={styles.controlIcon} />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={togglePlayPause} style={[styles.controlButton, styles.playButton]}>
-                        <Image
-                            source={
-                                isPlaying
-                                    ? require('@/assets/icons/pause.png')
-                                    : require('@/assets/icons/play.png')
-                            }
-                            style={styles.controlIcon}
-                        />
+                        {
+                            isPlaying ?
+                                <AntDesign name="pause" size={30} color="#FF0099" />
+                                :
+                                <Entypo name="controller-play" size={30} color="#FF0099" />
+                        }
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={skipToNext} style={styles.controlButton}>
+                    <TouchableOpacity onPress={nextSong} style={styles.controlButton}>
                         <Image source={require('@/assets/icons/forward.png')} style={styles.controlIcon} />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => setIsPlaylistVisible(true)} style={styles.controlButton}>
                         <Image source={require('@/assets/icons/playlist.png')} style={styles.controlIcon} />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={downloadCurrentTrack} style={styles.controlButton}>
-                        <Image source={require('@/assets/icons/download.webp')} style={styles.controlIcon} />
+                        <AntDesign name="download" size={24} color="#FF0099" />
                     </TouchableOpacity>
                 </View>
             </View>
-            {/* <Tracklist
+            <Tracklist
                 visible={isPlaylistVisible}
                 onClose={() => setIsPlaylistVisible(false)}
-                tracks={trackList}
-                currentTrackIndex={trackList.indexOf(currentTrack)}
-                onSelectTrack={setTrack}
-            /> */}
+                tracks={waitingList}
+                currentTrackIndex={waitingList.indexOf(currentTrack)}
+            />
         </ImageBackground>
     );
 };
@@ -215,17 +208,23 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     topNav: {
+        position: 'relative',
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         alignItems: 'center',
         width: '90%',
-        paddingTop: 40,
+        paddingTop: 10,
         marginBottom: 20,
+    },
+    backNav: {
+        position: 'absolute',
+        left: 0
     },
     title: {
         color: '#FF0099',
         fontSize: 24,
         fontWeight: 'bold',
+        textAlign: 'center'
     },
     icon: {
         width: 24,
@@ -300,7 +299,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         width: '90%',
-        marginTop: 5,
     },
     timestampText: {
         color: '#FFFFFF',

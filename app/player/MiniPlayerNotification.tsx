@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
-import { usePlayback } from '../../provider/PlaybackContext';
+import { usePlayback } from '../provider/PlaybackContext';
 import { getMainArtistName } from '@/utils/utils';
 
 const MiniPlayerNotification: React.FC = () => {

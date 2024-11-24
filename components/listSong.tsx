@@ -1,8 +1,10 @@
 import { DataSong } from '@/types/interfaces';
 import { getMainArtistName, getPosterSong } from '@/utils/utils';
 import React from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { Image } from 'expo-image';
+import { usePlayback } from '@/app/provider/PlaybackContext';
+import { useRouter } from "expo-router";
 
 interface ListSongProps {
   maintitle?: string;
@@ -11,13 +13,8 @@ interface ListSongProps {
 }
 
 const ListSong: React.FC<ListSongProps> = ({ maintitle, subtitle, data }) => {
-  // Utility function to truncate text
-  const truncateText = (text: string) => {
-    if (text.length > 10) {
-      return text.slice(0, 10) + '...'; // Truncate and add ellipsis
-    }
-    return text;
-  };
+  const router = useRouter();
+  const { setCurrentSong, setWaitingList } = usePlayback()
 
   return (
     <View style={styles.container} className='text-white'>
@@ -31,15 +28,29 @@ const ListSong: React.FC<ListSongProps> = ({ maintitle, subtitle, data }) => {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => {
           return (
-            <View style={styles.itemContainer}>
+            <TouchableOpacity
+              style={styles.itemContainer}
+              onPress={() => {
+                if (data) {
+                  setCurrentSong(item);
+                  setWaitingList(data);
+                  router.push('/player/MainPlayer');
+                }
+              }}
+            >
               <Image
                 source={getPosterSong(item?.album).image}
-                style={styles.image} />
+                style={styles.image}
+              />
               <View>
-                <Text style={styles.name} className='line-clamp-3'>{item.title}</Text>
-                <Text style={styles.artist} className='line-clamp-2'>{getMainArtistName(item?.artists)}</Text>
+                <Text style={styles.name} className='line-clamp-3'>
+                  {item.title}
+                </Text>
+                <Text style={styles.artist} className='line-clamp-2'>
+                  {getMainArtistName(item?.artists)}
+                </Text>
               </View>
-            </View>
+            </TouchableOpacity>
           )
         }}
         showsHorizontalScrollIndicator={false}

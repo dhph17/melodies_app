@@ -69,7 +69,7 @@ const TabBarButton = (props: TabBarButtonProps) => {
             <Animated.View style={[animatedIconStyle]}>
                 {icons[routeName]
                     ? icons[routeName]({ color })
-                    : <AntDesign name="questioncircleo" size={26} color={color} />}
+                    : <AntDesign name="questioncircleo" size={20} color={color} />}
             </Animated.View>
 
             <Animated.Text style={[{
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        gap: 4
+        gap: 1
     }
 })
 

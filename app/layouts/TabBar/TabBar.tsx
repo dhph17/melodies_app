@@ -66,14 +66,13 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         backgroundColor: '#fc0094',
-
         marginHorizontal: 20,
-        paddingVertical: 15,
+        paddingVertical: 10,
         borderRadius: 25,
         borderCurve: 'continuous',
         shadowColor: '#0e9eef',
-        shadowOffset: { width: 0, height: -22 }, // Dịch xuống dưới
-        shadowOpacity: 0.4, // Độ mờ bóng
+        shadowOffset: { width: 0, height: -22 },
+        shadowOpacity: 0.4,
         shadowRadius: 0,
         elevation: 5,
     },

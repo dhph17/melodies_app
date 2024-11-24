@@ -34,7 +34,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ toggleForm, setIsOTP }) => {
         console.log('Success', 'Login successful');
         await AsyncStorage.setItem('accessToken', response.data.accessToken);
         await AsyncStorage.setItem('role', response.data.role);
-        router.push('/(public)/')
+        router.push('/(public)')
       } else {
         Alert.alert('Errorrrr', response.error || 'Login failed');
       }
