@@ -1,1 +1,2 @@
-export const PUBLIC_API_ENDPOINT = 'https://s8rlm33d-3001.asse.devtunnels.ms'
+export const PUBLIC_API_ENDPOINT = 'http://192.168.1.18:3001'
+export const PUBLIC_FE_ENDPOINT = 'http://192.168.1.18:8081'

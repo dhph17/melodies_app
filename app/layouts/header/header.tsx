@@ -15,7 +15,7 @@ const svgContent = `
 `;
 const Header = () => {
     return (
-        <View style={styles.container}>
+        <View style={styles.container} className='bg-primaryColorBg'>
             <View>
                 <AntDesign name="search1" size={24} color='white' />
             </View>

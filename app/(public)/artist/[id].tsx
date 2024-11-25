@@ -6,13 +6,14 @@ import { fetchApiData } from '@/app/api/appService';
 import { Artist, DataSong } from '@/types/interfaces';
 import ArtistPopularSong from '@/components/trendingSong';
 import { LinearGradient } from 'expo-linear-gradient';
-const { width: screenWidth } = Dimensions.get('window');
+import { PUBLIC_FE_ENDPOINT } from '@/app/config'
 
 const ArtistDetail = () => {
     const { id } = useGlobalSearchParams();
     const [dataArtist, setDataArtist] = useState<Artist>();
     const [dataSongArtist, setDataSongArtist] = useState<DataSong[]>([]);
     const [dataAlbumArtist, setDataAlbumArtist] = useState([]);
+    const [dominantColor, setDominantColor] = useState<string>();
     const [scrollY] = useState(new Animated.Value(0));
 
     useEffect(() => {
@@ -25,6 +26,22 @@ const ArtistDetail = () => {
                 ]);
                 if (responses[0].success) {
                     setDataArtist(responses[0].data.artist);
+                    const imageUrl = responses[0].data.artist.avatar
+                    try {
+                        const response = await fetch(
+                            `${PUBLIC_FE_ENDPOINT}/api/get-dominant-color/get-dominant?imageUrl=${encodeURIComponent(imageUrl)}`
+                        );
+                        console.log("API response:", response);
+                        const data = await response.json();
+                        if (response.ok) {
+                            console.log("Dominant color:", data.dominantColor);
+                            setDominantColor(data.dominantColor);
+                        } else {
+                            console.error("Error fetching dominant color:", data.error);
+                        }
+                    } catch (error) {
+                        console.error("Error fetching dominant color:", error);
+                    }
                 }
                 if (responses[1].success) {
                     setDataSongArtist(responses[1].data.popSong);
@@ -142,9 +159,10 @@ const styles = StyleSheet.create({
         height: '10%',
     },
     artistName: {
+        paddingHorizontal: 12,
         color: 'white',
-        fontSize: 40,
-        fontWeight: '500',
+        fontSize: 50,
+        fontWeight: '700',
     },
     section: {
         backgroundColor: 'black',

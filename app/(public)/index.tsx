@@ -42,7 +42,7 @@ const Main = () => {
                 styles.container,
                 { paddingBottom: currentTrack ? 150 : 70 },
             ]}
-            className="flex flex-col gap-4"
+            className="flex flex-col gap-4 bg-primaryColorBg"
         >
             <Banner />
             <View>

@@ -53,7 +53,7 @@ const Profile = () => {
             <FontAwesome name="chevron-right" size={20} color="#fff" style={styles.chevronIcon} />
         </TouchableOpacity>
     );
-    
+
 
     return (
         <View style={styles.container}>
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
     scrollContent: {
         paddingHorizontal: 20,
         paddingTop: 30,
-        paddingBottom: 150, // Adjust to prevent overlap with the nav bar and mini-player
+        paddingBottom: 150,
     },
     avatarContainer: {
         alignItems: 'center',

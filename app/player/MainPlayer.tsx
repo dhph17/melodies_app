@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
     },
     overlay: {
         flex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        backgroundColor: '#121212',
         alignItems: 'center',
     },
     topNav: {
