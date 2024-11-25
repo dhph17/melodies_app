@@ -30,6 +30,7 @@ export default function PublicLayout() {
                     name="playlist/index"
                     options={{
                         title: "Playlist",
+                        headerShown: false,
                     }}
                 />
                 <Tabs.Screen
