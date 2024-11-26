@@ -6,10 +6,12 @@ import { fetchApiData } from '@/app/api/appService';
 import { User } from "@/types/interfaces";
 import { useFocusEffect } from '@react-navigation/native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import EditProfileModal from './EditProfileModal';
 
 const Profile = () => {
     const router = useRouter();
     const [user, setUser] = useState<User | null>(null);
+    const [isModalVisible, setModalVisible] = useState(false);
 
     useFocusEffect(
         React.useCallback(() => {
@@ -46,6 +48,23 @@ const Profile = () => {
         }
     };
 
+    const handleSaveChanges = async (newName: string, newAvatar: string) => {
+        const accessToken = await AsyncStorage.getItem('accessToken');
+        if (accessToken) {
+            const updatedUser = {
+                username: newName,
+                avatar: newAvatar,
+            };
+            const result = await fetchApiData(`/api/user/update`, "POST", updatedUser, accessToken);
+            if (result.success) {
+                setUser(result.data.user);
+                setModalVisible(false);
+            } else {
+                console.error("Update error:", result.error);
+            }
+        }
+    };
+
     const SectionItem = ({ iconName, title, onPress }: { iconName: string; title: string; onPress?: () => void }) => (
         <TouchableOpacity style={styles.sectionItem} onPress={onPress}>
             <FontAwesome name={iconName} size={20} color="#fff" style={styles.icon} />
@@ -77,7 +96,7 @@ const Profile = () => {
 
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Tài khoản</Text>
-                    <SectionItem iconName="user" title="Chỉnh sửa hồ sơ" />
+                    <SectionItem iconName="user" title="Chỉnh sửa hồ sơ" onPress={() => setModalVisible(true)} />
                 </View>
 
                 <View style={styles.section}>
@@ -99,6 +118,14 @@ const Profile = () => {
                     <SectionItem iconName="sign-out" title="Đăng xuất" onPress={handleLogout} />
                 </View>
             </ScrollView>
+
+            <EditProfileModal
+                isVisible={isModalVisible}
+                onClose={() => setModalVisible(false)}
+                onSave={handleSaveChanges}
+                currentName={user?.username || ''}
+                currentAvatar={user?.avatar || ''}
+            />
         </View>
     );
 };
