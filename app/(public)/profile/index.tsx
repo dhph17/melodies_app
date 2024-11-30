@@ -6,10 +6,16 @@ import { fetchApiData } from '@/app/api/appService';
 import { User } from "@/types/interfaces";
 import { useFocusEffect } from '@react-navigation/native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import EditProfileModal from './EditProfileModal';
+import EditPasswordModal from './EditPasswordModal';
+import SubscriptionModal from './SubscriptionModal';
 
 const Profile = () => {
     const router = useRouter();
     const [user, setUser] = useState<User | null>(null);
+    const [isModalVisible, setModalVisible] = useState(false); // Profile edit modal
+    const [isPasswordModalVisible, setPasswordModalVisible] = useState(false); // Password edit modal
+    const [isSubscriptionModalVisible, setSubscriptionModalVisible] = useState(false);
 
     useFocusEffect(
         React.useCallback(() => {
@@ -46,6 +52,40 @@ const Profile = () => {
         }
     };
 
+    const handleSaveChanges = async (newName: string, newAvatar: string) => {
+        const accessToken = await AsyncStorage.getItem('accessToken');
+        if (accessToken) {
+            const updatedUser = {
+                username: newName,
+                avatar: newAvatar,
+            };
+            const result = await fetchApiData(`/api/user/update`, "POST", updatedUser, accessToken);
+            if (result.success) {
+                setUser(result.data.user);
+                setModalVisible(false);
+            } else {
+                console.error("Update error:", result.error);
+            }
+        }
+    };
+
+    const handlePasswordChange = async (currentPass: string, newPass: string) => {
+        const accessToken = await AsyncStorage.getItem('accessToken');
+        if (accessToken) {
+            const passwordData = {
+                currentPassword: currentPass,
+                newPassword: newPass,
+            };
+            const result = await fetchApiData(`/api/user/change-password`, "POST", passwordData, accessToken);
+            if (result.success) {
+                alert('Password changed successfully');
+                setPasswordModalVisible(false);
+            } else {
+                alert('Failed to change password');
+            }
+        }
+    };
+
     const SectionItem = ({ iconName, title, onPress }: { iconName: string; title: string; onPress?: () => void }) => (
         <TouchableOpacity style={styles.sectionItem} onPress={onPress}>
             <FontAwesome name={iconName} size={20} color="#fff" style={styles.icon} />
@@ -53,7 +93,6 @@ const Profile = () => {
             <FontAwesome name="chevron-right" size={20} color="#fff" style={styles.chevronIcon} />
         </TouchableOpacity>
     );
-
 
     return (
         <View style={styles.container}>
@@ -77,12 +116,12 @@ const Profile = () => {
 
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Tài khoản</Text>
-                    <SectionItem iconName="user" title="Chỉnh sửa hồ sơ" />
+                    <SectionItem iconName="user" title="Chỉnh sửa hồ sơ" onPress={() => setModalVisible(true)} />
                 </View>
 
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Đăng ký</Text>
-                    <SectionItem iconName="list" title="Các gói có sẵn" />
+                    <SectionItem iconName="list" title="Các gói có sẵn" onPress={() => setSubscriptionModalVisible(true)}/>
                     <SectionItem iconName="edit" title="Quản lý gói đăng ký" />
                     <SectionItem iconName="times" title="Hủy gói đăng ký" />
                 </View>
@@ -94,11 +133,37 @@ const Profile = () => {
 
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Bảo mật</Text>
-                    <SectionItem iconName="lock" title="Đổi mật khẩu" />
+                    <SectionItem
+                        iconName="lock"
+                        title="Đổi mật khẩu"
+                        onPress={() => setPasswordModalVisible(true)} // Open password modal
+                    />
                     <SectionItem iconName="bell" title="Cài đặt thông báo" />
                     <SectionItem iconName="sign-out" title="Đăng xuất" onPress={handleLogout} />
                 </View>
             </ScrollView>
+
+            {/* Profile Edit Modal */}
+            <EditProfileModal
+                isVisible={isModalVisible}
+                onClose={() => setModalVisible(false)}
+                onSave={handleSaveChanges}
+                currentName={user?.username || ''}
+                currentAvatar={user?.avatar || ''}
+            />
+
+            {/* Password Edit Modal */}
+            <EditPasswordModal
+                isVisible={isPasswordModalVisible}
+                onClose={() => setPasswordModalVisible(false)}
+                onSave={handlePasswordChange}
+            />
+
+            <SubscriptionModal
+                isVisible={isSubscriptionModalVisible}
+                onClose={() => setSubscriptionModalVisible(false)}
+                onSelectPlan={(plan) => console.log(`Selected plan: ${plan}`)} // Handle selected plan
+            />
         </View>
     );
 };
