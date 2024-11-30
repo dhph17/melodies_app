@@ -15,6 +15,20 @@ const AlbumPage = () => {
     const [dataAlbum, setDataAlbum] = useState<DataAlbum>();
     const [dominantColor, setDominantColor] = useState<string>('rgba(0, 0, 0, 0)');
 
+    function formatDuration(totalMilliseconds: number) {
+        const totalSeconds = Math.floor(totalMilliseconds / 1000);
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        const timeParts = [];
+        if (hours > 0) {
+            timeParts.push(`${hours}h`);
+        }
+        timeParts.push(`${minutes} min`);
+        timeParts.push(`${seconds} sec`);
+        return timeParts.join(' ');
+    }
+
     useEffect(() => {
         const fetchData = async () => {
             //   setLoading(true);
@@ -79,10 +93,7 @@ const AlbumPage = () => {
                         style={styles.image}
                     />
                     <Text style={styles.title}>{dataAlbum?.title}</Text>
-                    <Text style={styles.description}>
-                        New and approved indie pop. Cover: No Rome
-                    </Text>
-                    <Text style={styles.likes}>1,629,592 likes · 6h 48m</Text>
+                    <Text style={styles.likes}>{dataAlbum?.songNumber ?? 0} {(dataAlbum?.songNumber ?? 0) > 1 ? 'songs' : 'song'} <Text className="text-gray-300">•</Text> {dataAlbum ? formatDuration(dataAlbum.totalDuration) : ''}</Text>
                 </View>
             </LinearGradient>
 

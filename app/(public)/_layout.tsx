@@ -62,13 +62,6 @@ export default function PublicLayout() {
                         headerShown: false,
                     }}
                 />
-                <Tabs.Screen
-                    name="playlist/ViewPlaylist"
-                    options={{
-                        title: "Profile",
-                        headerShown: false,
-                    }}
-                />
             </Tabs>
             <MiniPlayer />
         </SafeAreaView>

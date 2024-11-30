@@ -1,9 +1,11 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import { PUBLIC_MUSIC_ENDPOINT } from '@/app/config'
 import { Audio } from 'expo-av';
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 import { DataSong } from '@/types/interfaces';
 import { getMainArtistName } from '@/utils/utils';
+import { decrypt } from '@/app/decode';
 
 interface PlaybackProviderProps {
     children: ReactNode;
@@ -67,7 +69,7 @@ export const PlaybackProvider: React.FC<PlaybackProviderProps> = ({ children }) 
             }
             if (currentTrack) {
                 const { sound: newSound } = await Audio.Sound.createAsync(
-                    { uri: currentTrack.filePathAudio },
+                    { uri: `${decrypt(currentTrack.filePathAudio)}` },
                     { shouldPlay: isPlaying },
                     (status) => {
                         if (status.isLoaded) {

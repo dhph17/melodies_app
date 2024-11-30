@@ -56,7 +56,7 @@ export interface DataSong {
 export interface User {
     id: string;
     username: string;
-    avatar: string | null;
+    image: string | null;
     accountType: string;
     name: string;
 }
