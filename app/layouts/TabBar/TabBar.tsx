@@ -22,6 +22,7 @@ const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
                 if (['_sitemap', '+not-found'].includes(route.name)) return null;
                 if (route.name === 'artist/[id]') return null;
                 if (route.name === 'playlist/ViewPlaylist') return null;
+                if (route.name === 'album/[id]') return null
 
                 const isFocused = state.index === index;
 

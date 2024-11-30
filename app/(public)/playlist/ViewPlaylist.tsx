@@ -27,16 +27,16 @@ const playlistData = [
 ];
 
 const ViewPlaylist = () => {
-  const router = useRouter(); 
+  const router = useRouter();
 
   const handleBackClick = () => {
-    router.push("/playlist"); 
+    router.push("/playlist");
   };
   return (
     <View style={styles.container}>
       {/* Header with Gradient */}
       <LinearGradient
-        colors={["#3a3a3a", "#121212"]} 
+        colors={["#3a3a3a", "#121212"]}
         style={styles.headerContainer}
       >
         <View style={styles.header}>
@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
     color: "#bbb",
   },
   flatListContent: {
-    paddingBottom: 100, 
+    paddingBottom: 100,
   },
   songItem: {
     flexDirection: "row",

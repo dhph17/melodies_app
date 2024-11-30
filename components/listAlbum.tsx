@@ -30,13 +30,7 @@ const AlbumList: React.FC<ListAlbumProps> = ({ maintitle, subtitle, data }) => {
           return (
             <TouchableOpacity
               style={styles.itemContainer}
-            // onPress={() => {
-            //   if (data) {
-            //     setCurrentSong(item);
-            //     setWaitingList(data);
-            //     router.push('/player/MainPlayer');
-            //   }
-            // }}
+              onPress={() => router.push(`/(public)/album/${item.albumId}`)}
             >
               <Image
                 source={getPoster(item)}
