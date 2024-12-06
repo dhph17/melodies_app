@@ -8,12 +8,14 @@ import { DataAlbum } from '@/types/interfaces';
 import { LinearGradient } from "expo-linear-gradient";
 import { FontAwesome } from "@expo/vector-icons";
 import { getMainArtistName, getPoster } from '@/utils/utils';
+import { usePlayback } from '@/app/provider/PlaybackContext';
 
 const AlbumPage = () => {
     const { id } = useGlobalSearchParams();
     const router = useRouter()
     const [dataAlbum, setDataAlbum] = useState<DataAlbum>();
     const [dominantColor, setDominantColor] = useState<string>('rgba(0, 0, 0, 0)');
+    const { setCurrentSong, setWaitingList, currentTrack } = usePlayback()
 
     function formatDuration(totalMilliseconds: number) {
         const totalSeconds = Math.floor(totalMilliseconds / 1000);
@@ -101,10 +103,11 @@ const AlbumPage = () => {
             <FlatList
                 data={dataAlbum?.songs}
                 keyExtractor={(item) => item.id}
-                contentContainerStyle={styles.flatListContent}
+                contentContainerStyle={[{ paddingBottom: currentTrack ? 150 : 80 }]}
                 renderItem={({ item }) => (
                     <TouchableOpacity
                         style={styles.songItem}
+                        onPress={() => { setCurrentSong(item); if (dataAlbum?.songs) setWaitingList(dataAlbum.songs) }}
                     >
                         <Image
                             source={{ uri: dataAlbum ? getPoster(dataAlbum) : undefined }}

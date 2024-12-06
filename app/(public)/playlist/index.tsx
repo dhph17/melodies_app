@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -8,60 +8,71 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import { useRouter } from 'expo-router';
-
-type PlaylistItem = {
-  id: string;
-  title: string;
-  type: string;
-  subtitle: string;
-  icon: string;
-};
+import { useFocusEffect, useRouter } from 'expo-router';
+import UserImage from '@/assets/images/placeholderUser.jpg'
+import PlaylistImage from '@/assets/images/placeholderPlaylist.png'
+import { fetchApiData } from '@/app/api/appService';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { DataPlaylist, User } from '@/types/interfaces';
 
 const Playlist = () => {
-  const [playlistData, setPlaylistData] = useState<PlaylistItem[]>([]);
-  const [filteredData, setFilteredData] = useState<PlaylistItem[]>([]);
-  const [filter, setFilter] = useState<string>('All');
-  const [sortOrder, setSortOrder] = useState<'az' | 'recent'>('recent');
-
   const router = useRouter();
+  const [user, setUser] = useState<User | null>(null);
+  const [listPlayer, setListPlayer] = useState<DataPlaylist[]>()
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        const accessToken = await AsyncStorage.getItem('accessToken');
+        if (accessToken) {
+          const result = await fetchApiData(`/api/user`, "GET", null, accessToken ?? null);
+          if (result.success) {
+            setUser(result.data.user);
+            // console.log(result.data.user);
+
+          } else {
+            console.error("Login error:", result.error);
+          }
+        }
+      };
+
+      fetchData();
+    }, [])
+  );
 
   useEffect(() => {
     const fetchData = async () => {
-      const data: PlaylistItem[] = [
-        { id: '1', title: 'Liked Songs', type: 'Playlist', subtitle: '58 songs', icon: 'https://via.placeholder.com/50/8A2BE2/FFFFFF?text=♥' },
-        { id: '2', title: 'New Episodes', type: 'Podcast', subtitle: 'Updated 2 days ago', icon: 'https://via.placeholder.com/50/32CD32/FFFFFF?text=🔔' },
-        { id: '3', title: 'Lolo Zouaï', type: 'Artist', subtitle: '', icon: 'https://via.placeholder.com/50/FFD700/FFFFFF?text=LZ' },
-        { id: '4', title: 'Lana Del Rey', type: 'Artist', subtitle: '', icon: 'https://via.placeholder.com/50/FF69B4/FFFFFF?text=LDR' },
-        { id: '5', title: 'Front Left', type: 'Playlist', subtitle: 'Spotify', icon: 'https://via.placeholder.com/50/4682B4/FFFFFF?text=FL' },
-      ];
-      setPlaylistData(data);
-      setFilteredData(data);
-    };
+      const accessToken = await AsyncStorage.getItem('accessToken');
+      if (accessToken) {
+        const result = await fetchApiData(
+          "/api/user/playlist",
+          "GET",
+          null,
+          accessToken,
+          { page: 1 }
+        );
+        if (result.success) {
+          setListPlayer(result.data.playlists)
+        } else {
+
+        }
+      };
+    }
 
     fetchData();
-  }, []);
+  }, [])
 
-  const applyFilter = (filterType: string) => {
-    setFilter(filterType);
-    if (filterType === 'All') {
-      setFilteredData(playlistData);
-    } else {
-      const filtered = playlistData.filter((item) => item.type === filterType);
-      setFilteredData(filtered);
-    }
+  const handlePlaylistClick = (id: string) => {
+    router.push(`/playlist/${id}`);
   };
 
-  const handlePlaylistClick = () => {
-    router.push('./playlist/ViewPlaylist');
-  };
-
-  const renderItem = ({ item }: { item: PlaylistItem }) => (
-    <TouchableOpacity style={styles.item} onPress={() => handlePlaylistClick()}>
-      <Image source={{ uri: item.icon }} style={styles.icon} />
+  const renderItem = ({ item }: { item: DataPlaylist }) => (
+    <TouchableOpacity style={styles.item} onPress={() => handlePlaylistClick(item.playlistId)}>
+      <Image
+        source={item?.image ? { uri: item.image } : PlaylistImage}
+        style={styles.icon} />
       <View>
         <Text style={styles.title}>{item.title}</Text>
-        {item.subtitle ? <Text style={styles.subtitle}>{item.subtitle}</Text> : null}
       </View>
     </TouchableOpacity>
   );
@@ -71,11 +82,11 @@ const Playlist = () => {
       <View style={styles.headerContainer}>
         {/* Avatar */}
         <Image
-          source={{ uri: 'https://via.placeholder.com/50/#EE10B0/FFFFFF?' }}
+          source={user?.image ? { uri: user.image } : UserImage}
           style={styles.avatar}
         />
         {/* Title */}
-        <Text style={styles.headerTitle}>Your Library</Text>
+        <Text style={styles.headerTitle}>Your Playlist</Text>
         {/* "+" Button */}
         <TouchableOpacity style={styles.addButton}>
           <Text style={styles.addButtonText}>+</Text>
@@ -83,7 +94,7 @@ const Playlist = () => {
       </View>
 
       {/* Filters */}
-      <View style={styles.filterContainer}>
+      {/* <View style={styles.filterContainer}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filters}>
           {['All', 'Playlists', 'Artists', 'Albums', 'Podcasts'].map((type) => (
             <TouchableOpacity
@@ -95,12 +106,12 @@ const Playlist = () => {
             </TouchableOpacity>
           ))}
         </ScrollView>
-      </View>
+      </View> */}
 
       {/* Playlist */}
       <FlatList
-        data={filteredData}
-        keyExtractor={(item) => item.id}
+        data={listPlayer}
+        keyExtractor={(item) => item.playlistId}
         renderItem={renderItem}
         contentContainerStyle={styles.list}
       />
@@ -109,7 +120,7 @@ const Playlist = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#121212', padding: 30 },
+  container: { flex: 1, backgroundColor: '#121212', padding: 14 },
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -121,6 +132,8 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     backgroundColor: '#333',
+    borderWidth: 1,
+    borderColor: '#3b82f6',
   },
   headerTitle: {
     flex: 1,
@@ -163,9 +176,12 @@ const styles = StyleSheet.create({
   activeFilterText: { color: '#fff', fontWeight: 'bold' },
   list: { paddingBottom: 100 },
   item: {
+    backgroundColor: '#1F1F1F',
+    padding: 8,
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    marginVertical: 10,
+    borderRadius: 5
   },
   icon: {
     width: 50,

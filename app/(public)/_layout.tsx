@@ -34,20 +34,12 @@ export default function PublicLayout() {
                     }}
                 />
                 <Tabs.Screen
-                    name="playlist/ViewPlaylist"
-                    options={{
-                        title: "Playlist",
-                        headerShown: false,
-                    }}
-                />
-                <Tabs.Screen
                     name="profile/index"
                     options={{
                         title: "Profile",
                         headerShown: false,
                     }}
                 />
-
                 <Tabs.Screen
                     name="artist/[id]"
                     options={{
@@ -57,6 +49,13 @@ export default function PublicLayout() {
                 />
                 <Tabs.Screen
                     name="album/[id]"
+                    options={{
+                        title: "Profile",
+                        headerShown: false,
+                    }}
+                />
+                <Tabs.Screen
+                    name="playlist/[id]"
                     options={{
                         title: "Profile",
                         headerShown: false,

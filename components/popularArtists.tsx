@@ -1,13 +1,13 @@
 import React from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
-import { User } from '@/types/interfaces';
+import { Artist } from '@/types/interfaces';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 
 interface ArtistItemProps {
   maintitle?: string;
   subtitle?: string;
-  data?: User[];
+  data?: Artist[];
 }
 
 const PopularArtists: React.FC<ArtistItemProps> = ({ maintitle, subtitle, data }) => {
