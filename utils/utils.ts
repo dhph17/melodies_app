@@ -3,9 +3,9 @@ import ImageSong from '@/assets/images/placeholderSong.png'
 import ImagePlaylist from '@/assets/images/placeholderPlaylist.png'
 
 // Hàm lấy tên nghệ sĩ chính
-export const getMainArtistName = (artists: Artist[]): string => {
+export const getMainArtistName = (artists: Artist[]): string | undefined => {
     const mainArtist = artists.find(artist => artist?.ArtistSong.main === true);
-    return mainArtist?.name || 'Unknown Artist'; // Ensure it always returns a string
+    return mainArtist?.name;
 };
 
 export const getMainArtistId = (artists: Artist[]): string | undefined => {
