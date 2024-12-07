@@ -13,7 +13,6 @@ import { formatTime, getMainArtistName, getPosterSong } from '@/utils/utils';
 import { Image } from 'expo-image';
 import Tracklist from '@/app/player/tracklist';
 
-
 const { height, width } = Dimensions.get('window');
 
 const MainPlayer = () => {
@@ -36,6 +35,7 @@ const MainPlayer = () => {
     const [isPlaylistVisible, setIsPlaylistVisible] = useState(false);
 
     const [sliderValue, setSliderValue] = useState(positionMillis);
+    const [lyrics, setLyrics] = useState<string | null>(null);
 
     useEffect(() => {
         if (positionMillis !== sliderValue) {
@@ -43,11 +43,21 @@ const MainPlayer = () => {
         }
     }, [positionMillis]);
 
+    // Fetch the lyrics when currentTrack changes
+    useEffect(() => {
+        const fetchLyrics = async () => {
+            if (currentTrack) {
+                const fetchedLyrics = await getLyrics(currentTrack.title, getMainArtistName(currentTrack.artists));
+                setLyrics(fetchedLyrics || 'Lyrics not found'); // Default to a message if no lyrics are found
+            }
+        };
+    
+        fetchLyrics();
+    }, [currentTrack]); // Re-fetch lyrics when currentTrack changes
+    
     const handleSlidingComplete = (value: number) => {
         seekTo(value);
     };
-
-    const lyrics = currentTrack ? getLyrics(currentTrack.title) : '';
 
     const downloadCurrentTrack = async () => {
         if (!currentTrack || !currentTrack.filePathAudio) {
@@ -141,21 +151,21 @@ const MainPlayer = () => {
                 {isLyrics ? (
                     <View style={styles.lyricsContainer}>
                         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-                            <Text style={styles.lyrics}>{lyrics}</Text>
+                            <Text style={styles.lyrics}>{lyrics || 'Loading lyrics...'}</Text>
                         </ScrollView>
                     </View>
                 ) : (
                     <View style={styles.sliderContainer}>
                         <Slider
-                        style={styles.slider}
-                        minimumValue={0}
-                        maximumValue={durationMillis}
-                        value={sliderValue}
-                        onSlidingComplete={handleSlidingComplete}
-                        minimumTrackTintColor="#FF0099"
-                        maximumTrackTintColor="#888888"
-                        thumbTintColor="#FF0099"
-                    />
+                            style={styles.slider}
+                            minimumValue={0}
+                            maximumValue={durationMillis}
+                            value={sliderValue}
+                            onSlidingComplete={handleSlidingComplete}
+                            minimumTrackTintColor="#FF0099"
+                            maximumTrackTintColor="#888888"
+                            thumbTintColor="#FF0099"
+                        />
                         <View style={styles.timestampContainer}>
                             <Text style={styles.timestampText}>{formatTime(positionMillis)}</Text>
                             <Text style={styles.timestampText}>{formatTime(durationMillis)}</Text>
