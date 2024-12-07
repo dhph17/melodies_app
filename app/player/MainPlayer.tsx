@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ImageBackground, Dimensions, ScrollView, Alert } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { usePlayback } from '../provider/PlaybackContext';
@@ -34,6 +34,18 @@ const MainPlayer = () => {
 
     const [isLyrics, setIsLyrics] = useState(false);
     const [isPlaylistVisible, setIsPlaylistVisible] = useState(false);
+
+    const [sliderValue, setSliderValue] = useState(positionMillis);
+
+    useEffect(() => {
+        if (positionMillis !== sliderValue) {
+            setSliderValue(positionMillis);
+        }
+    }, [positionMillis]);
+
+    const handleSlidingComplete = (value: number) => {
+        seekTo(value);
+    };
 
     const lyrics = currentTrack ? getLyrics(currentTrack.title) : '';
 
@@ -135,15 +147,15 @@ const MainPlayer = () => {
                 ) : (
                     <View style={styles.sliderContainer}>
                         <Slider
-                            style={styles.slider}
-                            minimumValue={0}
-                            maximumValue={durationMillis}
-                            value={positionMillis}
-                            onSlidingComplete={seekTo}
-                            minimumTrackTintColor="#FF0099"
-                            maximumTrackTintColor="#888888"
-                            thumbTintColor="#FF0099"
-                        />
+                        style={styles.slider}
+                        minimumValue={0}
+                        maximumValue={durationMillis}
+                        value={sliderValue}
+                        onSlidingComplete={handleSlidingComplete}
+                        minimumTrackTintColor="#FF0099"
+                        maximumTrackTintColor="#888888"
+                        thumbTintColor="#FF0099"
+                    />
                         <View style={styles.timestampContainer}>
                             <Text style={styles.timestampText}>{formatTime(positionMillis)}</Text>
                             <Text style={styles.timestampText}>{formatTime(durationMillis)}</Text>
