@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ImageBackground, Dimensions, ScrollView, Alert } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { usePlayback } from '../provider/PlaybackContext';
@@ -12,7 +12,8 @@ import { Asset } from 'expo-asset';
 import { formatTime, getMainArtistName, getPosterSong } from '@/utils/utils';
 import { Image } from 'expo-image';
 import Tracklist from '@/app/player/tracklist';
-
+import CommentModal from './commentModal';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 const { height, width } = Dimensions.get('window');
 
@@ -35,16 +36,14 @@ const MainPlayer = () => {
     const [isLyrics, setIsLyrics] = useState(false);
     const [isPlaylistVisible, setIsPlaylistVisible] = useState(false);
 
-    const [sliderValue, setSliderValue] = useState(positionMillis);
+    const [isCommentModalVisible, setIsCommentModalVisible] = useState(false);
 
-    useEffect(() => {
-        if (positionMillis !== sliderValue) {
-            setSliderValue(positionMillis);
-        }
-    }, [positionMillis]);
+    const handleCommentButtonPress = () => {
+        setIsCommentModalVisible(true);
+    };
 
-    const handleSlidingComplete = (value: number) => {
-        seekTo(value);
+    const closeCommentModal = () => {
+        setIsCommentModalVisible(false);
     };
 
     const lyrics = currentTrack ? getLyrics(currentTrack.title) : '';
@@ -112,6 +111,9 @@ const MainPlayer = () => {
                         <Ionicons name="arrow-back" size={24} color="#FF0099" />
                     </TouchableOpacity>
                     <Text style={styles.title}>Music</Text>
+                    <TouchableOpacity onPress={handleCommentButtonPress} style={styles.commentButton}>
+                        <FontAwesome name="comment" size={24} color="#FF0099" />
+                    </TouchableOpacity>
                 </View>
 
                 <Image source={getPosterSong(currentTrack.album).image} style={isLyrics ? styles.albumCoverSmall : styles.albumCoverLarge} />
@@ -147,15 +149,15 @@ const MainPlayer = () => {
                 ) : (
                     <View style={styles.sliderContainer}>
                         <Slider
-                        style={styles.slider}
-                        minimumValue={0}
-                        maximumValue={durationMillis}
-                        value={sliderValue}
-                        onSlidingComplete={handleSlidingComplete}
-                        minimumTrackTintColor="#FF0099"
-                        maximumTrackTintColor="#888888"
-                        thumbTintColor="#FF0099"
-                    />
+                            style={styles.slider}
+                            minimumValue={0}
+                            maximumValue={durationMillis}
+                            value={positionMillis}
+                            onSlidingComplete={seekTo}
+                            minimumTrackTintColor="#FF0099"
+                            maximumTrackTintColor="#888888"
+                            thumbTintColor="#FF0099"
+                        />
                         <View style={styles.timestampContainer}>
                             <Text style={styles.timestampText}>{formatTime(positionMillis)}</Text>
                             <Text style={styles.timestampText}>{formatTime(durationMillis)}</Text>
@@ -359,6 +361,11 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '500',
     },
+    commentButton: {
+        position: 'absolute',
+        right: 0,
+        padding: 10,
+      },
 });
 
 export default MainPlayer;
