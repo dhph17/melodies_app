@@ -57,11 +57,7 @@ const AlbumPage = () => {
                 } else {
                     setDominantColor('#595959');
                 }
-            } else {
-                console.error("Login error:", result.error);
-                // setNotFound(true)
             }
-            //   setLoading(false);
         };
 
         fetchData();
@@ -160,12 +156,11 @@ const styles = StyleSheet.create({
     },
     playlistInfo: {
         alignItems: "center",
-        marginTop: 80,
-
+        marginTop: 40,
     },
     image: {
-        width: 150,
-        height: 150,
+        width: 120,
+        height: 120,
         borderRadius: 8,
         marginBottom: 10,
     },

@@ -31,7 +31,7 @@ const Playlist = () => {
             // console.log(result.data.user);
 
           } else {
-            console.error("Login error:", result.error);
+            console.error("Get user error:", result.error);
           }
         }
       };
@@ -62,6 +62,25 @@ const Playlist = () => {
     fetchData();
   }, [])
 
+
+  const handleAddPlaylist = async () => {
+    const accessToken = await AsyncStorage.getItem('accessToken');
+    if (accessToken) {
+      const result = await fetchApiData(
+        "/api/user/playlist/create",
+        "POST",
+        null,
+        accessToken
+      );
+      if (result.success && result.data?.newPlaylist) {
+        setListPlayer(prevList => [result.data?.newPlaylist, ...(prevList || [])])
+        router.push(`/playlist/${result.data.newPlaylist.playlistId}`)
+      } else {
+
+      }
+    }
+  }
+
   const handlePlaylistClick = (id: string) => {
     router.push(`/playlist/${id}`);
   };
@@ -88,7 +107,7 @@ const Playlist = () => {
         {/* Title */}
         <Text style={styles.headerTitle}>Your Playlist</Text>
         {/* "+" Button */}
-        <TouchableOpacity style={styles.addButton}>
+        <TouchableOpacity style={styles.addButton} onPress={handleAddPlaylist}>
           <Text style={styles.addButtonText}>+</Text>
         </TouchableOpacity>
       </View>
