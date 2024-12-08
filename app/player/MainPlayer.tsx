@@ -12,7 +12,8 @@ import { Asset } from 'expo-asset';
 import { formatTime, getMainArtistName, getPosterSong } from '@/utils/utils';
 import { Image } from 'expo-image';
 import Tracklist from '@/app/player/tracklist';
-
+import CommentModal from './commentModal';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 const { height, width } = Dimensions.get('window');
 
@@ -34,6 +35,16 @@ const MainPlayer = () => {
 
     const [isLyrics, setIsLyrics] = useState(false);
     const [isPlaylistVisible, setIsPlaylistVisible] = useState(false);
+
+    const [isCommentModalVisible, setIsCommentModalVisible] = useState(false);
+
+    const handleCommentButtonPress = () => {
+        setIsCommentModalVisible(true);
+    };
+
+    const closeCommentModal = () => {
+        setIsCommentModalVisible(false);
+    };
 
     const lyrics = currentTrack ? getLyrics(currentTrack.title) : '';
 
@@ -100,6 +111,9 @@ const MainPlayer = () => {
                         <Ionicons name="arrow-back" size={24} color="#FF0099" />
                     </TouchableOpacity>
                     <Text style={styles.title}>Music</Text>
+                    <TouchableOpacity onPress={handleCommentButtonPress} style={styles.commentButton}>
+                        <FontAwesome name="comment" size={24} color="#FF0099" />
+                    </TouchableOpacity>
                 </View>
 
                 <Image source={getPosterSong(currentTrack.album).image} style={isLyrics ? styles.albumCoverSmall : styles.albumCoverLarge} />
@@ -347,6 +361,11 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '500',
     },
+    commentButton: {
+        position: 'absolute',
+        right: 0,
+        padding: 10,
+      },
 });
 
 export default MainPlayer;
