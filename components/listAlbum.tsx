@@ -63,13 +63,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     flexDirection: 'column',
     marginRight: 16,
-    width: 100,
+    width: 120,
     backgroundColor: '#1F1F1F',
     padding: 10
   },
   image: {
-    width: 80,
-    height: 80,
+    width: 100,
+    height: 100,
     marginBottom: 8,
     borderRadius: 8,
   },

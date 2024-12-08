@@ -4,6 +4,7 @@ import { Image } from 'expo-image';
 import { DataSong } from '@/types/interfaces';
 import EvilIcons from '@expo/vector-icons/EvilIcons';
 import { formatTime, getMainArtistName, getPosterSong } from '@/utils/utils';
+import { usePlayback } from '@/app/provider/PlaybackContext';
 
 interface ArtistPopularSongProps {
   maintitle?: string;
@@ -14,6 +15,7 @@ interface ArtistPopularSongProps {
 const ArtistPopularSong: React.FC<ArtistPopularSongProps> = ({ maintitle, subtitle, data }) => {
   const [pressedItemId, setPressedItemId] = useState<string | null>(null);
   const [showAll, setShowAll] = useState(false);
+  const { setCurrentSong, setWaitingList } = usePlayback()
 
   const renderSong = ({ item }: { item: DataSong }) => {
     const isPressed = pressedItemId === item.id;
@@ -21,6 +23,7 @@ const ArtistPopularSong: React.FC<ArtistPopularSongProps> = ({ maintitle, subtit
     return (
       <TouchableOpacity
         activeOpacity={0.7}
+        onPress={() => { setCurrentSong(item); if (data) setWaitingList(data) }}
         onPressIn={() => setPressedItemId(item.id)}
         onPressOut={() => setPressedItemId(null)}
         style={[

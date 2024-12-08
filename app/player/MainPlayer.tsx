@@ -14,6 +14,7 @@ import { Image } from 'expo-image';
 import Tracklist from '@/app/player/tracklist';
 import CommentModal from './commentModal';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import { decrypt } from '@/app/decode';
 
 const { height, width } = Dimensions.get('window');
 
@@ -55,9 +56,13 @@ const MainPlayer = () => {
         }
 
         try {
-            // Resolve the local file URI using expo-asset
-            const asset = Asset.fromModule(currentTrack.filePathAudio);
-            await asset.downloadAsync(); // Ensure the asset is available locally
+            const decryptedFilePath = decrypt(currentTrack.filePathAudio);
+            if (!decryptedFilePath) {
+                Alert.alert('Error', 'Unable to decrypt the audio file path.');
+                return;
+            }
+            const asset = Asset.fromModule(decryptedFilePath);
+            await asset.downloadAsync();
             const localUri = asset.localUri;
 
             if (!localUri) {
@@ -365,7 +370,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         right: 0,
         padding: 10,
-      },
+    },
 });
 
 export default MainPlayer;

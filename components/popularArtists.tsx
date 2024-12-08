@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native
 import { Artist } from '@/types/interfaces';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
+import { usePlayback } from '@/app/provider/PlaybackContext';
 
 interface ArtistItemProps {
   maintitle?: string;
@@ -54,14 +55,14 @@ const styles = StyleSheet.create({
   itemContainer: {
     flexDirection: 'column',
     alignItems: 'center',
-    marginRight: 16,
-    width: 100,
+    marginRight: 8,
+    width: 110,
   },
   image: {
-    width: 80,
-    height: 80,
+    width: 100,
+    height: 100,
     marginBottom: 8,
-    borderRadius: 40,
+    borderRadius: 50,
   },
   name: {
     fontSize: 16,
