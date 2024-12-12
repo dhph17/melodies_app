@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useRouter } from "expo-router";
-import { Text, View, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { Text, View, TouchableOpacity, StyleSheet, ScrollView, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import UserImage from '@/assets/images/placeholderUser.jpg'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetchApiData } from '@/app/api/appService';
@@ -99,6 +99,12 @@ const Profile = () => {
     );
 
     return (
+        <KeyboardAvoidingView
+        style={styles.container}
+        behavior='padding'
+        keyboardVerticalOffset={0}
+        >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <View style={styles.avatarContainer}>
@@ -169,6 +175,8 @@ const Profile = () => {
                 onSelectPlan={(plan) => console.log(`Selected plan: ${plan}`)} // Handle selected plan
             />
         </View>
+        </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
     );
 };
 

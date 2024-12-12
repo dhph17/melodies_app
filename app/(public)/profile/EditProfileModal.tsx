@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Text, View, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { Text, View, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 // import * as ImagePicker from 'react-native-image-picker';
 import * as ImagePicker from 'expo-image-picker';
@@ -41,10 +41,11 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isVisible, onClose,
 
   return (
     <KeyboardAvoidingView
-      behavior="height"
-      keyboardVerticalOffset={0}
-    >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        style={styles.container}
+        behavior='padding'
+        keyboardVerticalOffset={0}
+        >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <Modal
           isVisible={isVisible}
           onBackdropPress={onClose}
@@ -91,9 +92,8 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isVisible, onClose,
             </View>
           </View>
         </Modal >
-      </TouchableWithoutFeedback>
-
-    </KeyboardAvoidingView>
+        </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
   );
 };
 
@@ -101,6 +101,9 @@ const styles = StyleSheet.create({
   modal: {
     justifyContent: 'flex-end',
     margin: 0,
+  },
+  container: {
+    flex: 1,
   },
   modalContent: {
     backgroundColor: '#121212',
