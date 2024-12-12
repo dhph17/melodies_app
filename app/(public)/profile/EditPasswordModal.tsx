@@ -22,12 +22,6 @@ const EditPasswordModal: React.FC<EditPasswordModalProps> = ({ isVisible, onClos
   };
 
   return (
-    <KeyboardAvoidingView
-        style={styles.container}
-        behavior='padding'
-        keyboardVerticalOffset={0}
-        >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <Modal
       isVisible={isVisible}
       onBackdropPress={onClose}
@@ -35,6 +29,12 @@ const EditPasswordModal: React.FC<EditPasswordModalProps> = ({ isVisible, onClos
       animationIn="slideInUp"
       animationOut="slideOutDown"
     >
+      <KeyboardAvoidingView
+      style={styles.container}
+      behavior='padding'
+      keyboardVerticalOffset={0}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.modalContent}>
         {/* Header */}
         <View style={styles.header}>
@@ -83,9 +83,9 @@ const EditPasswordModal: React.FC<EditPasswordModalProps> = ({ isVisible, onClos
           />
         </View>
       </View>
+      </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     </Modal>
-    </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
   );
 };
 
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
-    height: 700,
+    height: 1200,
   },
   header: {
     flexDirection: 'row',
