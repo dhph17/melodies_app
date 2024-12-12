@@ -40,6 +40,7 @@ const MainPlayer = () => {
     const [isCommentModalVisible, setIsCommentModalVisible] = useState(false);
 
     const handleCommentButtonPress = () => {
+        console.log("Opening Comment Modal");
         setIsCommentModalVisible(true);
     };
 
@@ -210,6 +211,10 @@ const MainPlayer = () => {
                 onClose={() => setIsPlaylistVisible(false)}
                 tracks={waitingList}
                 currentTrackIndex={waitingList.indexOf(currentTrack)}
+            />
+            <CommentModal
+                visible={isCommentModalVisible}
+                onClose={() => setIsCommentModalVisible(false)}
             />
         </ImageBackground>
     );
