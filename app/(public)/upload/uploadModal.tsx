@@ -83,7 +83,11 @@ const UploadModal = ({ visible, onClose, onSave }: { visible: boolean; onClose: 
   };
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior='padding'
+      keyboardVerticalOffset={0}
+    >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <Modal
           isVisible={visible}
@@ -179,6 +183,9 @@ const styles = StyleSheet.create({
   modal: {
     justifyContent: "flex-end",
     margin: 0,
+  },
+  container: {
+    flex: 1,
   },
   modalContent: {
     backgroundColor: "#121212",

@@ -1,19 +1,14 @@
 import React, { useState } from 'react';
-import { Text, View, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard } from 'react-native';
-import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
-// import * as ImagePicker from 'react-native-image-picker';
-import * as ImagePicker from 'expo-image-picker';
-import UserImage from '@/assets/images/placeholderUser.jpg'
+import { Text, View, TextInput, TouchableOpacity, StyleSheet, Image, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import Modal from 'react-native-modal';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { Image } from 'expo-image';
 
 interface EditProfileModalProps {
   isVisible: boolean;
   onClose: () => void;
   onSave: (newName: string, newAvatar: string) => void;
   currentName: string;
-  currentAvatar: string | null;
+  currentAvatar: string;
 }
 
 const EditProfileModal: React.FC<EditProfileModalProps> = ({ isVisible, onClose, onSave, currentName, currentAvatar }) => {
@@ -21,23 +16,12 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isVisible, onClose,
   const [newAvatar, setNewAvatar] = useState(currentAvatar);
 
   const handleSaveChanges = () => {
-    // onSave(newName, newAvatar);
+    onSave(newName, newAvatar);
   };
 
-  const handleEditAvatar = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      setNewAvatar(result.assets[0].uri);
-    }
-
+  const handleEditAvatar = () => {
+    setNewAvatar('https://via.placeholder.com/150'); // Placeholder for a new avatar URL
   };
-
 
   return (
     <KeyboardAvoidingView
@@ -46,54 +30,54 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isVisible, onClose,
         keyboardVerticalOffset={0}
         >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <Modal
-          isVisible={isVisible}
-          onBackdropPress={onClose}
-          style={styles.modal}
-          animationIn="slideInUp"
-          animationOut="slideOutDown"
-        >
+    <Modal
+      isVisible={isVisible}
+      onBackdropPress={onClose}
+      style={styles.modal}
+      animationIn="slideInUp"
+      animationOut="slideOutDown"
+    >
+        <View style={styles.modalContent}>
+        {/* Header */}
+        <View style={styles.header}>
+          <TouchableOpacity onPress={onClose} style={styles.headerButton}>
+            <Text style={styles.cancelButton}>Hủy</Text>
+          </TouchableOpacity>
+          <Text style={styles.modalTitle}>Chỉnh sửa hồ sơ</Text>
+          <TouchableOpacity onPress={handleSaveChanges} style={styles.headerButton}>
+            <Text style={styles.saveButton}>Lưu</Text>
+          </TouchableOpacity>
+        </View>
 
-          <View style={styles.modalContent}>
-            {/* Header */}
-            <View style={styles.header}>
-              <TouchableOpacity onPress={onClose} style={styles.headerButton}>
-                <Text style={styles.cancelButton}>Hủy</Text>
-              </TouchableOpacity>
-              <Text style={styles.modalTitle}>Chỉnh sửa hồ sơ</Text>
-              <TouchableOpacity onPress={handleSaveChanges} style={styles.headerButton}>
-                <Text style={styles.saveButton}>Lưu</Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* Avatar Section */}
-            <View style={styles.avatarContainer}>
-              <TouchableOpacity onPress={handleEditAvatar}>
-                <View style={styles.avatarWrapper}>
-                  <Image
-                    source={newAvatar ? { uri: newAvatar } : UserImage}
-                    style={styles.avatar}
-                  />
-                  <View style={styles.editIcon}>
-                    <FontAwesome name="pencil" size={16} color="#fff" />
-                  </View>
-                </View>
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Tên</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Tên người dùng"
-                value={newName}
-                onChangeText={setNewName}
+        {/* Avatar Section */}
+        <View style={styles.avatarContainer}>
+          <TouchableOpacity onPress={handleEditAvatar}>
+            <View style={styles.avatarWrapper}>
+              <Image
+                source={{ uri: newAvatar || 'https://via.placeholder.com/150' }}
+                style={styles.avatar}
               />
+              <View style={styles.editIcon}>
+                <FontAwesome name="pencil" size={16} color="#fff" />
+              </View>
             </View>
-          </View>
-        </Modal >
-        </TouchableWithoutFeedback>
-        </KeyboardAvoidingView>
+          </TouchableOpacity>
+        </View>
+
+        {/* Name Input */}
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Tên</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Tên người dùng"
+            value={newName}
+            onChangeText={setNewName}
+          />
+        </View>
+      </View>
+    </Modal>
+    </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 

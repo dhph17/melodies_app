@@ -1,7 +1,6 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from "expo-router";
-import { Text, View, TouchableOpacity, StyleSheet, ScrollView, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard } from 'react-native';
-import UserImage from '@/assets/images/placeholderUser.jpg'
+import { Text, View, TouchableOpacity, StyleSheet, Image, ScrollView, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetchApiData } from '@/app/api/appService';
 import { User } from "@/types/interfaces";
@@ -10,7 +9,6 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import EditProfileModal from './EditProfileModal';
 import EditPasswordModal from './EditPasswordModal';
 import SubscriptionModal from './SubscriptionModal';
-import { Image } from 'expo-image';
 
 const Profile = () => {
     const router = useRouter();
@@ -20,15 +18,13 @@ const Profile = () => {
     const [isSubscriptionModalVisible, setSubscriptionModalVisible] = useState(false);
 
     useFocusEffect(
-        useCallback(() => {
+        React.useCallback(() => {
             const fetchData = async () => {
                 const accessToken = await AsyncStorage.getItem('accessToken');
                 if (accessToken) {
                     const result = await fetchApiData(`/api/user`, "GET", null, accessToken ?? null);
                     if (result.success) {
                         setUser(result.data.user);
-                        console.log(result.data.user);
-
                     } else {
                         console.error("Login error:", result.error);
                     }
@@ -109,7 +105,7 @@ const Profile = () => {
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <View style={styles.avatarContainer}>
                     <Image
-                        source={user?.image ? { uri: user.image } : UserImage}
+                        source={{ uri: user?.avatar || 'https://via.placeholder.com/150' }}
                         style={styles.avatar}
                     />
                     {user ? (
@@ -131,7 +127,7 @@ const Profile = () => {
 
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Đăng ký</Text>
-                    <SectionItem iconName="list" title="Các gói có sẵn" onPress={() => setSubscriptionModalVisible(true)} />
+                    <SectionItem iconName="list" title="Các gói có sẵn" onPress={() => setSubscriptionModalVisible(true)}/>
                     <SectionItem iconName="edit" title="Quản lý gói đăng ký" />
                     <SectionItem iconName="times" title="Hủy gói đăng ký" />
                 </View>
@@ -159,7 +155,7 @@ const Profile = () => {
                 onClose={() => setModalVisible(false)}
                 onSave={handleSaveChanges}
                 currentName={user?.username || ''}
-                currentAvatar={user?.image || null}
+                currentAvatar={user?.avatar || ''}
             />
 
             {/* Password Edit Modal */}
@@ -198,7 +194,7 @@ const styles = StyleSheet.create({
         width: 100,
         height: 100,
         borderRadius: 50,
-        borderWidth: 1,
+        borderWidth: 2,
         borderColor: '#3b82f6',
     },
     username: {

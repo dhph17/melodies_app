@@ -83,7 +83,7 @@ const EditPasswordModal: React.FC<EditPasswordModalProps> = ({ isVisible, onClos
           />
         </View>
       </View>
-    </Modal>  
+    </Modal>
     </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
