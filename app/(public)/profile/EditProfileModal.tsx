@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Text, View, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { Text, View, TextInput, TouchableOpacity, StyleSheet, Image, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import Modal from 'react-native-modal';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
@@ -24,6 +24,12 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isVisible, onClose,
   };
 
   return (
+    <KeyboardAvoidingView
+        style={styles.container}
+        behavior='padding'
+        keyboardVerticalOffset={0}
+        >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <Modal
       isVisible={isVisible}
       onBackdropPress={onClose}
@@ -31,7 +37,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isVisible, onClose,
       animationIn="slideInUp"
       animationOut="slideOutDown"
     >
-      <View style={styles.modalContent}>
+        <View style={styles.modalContent}>
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={onClose} style={styles.headerButton}>
@@ -70,6 +76,8 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isVisible, onClose,
         </View>
       </View>
     </Modal>
+    </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -77,6 +85,9 @@ const styles = StyleSheet.create({
   modal: {
     justifyContent: 'flex-end',
     margin: 0,
+  },
+  container: {
+    flex: 1,
   },
   modalContent: {
     backgroundColor: '#121212',

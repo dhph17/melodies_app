@@ -28,9 +28,7 @@ const LoginPage = () => {
   const [isAnimationComplete, setIsAnimationComplete] = useState(true);
   const [isOTP, setIsOTP] = useState(false);
   const animatedPosition = useRef(new Animated.Value(0)).current;
-  const [otpValues, setOtpValues] = useState(Array(5).fill(''));
   const { height } = Dimensions.get('window');
-  const otpInputs = useRef<(TextInput | null)[]>([]);
 
   const toggleForm = () => {
     setIsAnimationComplete(false);
@@ -47,34 +45,6 @@ const LoginPage = () => {
     }).start(() => {
       setIsAnimationComplete(true);
     });
-  };
-
-  const handleOTPInputChange = (index: number, value: string) => {
-    const newOtpValues = [...otpValues];
-    newOtpValues[index] = value;
-    setOtpValues(newOtpValues);
-
-    if (value === '') {
-      if (index > 0) {
-        otpInputs.current[index - 1]?.focus();
-      }
-    } else {
-      if (index < otpInputs.current.length - 1) {
-        otpInputs.current[index + 1]?.focus();
-      }
-    }
-  };
-
-  const handleKeyPress = (index: number, event: any) => {
-    if (event.nativeEvent.key === 'Backspace') {
-      if (index > 0 && otpValues[index] === '') {
-        otpInputs.current[index - 1]?.focus();
-      }
-    }
-  };
-
-  const handleSignUp = () => {
-    setIsOTP(true); // Show OTP form after signing up
   };
 
   return (

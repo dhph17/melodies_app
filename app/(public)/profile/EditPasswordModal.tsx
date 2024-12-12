@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Text, View, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { Text, View, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import Modal from 'react-native-modal';
 
 interface EditPasswordModalProps {
@@ -22,6 +22,12 @@ const EditPasswordModal: React.FC<EditPasswordModalProps> = ({ isVisible, onClos
   };
 
   return (
+    <KeyboardAvoidingView
+        style={styles.container}
+        behavior='padding'
+        keyboardVerticalOffset={0}
+        >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <Modal
       isVisible={isVisible}
       onBackdropPress={onClose}
@@ -78,6 +84,8 @@ const EditPasswordModal: React.FC<EditPasswordModalProps> = ({ isVisible, onClos
         </View>
       </View>
     </Modal>
+    </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -85,6 +93,9 @@ const styles = StyleSheet.create({
   modal: {
     justifyContent: 'flex-end',
     margin: 0,
+  },
+  container: {
+    flex: 1,
   },
   modalContent: {
     backgroundColor: '#121212',
