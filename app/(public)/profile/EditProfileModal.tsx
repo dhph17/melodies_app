@@ -74,6 +74,21 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isVisible, onClose,
             onChangeText={setNewName}
           />
         </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Username</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="John Cena"
+            editable={false}
+          />
+        </View><View style={styles.inputContainer}>
+          <Text style={styles.label}>Email</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="email@example.com"
+            editable={false}
+          />
+        </View>
       </View>
       </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
