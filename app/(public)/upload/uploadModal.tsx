@@ -5,6 +5,7 @@ import * as DocumentPicker from "expo-document-picker";
 import Modal from "react-native-modal";
 import { Image } from "expo-image";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import * as FileSystem from 'expo-file-system';
 
 const UploadModal = ({ visible, onClose, onSave }: { visible: boolean; onClose: () => void; onSave: (track: { title: string; mainArtist: string; releaseDate: string; subArtists: string; audioFile: string; lyricFile: string; imageUri: string; }) => void }) => {
   const [newTrack, setNewTrack] = useState({
@@ -47,31 +48,35 @@ const UploadModal = ({ visible, onClose, onSave }: { visible: boolean; onClose: 
   const handleAudioPick = async () => {
     try {
       const result = await DocumentPicker.getDocumentAsync({
-        type: "audio/*", // Specify the file type
+        type: "audio/*",
       });
-  
+
       if (!result.canceled && result.assets?.length > 0) {
-        setNewTrack({ ...newTrack, audioFile: result.assets[0].uri }); // Access the URI from the assets
+        const audioUri = result.assets[0].uri;
+        const audioFileName = audioUri.split('/').pop() || ''; // Provide a default empty string if undefined
+        setNewTrack({ ...newTrack, audioFile: audioFileName });
       }
     } catch (error) {
       console.error("Error picking audio file:", error);
     }
   };
-  
+
   const handleLyricPick = async () => {
     try {
       const result = await DocumentPicker.getDocumentAsync({
-        type: "text/*", // Specify the file type
+        type: "text/*",
       });
-  
+
       if (!result.canceled && result.assets?.length > 0) {
-        setNewTrack({ ...newTrack, lyricFile: result.assets[0].uri }); // Access the URI from the assets
+        const lyricUri = result.assets[0].uri;
+        const lyricFileName = lyricUri.split('/').pop() || ''; // Provide a default empty string if undefined
+        setNewTrack({ ...newTrack, lyricFile: lyricFileName });
       }
     } catch (error) {
       console.error("Error picking lyric file:", error);
     }
   };
-  
+
   const handleDateChange = (text: string) => {
     const formattedDate = text.replace(/[^0-9]/g, "").slice(0, 8);
     const parts = [
@@ -164,12 +169,16 @@ const UploadModal = ({ visible, onClose, onSave }: { visible: boolean; onClose: 
 
               <Text style={styles.label}>Audio File</Text>
               <TouchableOpacity style={styles.fileButton} onPress={handleAudioPick}>
-                <Text style={styles.fileButtonText}>{newTrack.audioFile ? "Audio Selected" : "Choose Audio File"}</Text>
+                <Text style={styles.fileButtonText}>
+                  {newTrack.audioFile ? `Audio: ${newTrack.audioFile}` : "Choose Audio File"}
+                </Text>
               </TouchableOpacity>
 
               <Text style={styles.label}>Lyric File</Text>
               <TouchableOpacity style={styles.fileButton} onPress={handleLyricPick}>
-                <Text style={styles.fileButtonText}>{newTrack.lyricFile ? "Lyrics Selected" : "Choose Lyric File"}</Text>
+                <Text style={styles.fileButtonText}>
+                  {newTrack.lyricFile ? `Lyric: ${newTrack.lyricFile}` : "Choose Lyric File"}
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
