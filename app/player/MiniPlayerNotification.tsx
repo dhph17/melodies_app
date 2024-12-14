@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 import { usePlayback } from '../provider/PlaybackContext';
-import { getMainArtistName } from '@/utils/utils';
+import { getMainArtistInfo } from '@/utils/utils';
 
 const MiniPlayerNotification: React.FC = () => {
     const { currentTrack, isPlaying } = usePlayback();
@@ -18,7 +18,7 @@ const MiniPlayerNotification: React.FC = () => {
             await Notifications.scheduleNotificationAsync({
                 content: {
                     title: currentTrack.title,
-                    body: isPlaying ? `Playing ${getMainArtistName(currentTrack.artists)}` : 'Paused',
+                    body: isPlaying ? `Playing ${getMainArtistInfo(currentTrack.artists)}` : 'Paused',
                 },
                 trigger: null,
             });

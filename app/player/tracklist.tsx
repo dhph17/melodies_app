@@ -1,6 +1,6 @@
 import { usePlayback } from '@/app/provider/PlaybackContext';
 import { DataSong } from '@/types/interfaces';
-import { getMainArtistName, getPosterSong } from '@/utils/utils';
+import { getAllArtistsInfo, getPosterSong } from '@/utils/utils';
 import { Image } from 'expo-image';
 import React from 'react';
 import {
@@ -40,11 +40,16 @@ const Tracklist: React.FC<TracklistProps> = ({
                     <Text style={[styles.trackTitle, isCurrent && styles.currentTrackText]}>
                         {item.title}
                     </Text>
-                    <Text style={[styles.trackArtist, isCurrent && styles.currentTrackText]}>
-                        {getMainArtistName(item.artists)}
+                    <Text style={[styles.trackArtist, isCurrent && styles.currentTrackText]} >
+                        {getAllArtistsInfo(item?.artists).map((artist, index, array) => (
+                            <Text key={artist.id}>
+                                {artist.name}
+                                {index < array.length - 1 && <Text>, </Text>}
+                            </Text>
+                        ))}
                     </Text>
-                </View>
-            </TouchableOpacity>
+                </View >
+            </TouchableOpacity >
         );
     };
 

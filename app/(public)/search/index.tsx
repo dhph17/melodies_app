@@ -7,7 +7,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import { Image } from 'expo-image';
 import { DataSong } from '@/types/interfaces';
 import { fetchApiData } from '@/app/api/appService';
-import { getMainArtistName, getPosterSong } from '@/utils/utils';
+import { getAllArtistsInfo, getPosterSong } from '@/utils/utils';
 import { usePlayback } from '@/app/provider/PlaybackContext';
 import ArtistPopularSong from '@/components/trendingSong';
 import PopularArtists from '@/components/popularArtists';
@@ -113,7 +113,14 @@ const SearchIndex = () => {
         <Image source={{ uri: getPosterSong(item.album).image ? getPosterSong(item.album).image : SongPlaceholder }} style={styles.songImage} />
         <View style={styles.songInfo}>
           <Text style={styles.songTitle}>{item.title}</Text>
-          <Text style={styles.songArtist}>{getMainArtistName(item.artists)}</Text>
+          <Text style={styles.songArtist} >
+            {getAllArtistsInfo(item?.artists).map((artist, index, array) => (
+              <Text key={artist.id}>
+                {artist.name}
+                {index < array.length - 1 && <Text>, </Text>}
+              </Text>
+            ))}
+          </Text>
         </View>
         <TouchableOpacity>
           <FontAwesome name="ellipsis-v" size={20} color="white" />

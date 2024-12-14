@@ -13,7 +13,7 @@ import Slider from '@react-native-community/slider';
 import { usePlayback } from '../../provider/PlaybackContext';
 import { useRouter } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { formatTime, getMainArtistName, getPosterSong } from '@/utils/utils';
+import { formatTime, getAllArtistsInfo, getPosterSong } from '@/utils/utils';
 import { Image } from 'expo-image';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import AddSongModal from './songModal';
@@ -78,7 +78,14 @@ const MainPlayer = () => {
 
                 <View style={styles.songInfoCenter}>
                     <Text style={styles.songTitle}>{currentTrack.title}</Text>
-                    <Text style={styles.artist}>{getMainArtistName(currentTrack.artists)}</Text>
+                    <Text style={styles.artist} >
+                        {getAllArtistsInfo(currentTrack?.artists).map((artist, index, array) => (
+                            <Text key={artist.id} style={styles.artist}>
+                                {artist.name}
+                                {index < array.length - 1 && <Text>, </Text>}
+                            </Text>
+                        ))}
+                    </Text>
                 </View>
                 <View style={styles.sliderContainer}>
                     <Slider

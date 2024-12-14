@@ -7,7 +7,7 @@ import { fetchApiData } from '@/app/api/appService';
 import { DataAlbum } from '@/types/interfaces';
 import { LinearGradient } from "expo-linear-gradient";
 import { FontAwesome } from "@expo/vector-icons";
-import { getMainArtistName, getPoster } from '@/utils/utils';
+import { getAllArtistsInfo, getPoster } from '@/utils/utils';
 import { usePlayback } from '@/app/provider/PlaybackContext';
 
 const AlbumPage = () => {
@@ -90,7 +90,7 @@ const AlbumPage = () => {
                         source={dataAlbum ? getPoster(dataAlbum) : undefined}
                         style={styles.image}
                     />
-                    <Text style={styles.title}>{dataAlbum?.title}</Text>
+                    <Text style={styles.title} numberOfLines={2} >{dataAlbum?.title}</Text>
                     <Text style={styles.likes}>{dataAlbum?.songNumber ?? 0} {(dataAlbum?.songNumber ?? 0) > 1 ? 'songs' : 'song'} <Text className="text-gray-300">•</Text> {dataAlbum ? formatDuration(dataAlbum.totalDuration) : ''}</Text>
                 </View>
             </LinearGradient>
@@ -111,7 +111,14 @@ const AlbumPage = () => {
                         />
                         <View style={styles.songInfo}>
                             <Text style={styles.songTitle}>{item.title}</Text>
-                            <Text style={styles.songArtist}>{getMainArtistName(item?.artists)}</Text>
+                            <Text style={styles.songArtist} >
+                                {getAllArtistsInfo(item?.artists).map((artist, index, array) => (
+                                    <Text key={artist.id}>
+                                        {artist.name}
+                                        {index < array.length - 1 && <Text>, </Text>}
+                                    </Text>
+                                ))}
+                            </Text>
                         </View>
                         <TouchableOpacity>
                             <FontAwesome name="ellipsis-v" size={20} color="white" />
@@ -169,6 +176,8 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         color: "white",
         marginBottom: 5,
+        textAlign: "center",
+        width: '80%',
     },
     description: {
         fontSize: 14,

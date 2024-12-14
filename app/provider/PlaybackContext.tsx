@@ -4,7 +4,7 @@ import { Audio } from 'expo-av';
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 import { DataSong } from '@/types/interfaces';
-import { getMainArtistName } from '@/utils/utils';
+import { getMainArtistInfo } from '@/utils/utils';
 import { decrypt } from '@/app/decode';
 
 interface PlaybackProviderProps {
@@ -148,7 +148,7 @@ export const PlaybackProvider: React.FC<PlaybackProviderProps> = ({ children }) 
             await Notifications.scheduleNotificationAsync({
                 content: {
                     title: currentTrack.title,
-                    body: `${getMainArtistName(currentTrack.artists)} - ${isPlaying ? 'Playing' : 'Paused'}`,
+                    body: `${getMainArtistInfo(currentTrack.artists)} - ${isPlaying ? 'Playing' : 'Paused'}`,
                 },
                 trigger: null,
             });

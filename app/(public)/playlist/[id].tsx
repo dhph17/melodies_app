@@ -17,7 +17,7 @@ import { DataPlaylist, DataSong } from "@/types/interfaces";
 import { PUBLIC_FE_ENDPOINT } from "@/app/config";
 import PlaylistImage from '@/assets/images/placeholderPlaylist.png'
 import SongImage from '@/assets/images/placeholderSong.jpg'
-import { getMainArtistName, getPosterSong } from "@/utils/utils";
+import { getAllArtistsInfo, getPosterSong } from "@/utils/utils";
 import { usePlayback } from "@/app/provider/PlaybackContext";
 
 const ViewPlaylist = () => {
@@ -146,7 +146,14 @@ const ViewPlaylist = () => {
             />
             <View style={styles.songInfo}>
               <Text style={styles.songTitle}>{item.title}</Text>
-              <Text style={styles.songArtist}>{getMainArtistName(item.artists)}</Text>
+              <Text style={styles.songArtist} >
+                {getAllArtistsInfo(item?.artists).map((artist, index, array) => (
+                  <Text key={artist.id}>
+                    {artist.name}
+                    {index < array.length - 1 && <Text>, </Text>}
+                  </Text>
+                ))}
+              </Text>
             </View>
             <TouchableOpacity>
               <FontAwesome name="ellipsis-v" size={20} color="white" />
@@ -204,6 +211,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "white",
     marginBottom: 5,
+    textAlign: "center",
+    width: '80%',
   },
   description: {
     fontSize: 14,

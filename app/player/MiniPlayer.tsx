@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { usePlayback } from '../provider/PlaybackContext';
-import { getMainArtistName, getPosterSong } from '@/utils/utils';
+import { getAllArtistsInfo, getPosterSong } from '@/utils/utils';
 import Entypo from '@expo/vector-icons/Entypo';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -30,8 +30,13 @@ const MiniPlayer: React.FC = () => {
                 <Text style={styles.trackTitle} numberOfLines={1}>
                     {currentTrack.title}
                 </Text>
-                <Text style={styles.trackArtist} numberOfLines={1}>
-                    {getMainArtistName(currentTrack.artists)}
+                <Text style={styles.trackArtist} >
+                    {getAllArtistsInfo(currentTrack?.artists).map((artist, index, array) => (
+                        <Text key={artist.id} >
+                            {artist.name}
+                            {index < array.length - 1 && <Text>, </Text>}
+                        </Text>
+                    ))}
                 </Text>
             </View>
 

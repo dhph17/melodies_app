@@ -9,7 +9,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import * as FileSystem from 'expo-file-system';
 import { Asset } from 'expo-asset';
-import { formatTime, getMainArtistName, getPosterSong } from '@/utils/utils';
+import { formatTime, getAllArtistsInfo, getPosterSong } from '@/utils/utils';
 import { Image } from 'expo-image';
 import Tracklist from '@/app/player/tracklist';
 import CommentModal from './commentModal';
@@ -143,7 +143,14 @@ const MainPlayer = () => {
 
                 <View style={styles.songInfoCenter}>
                     <Text style={styles.songTitle}>{currentTrack.title}</Text>
-                    <Text style={styles.artist}>{getMainArtistName(currentTrack.artists)}</Text>
+                    <Text style={styles.artist} >
+                        {getAllArtistsInfo(currentTrack?.artists).map((artist, index, array) => (
+                            <Text key={artist.id} style={styles.artist}>
+                                {artist.name}
+                                {index < array.length - 1 && <Text>, </Text>}
+                            </Text>
+                        ))}
+                    </Text>
                 </View>
 
                 {isLyrics ? (
@@ -306,6 +313,7 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         fontSize: 24,
         fontWeight: 'bold',
+        textAlign: "center",
     },
     artist: {
         color: '#BBBBBB',
