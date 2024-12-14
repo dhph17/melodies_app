@@ -3,7 +3,7 @@ import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native
 import { Image } from 'expo-image';
 import { DataSong } from '@/types/interfaces';
 import EvilIcons from '@expo/vector-icons/EvilIcons';
-import { formatTime, getMainArtistName, getPosterSong } from '@/utils/utils';
+import { formatTime, getAllArtistsInfo, getPosterSong } from '@/utils/utils';
 import { usePlayback } from '@/app/provider/PlaybackContext';
 
 interface ArtistPopularSongProps {
@@ -37,9 +37,14 @@ const ArtistPopularSong: React.FC<ArtistPopularSongProps> = ({ maintitle, subtit
             <Text style={styles.songTitle} numberOfLines={2}>
               {item.title}
             </Text>
-            <Text style={styles.songArtist} numberOfLines={1}>
-              {getMainArtistName(item.artists)}
-            </Text>
+            <View style={styles.artistSection} >
+              {getAllArtistsInfo(item?.artists).map((artist, index, array) => (
+                <Text key={artist.id} style={styles.artist}>
+                  {artist.name}
+                  {index < array.length - 1 && <Text>, </Text>}
+                </Text>
+              ))}
+            </View>
           </View>
         </View>
         <Text style={styles.songTime}>{formatTime(item.duration)}</Text>
@@ -103,7 +108,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   songDetails: {
-    width: '60%',
+    width: '70%',
     flexDirection: 'column',
     justifyContent: 'center',
     marginLeft: 12
@@ -113,9 +118,13 @@ const styles = StyleSheet.create({
     fontWeight: 500,
     fontSize: 16,
   },
-  songArtist: {
-    color: '#a0a0a0',
-    fontSize: 12,
+  artistSection: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  artist: {
+    fontSize: 11,
+    color: '#666',
   },
   songTime: {
     color: '#a0a0a0',

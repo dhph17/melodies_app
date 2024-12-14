@@ -3,14 +3,27 @@ import ImageSong from '@/assets/images/placeholderSong.png'
 import ImagePlaylist from '@/assets/images/placeholderPlaylist.png'
 
 // Hàm lấy tên nghệ sĩ chính
-export const getMainArtistName = (artists: Artist[]): string | undefined => {
+export const getMainArtistInfo = (artists: Artist[]): { name?: string; id?: string } | undefined => {
     const mainArtist = artists.find(artist => artist?.ArtistSong.main === true);
-    return mainArtist?.name;
+    if (!mainArtist) return undefined;
+    return {
+        name: mainArtist.name,
+        id: mainArtist.id,
+    };
 };
 
-export const getMainArtistId = (artists: Artist[]): string | undefined => {
-    const mainArtist = artists.find(artist => artist?.ArtistSong.main === true);
-    return mainArtist?.id;
+export const getSubArtistsInfo = (artists: Artist[]): { name?: string; id?: string }[] => {
+    return artists
+        .filter(artist => artist?.ArtistSong.main !== true)
+        .map(artist => ({ name: artist.name, id: artist.id }))
+        .filter(subArtist => subArtist.name && subArtist.id);
+};
+
+export const getAllArtistsInfo = (artists: Artist[]): { name?: string; id?: string }[] => {
+    const mainArtist = getMainArtistInfo(artists);
+    const subArtists = getSubArtistsInfo(artists);
+
+    return mainArtist ? [mainArtist, ...subArtists] : subArtists;
 };
 
 export const getPosterSong = (albums: Array<DataAlbum>, albumType?: string) => {

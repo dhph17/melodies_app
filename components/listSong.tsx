@@ -1,5 +1,5 @@
 import { DataSong } from '@/types/interfaces';
-import { getMainArtistName, getPosterSong } from '@/utils/utils';
+import { getAllArtistsInfo, getPosterSong } from '@/utils/utils';
 import React from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { Image } from 'expo-image';
@@ -46,9 +46,14 @@ const ListSong: React.FC<ListSongProps> = ({ maintitle, subtitle, data }) => {
                 <Text style={styles.name} className='line-clamp-3'>
                   {item.title}
                 </Text>
-                <Text style={styles.artist} className='line-clamp-2'>
-                  {getMainArtistName(item?.artists)}
-                </Text>
+                <View style={styles.artistSection} >
+                  {getAllArtistsInfo(item?.artists).map((artist, index, array) => (
+                    <Text key={artist.id} style={styles.artist}>
+                      {artist.name}
+                      {index < array.length - 1 && <Text>, </Text>}
+                    </Text>
+                  ))}
+                </View>
               </View>
             </TouchableOpacity>
           )
@@ -84,6 +89,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'white'
   },
+  artistSection: {
+    flex: 1,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+
   artist: {
     fontSize: 11,
     color: '#666',
