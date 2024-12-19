@@ -18,6 +18,7 @@ import { Image } from 'expo-image';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import HostModal from './hostModal';
 import GuestModal from './guestModal';
+import MemberModal from './MemberModal';
 
 const { height, width } = Dimensions.get('window');
 
@@ -40,9 +41,10 @@ const MainPlayer = () => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [isHostModalVisible, setHostModalVisible] = useState(false);
     const [isGuestModalVisible, setGuestModalVisible] = useState(false);
+    const [isMemberModalVisible, setMemberModalVisible] = useState(false);
 
     // Example of setting the user manually for testing purposes
-    const user = "host";  // Change this to "guest" to test the GuestModal
+    const user = "guest";  // Change this to "guest" to test the GuestModal
 
     // Reference to FlatList
     const flatListRef = useRef<FlatList>(null);
@@ -83,9 +85,13 @@ const MainPlayer = () => {
                         <Ionicons name="arrow-back" size={24} color="#FF0099" />
                     </TouchableOpacity>
                     <Text style={styles.title}>Music</Text>
+                    <TouchableOpacity style={styles.memberButton} onPress={() => setMemberModalVisible(true)}>
+                        <Ionicons name="people" size={24} color="#FF0099" />
+                    </TouchableOpacity>
                     <TouchableOpacity style={styles.addButton} onPress={handleAddButtonPress}>
                         <FontAwesome name="plus" size={24} color="#FF0099" />
                     </TouchableOpacity>
+    
                 </View>
 
                 <Image source={getPosterSong(currentTrack.album).image} style={styles.albumCoverSmall} />
@@ -157,6 +163,11 @@ const MainPlayer = () => {
                     onClose={() => setGuestModalVisible(false)}
                 />
             )}
+
+            <MemberModal
+                isVisible={isMemberModalVisible}
+                onClose={() => setMemberModalVisible(false)}
+            />
         </ImageBackground>
     );
 };
@@ -263,6 +274,11 @@ const styles = StyleSheet.create({
     addButton: {
         position: 'absolute',
         right: 0,
+        padding: 10,
+    },
+    memberButton: {
+        position: 'absolute',
+        right: 35,
         padding: 10,
     },
 });

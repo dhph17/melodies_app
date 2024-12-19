@@ -85,6 +85,7 @@ export default function PublicLayout() {
                 />
             </Tabs>
             <MiniPlayer />
+            
         </SafeAreaView>
     );
 }
