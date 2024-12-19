@@ -26,6 +26,7 @@ const { height, width } = Dimensions.get('window');
 interface Message {
     id: number;
     text: string;
+    username: string;
 }
 
 const MainPlayer = () => {
@@ -46,6 +47,8 @@ const MainPlayer = () => {
     // Example of setting the user manually for testing purposes
     const user = "guest";  // Change this to "guest" to test the GuestModal
 
+    const mockUsername = "John Cena";
+
     // Reference to FlatList
     const flatListRef = useRef<FlatList>(null);
 
@@ -54,7 +57,11 @@ const MainPlayer = () => {
 
         setMessages((prevMessages) => [
             ...prevMessages,
-            { id: prevMessages.length + 1, text: chatInput },
+            {
+                id: prevMessages.length + 1,
+                text: chatInput,
+                username: mockUsername,
+            },
         ]);
         setChatInput('');
 
@@ -127,10 +134,15 @@ const MainPlayer = () => {
                 {/* Chat Section */}
                 <View style={styles.chatContainer}>
                     <FlatList
-                        ref={flatListRef} // Attach the FlatList reference
+                        ref={flatListRef}
                         data={messages}
                         keyExtractor={(item) => item.id.toString()}
-                        renderItem={({ item }) => <Text style={styles.chatMessage}>{item.text}</Text>}
+                        renderItem={({ item }) => (
+                            <View style={styles.chatMessageContainer}>
+                                <Text style={styles.chatUsername}>{item.username}:</Text>
+                                <Text style={styles.chatMessage}>{item.text}</Text>
+                            </View>
+                        )}
                         contentContainerStyle={{ flexGrow: 1 }}
                         showsVerticalScrollIndicator={false}
                     />
@@ -247,10 +259,22 @@ const styles = StyleSheet.create({
         padding: 10,
         marginTop: 20,
     },
+    chatMessageContainer: {
+        flexDirection: 'row', // Align username and message horizontally
+        flexWrap: 'wrap', // Allow wrapping for long messages
+        marginVertical: 5,
+        alignItems: 'flex-start', // Align items to the top
+    },
+    chatUsername: {
+        color: '#FF0099',
+        fontWeight: 'bold',
+        marginRight: 5, // Add spacing between username and message
+        flexShrink: 0, // Prevent username from shrinking
+    },
     chatMessage: {
         color: '#FFFFFF',
         fontSize: 14,
-        marginVertical: 5,
+        flexShrink: 1, // Allow message to wrap properly
     },
     chatInputContainer: {
         flexDirection: 'row',
