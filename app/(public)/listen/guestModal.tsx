@@ -53,7 +53,7 @@ const SongModal: React.FC<SongModalProps> = ({ isVisible, onClose }) => {
         <Text style={styles.songArtist}>{item.artist}</Text>
       </View>
       <TouchableOpacity style={styles.songAction} onPress={() => handleSongAction(item.id)}>
-        <Text style={styles.actionText}>Add</Text>
+        <Text style={styles.actionText}>Request</Text>
       </TouchableOpacity>
     </View>
   );

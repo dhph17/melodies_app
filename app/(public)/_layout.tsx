@@ -71,7 +71,15 @@ export default function PublicLayout() {
                 <Tabs.Screen
                     name="listen/index"
                     options={{
-                        title: "Listen",
+                        title: "Listen Index",
+                        headerShown: false,
+                    }}
+                />
+
+                <Tabs.Screen
+                    name="listen/listenPlayer"
+                    options={{
+                        title: "Listen Player",
                         headerShown: false,
                     }}
                 />

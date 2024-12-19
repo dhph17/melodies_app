@@ -29,6 +29,8 @@ const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
                 if (route.name === 'playlist/[id]') return null;
                 if (route.name === 'upload/uploadModal') return null;
                 if (route.name === 'listen/songModal') return null;
+                if (route.name === 'listen/hostModal') return null;
+                if (route.name === 'listen/guestModal') return null;
 
                 const isFocused = state.index === index;
 
