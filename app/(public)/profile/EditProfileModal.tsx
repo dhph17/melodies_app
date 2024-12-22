@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Text, View, TextInput, TouchableOpacity, StyleSheet, Image, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import Modal from 'react-native-modal';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import UserImage from '@/assets/images/placeholderUser.jpg'
 
 interface EditProfileModalProps {
   isVisible: boolean;
@@ -20,7 +21,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isVisible, onClose,
   };
 
   const handleEditAvatar = () => {
-    setNewAvatar('https://via.placeholder.com/150'); // Placeholder for a new avatar URL
+    setNewAvatar('https://via.placeholder.com/150'); 
   };
 
   return (
@@ -32,65 +33,65 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isVisible, onClose,
       animationOut="slideOutDown"
     >
       <KeyboardAvoidingView
-      style={styles.container}
-      behavior='padding'
-      keyboardVerticalOffset={0}
-    >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={styles.modalContent}>
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity onPress={onClose} style={styles.headerButton}>
-            <Text style={styles.cancelButton}>Hủy</Text>
-          </TouchableOpacity>
-          <Text style={styles.modalTitle}>Chỉnh sửa hồ sơ</Text>
-          <TouchableOpacity onPress={handleSaveChanges} style={styles.headerButton}>
-            <Text style={styles.saveButton}>Lưu</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Avatar Section */}
-        <View style={styles.avatarContainer}>
-          <TouchableOpacity onPress={handleEditAvatar}>
-            <View style={styles.avatarWrapper}>
-              <Image
-                source={{ uri: newAvatar || 'https://via.placeholder.com/150' }}
-                style={styles.avatar}
-              />
-              <View style={styles.editIcon}>
-                <FontAwesome name="pencil" size={16} color="#fff" />
-              </View>
+        style={styles.container}
+        behavior='padding'
+        keyboardVerticalOffset={0}
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.modalContent}>
+            {/* Header */}
+            <View style={styles.header}>
+              <TouchableOpacity onPress={onClose} style={styles.headerButton}>
+                <Text style={styles.cancelButton}>Hủy</Text>
+              </TouchableOpacity>
+              <Text style={styles.modalTitle}>Chỉnh sửa hồ sơ</Text>
+              <TouchableOpacity onPress={handleSaveChanges} style={styles.headerButton}>
+                <Text style={styles.saveButton}>Lưu</Text>
+              </TouchableOpacity>
             </View>
-          </TouchableOpacity>
-        </View>
 
-        {/* Name Input */}
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Tên</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Tên người dùng"
-            value={newName}
-            onChangeText={setNewName}
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Username</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="John Cena"
-            editable={false}
-          />
-        </View><View style={styles.inputContainer}>
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="email@example.com"
-            editable={false}
-          />
-        </View>
-      </View>
-      </TouchableWithoutFeedback>
+            {/* Avatar Section */}
+            <View style={styles.avatarContainer}>
+              <TouchableOpacity onPress={handleEditAvatar}>
+                <View style={styles.avatarWrapper}>
+                  <Image
+                    source={newAvatar ? { uri: newAvatar } : UserImage}
+                    style={styles.avatar}
+                  />
+                  <View style={styles.editIcon}>
+                    <FontAwesome name="pencil" size={16} color="#fff" />
+                  </View>
+                </View>
+              </TouchableOpacity>
+            </View>
+
+            {/* Name Input */}
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Tên</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Tên người dùng"
+                value={newName}
+                onChangeText={setNewName}
+              />
+            </View>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Username</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="John Cena"
+                editable={false}
+              />
+            </View><View style={styles.inputContainer}>
+              <Text style={styles.label}>Email</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="email@example.com"
+                editable={false}
+              />
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
     </Modal>
   );

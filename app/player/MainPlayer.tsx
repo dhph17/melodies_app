@@ -222,6 +222,7 @@ const MainPlayer = () => {
             <CommentModal
                 visible={isCommentModalVisible}
                 onClose={() => setIsCommentModalVisible(false)}
+                idSong={currentTrack.id}
             />
         </ImageBackground>
     );
