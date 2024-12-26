@@ -88,4 +88,5 @@ export interface DataPlaylist {
     totalSong: number;
     createdAt: string;
     songsOfPlaylist: DataSong[];
+    privacy: boolean
 }

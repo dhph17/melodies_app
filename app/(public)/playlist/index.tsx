@@ -14,11 +14,14 @@ import PlaylistImage from '@/assets/images/placeholderPlaylist.png'
 import { fetchApiData } from '@/app/api/appService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { DataPlaylist, User } from '@/types/interfaces';
+import { usePlayback } from '@/app/provider/PlaybackContext';
 
 const Playlist = () => {
   const router = useRouter();
+  const { currentTrack } = usePlayback()
   const [user, setUser] = useState<User | null>(null);
-  const [listPlayer, setListPlayer] = useState<DataPlaylist[]>()
+  const [playlistPrivate, setPlaylistPrivate] = useState<DataPlaylist[]>()
+  const [playlistPublic, setPlaylistPublic] = useState<DataPlaylist[]>()
 
   useFocusEffect(
     useCallback(() => {
@@ -28,8 +31,6 @@ const Playlist = () => {
           const result = await fetchApiData(`/api/user`, "GET", null, accessToken ?? null);
           if (result.success) {
             setUser(result.data.user);
-            // console.log(result.data.user);
-
           } else {
             console.error("Get user error:", result.error);
           }
@@ -52,7 +53,14 @@ const Playlist = () => {
           { page: 1 }
         );
         if (result.success) {
-          setListPlayer(result.data.playlists)
+          const privatePlaylists = result.data.playlists.filter(
+            (playlist: DataPlaylist) => playlist.privacy
+          );
+          setPlaylistPrivate(privatePlaylists);
+          const publicPlaylists = result.data.playlists.filter(
+            (playlist: DataPlaylist) => !playlist.privacy
+          );
+          setPlaylistPublic(publicPlaylists);
         } else {
 
         }
@@ -61,7 +69,6 @@ const Playlist = () => {
 
     fetchData();
   }, [])
-
 
   const handleAddPlaylist = async () => {
     const accessToken = await AsyncStorage.getItem('accessToken');
@@ -73,7 +80,7 @@ const Playlist = () => {
         accessToken
       );
       if (result.success && result.data?.newPlaylist) {
-        setListPlayer(prevList => [result.data?.newPlaylist, ...(prevList || [])])
+        setPlaylistPublic(prevList => [result.data?.newPlaylist, ...(prevList || [])])
         router.push(`/playlist/${result.data.newPlaylist.playlistId}`)
       } else {
 
@@ -86,7 +93,7 @@ const Playlist = () => {
   };
 
   const renderItem = ({ item }: { item: DataPlaylist }) => (
-    <TouchableOpacity style={styles.item} onPress={() => handlePlaylistClick(item.playlistId)}>
+    <TouchableOpacity style={styles.item} onPress={() => handlePlaylistClick(item.playlistId)} key={item.playlistId}>
       <Image
         source={item?.image ? { uri: item.image } : PlaylistImage}
         style={styles.icon} />
@@ -94,6 +101,34 @@ const Playlist = () => {
         <Text style={styles.title}>{item.title}</Text>
       </View>
     </TouchableOpacity>
+  );
+
+  const renderContent = React.useMemo(
+    () => (
+      <View
+        style={[
+          styles.container,
+          { paddingBottom: currentTrack ? 150 : 70 },
+        ]}
+        className="flex flex-col gap-4 bg-primaryColorBg"
+      >
+        <Text className='text-white text-[1.2rem] font-semibold'>My private list</Text>
+        <View>
+          {
+            playlistPrivate?.map((playlist: DataPlaylist) => (
+              renderItem({ item: playlist })
+            ))
+          }
+        </View>
+        <Text className='text-white text-[1.2rem] font-semibold'>My playlist</Text>
+        {
+          playlistPublic && playlistPublic?.map((playlist: DataPlaylist) => (
+            renderItem({ item: playlist })
+          ))
+        }
+      </View >
+    ),
+    [playlistPrivate, playlistPublic]
   );
 
   return (
@@ -112,34 +147,18 @@ const Playlist = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Filters */}
-      {/* <View style={styles.filterContainer}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filters}>
-          {['All', 'Playlists', 'Artists', 'Albums', 'Podcasts'].map((type) => (
-            <TouchableOpacity
-              key={type}
-              style={[styles.filterButton, filter === type && styles.activeFilter]}
-              onPress={() => applyFilter(type)}
-            >
-              <Text style={[styles.filterText, filter === type && styles.activeFilterText]}>{type}</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View> */}
-
       {/* Playlist */}
       <FlatList
-        data={listPlayer}
-        keyExtractor={(item) => item.playlistId}
-        renderItem={renderItem}
-        contentContainerStyle={styles.list}
+        data={[]}
+        renderItem={null}
+        ListHeaderComponent={renderContent}
       />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#121212', padding: 14 },
+  container: { flex: 1, backgroundColor: '#121212', padding: 10 },
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -199,7 +218,7 @@ const styles = StyleSheet.create({
     padding: 8,
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 10,
+    marginVertical: 8,
     borderRadius: 5
   },
   icon: {
