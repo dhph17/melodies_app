@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from "expo-router";
-import { Text, View, TouchableOpacity, StyleSheet, Image, ScrollView, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { Text, View, TouchableOpacity, StyleSheet, ScrollView, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { Image } from 'expo-image';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetchApiData } from '@/app/api/appService';
 import { User } from "@/types/interfaces";
@@ -9,6 +10,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import EditProfileModal from './EditProfileModal';
 import EditPasswordModal from './EditPasswordModal';
 import SubscriptionModal from './SubscriptionModal';
+import UserImage from '@/assets/images/placeholderUser.jpg'
 
 const Profile = () => {
     const router = useRouter();
@@ -96,82 +98,82 @@ const Profile = () => {
 
     return (
         <KeyboardAvoidingView
-        style={styles.container}
-        behavior='padding'
-        keyboardVerticalOffset={0}
+            style={styles.container}
+            behavior='padding'
+            keyboardVerticalOffset={0}
         >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={styles.container}>
-            <ScrollView contentContainerStyle={styles.scrollContent}>
-                <View style={styles.avatarContainer}>
-                    <Image
-                        source={{ uri: user?.avatar || 'https://via.placeholder.com/150' }}
-                        style={styles.avatar}
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <View style={styles.container}>
+                    <ScrollView contentContainerStyle={styles.scrollContent}>
+                        <View style={styles.avatarContainer}>
+                            <Image
+                                source={user?.image ? { uri: user.image } : UserImage}
+                                style={styles.avatar}
+                            />
+                            {user ? (
+                                <Text style={styles.username}>{user.username}</Text>
+                            ) : (
+                                <TouchableOpacity
+                                    onPress={() => router.push('/authenticate')}
+                                    style={styles.loginButton}
+                                >
+                                    <Text style={styles.loginText}>Login</Text>
+                                </TouchableOpacity>
+                            )}
+                        </View>
+
+                        <View style={styles.section}>
+                            <Text style={styles.sectionTitle}>Tài khoản</Text>
+                            <SectionItem iconName="user" title="Chỉnh sửa hồ sơ" onPress={() => setModalVisible(true)} />
+                        </View>
+
+                        <View style={styles.section}>
+                            <Text style={styles.sectionTitle}>Đăng ký</Text>
+                            <SectionItem iconName="list" title="Các gói có sẵn" onPress={() => setSubscriptionModalVisible(true)} />
+                            <SectionItem iconName="edit" title="Quản lý gói đăng ký" />
+                            <SectionItem iconName="times" title="Hủy gói đăng ký" />
+                        </View>
+
+                        <View style={styles.section}>
+                            <Text style={styles.sectionTitle}>Thanh toán</Text>
+                            <SectionItem iconName="history" title="Lịch sử đặt hàng" />
+                        </View>
+
+                        <View style={styles.section}>
+                            <Text style={styles.sectionTitle}>Bảo mật</Text>
+                            <SectionItem
+                                iconName="lock"
+                                title="Đổi mật khẩu"
+                                onPress={() => setPasswordModalVisible(true)}
+                            />
+                            <SectionItem iconName="bell" title="Cài đặt thông báo" />
+                            <SectionItem iconName="sign-out" title="Đăng xuất" onPress={handleLogout} />
+                        </View>
+                    </ScrollView>
+
+                    {/* Profile Edit Modal */}
+                    <EditProfileModal
+                        isVisible={isModalVisible}
+                        onClose={() => setModalVisible(false)}
+                        onSave={handleSaveChanges}
+                        currentName={user?.username || ''}
+                        currentAvatar={user?.image || ''}
                     />
-                    {user ? (
-                        <Text style={styles.username}>{user.username}</Text>
-                    ) : (
-                        <TouchableOpacity
-                            onPress={() => router.push('/authenticate')}
-                            style={styles.loginButton}
-                        >
-                            <Text style={styles.loginText}>Login</Text>
-                        </TouchableOpacity>
-                    )}
-                </View>
 
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Tài khoản</Text>
-                    <SectionItem iconName="user" title="Chỉnh sửa hồ sơ" onPress={() => setModalVisible(true)} />
-                </View>
-
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Đăng ký</Text>
-                    <SectionItem iconName="list" title="Các gói có sẵn" onPress={() => setSubscriptionModalVisible(true)}/>
-                    <SectionItem iconName="edit" title="Quản lý gói đăng ký" />
-                    <SectionItem iconName="times" title="Hủy gói đăng ký" />
-                </View>
-
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Thanh toán</Text>
-                    <SectionItem iconName="history" title="Lịch sử đặt hàng" />
-                </View>
-
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Bảo mật</Text>
-                    <SectionItem
-                        iconName="lock"
-                        title="Đổi mật khẩu"
-                        onPress={() => setPasswordModalVisible(true)} // Open password modal
+                    {/* Password Edit Modal */}
+                    <EditPasswordModal
+                        isVisible={isPasswordModalVisible}
+                        onClose={() => setPasswordModalVisible(false)}
+                        onSave={handlePasswordChange}
                     />
-                    <SectionItem iconName="bell" title="Cài đặt thông báo" />
-                    <SectionItem iconName="sign-out" title="Đăng xuất" onPress={handleLogout} />
+
+                    <SubscriptionModal
+                        isVisible={isSubscriptionModalVisible}
+                        onClose={() => setSubscriptionModalVisible(false)}
+                        onSelectPlan={(plan) => console.log(`Selected plan: ${plan}`)} // Handle selected plan
+                    />
                 </View>
-            </ScrollView>
-
-            {/* Profile Edit Modal */}
-            <EditProfileModal
-                isVisible={isModalVisible}
-                onClose={() => setModalVisible(false)}
-                onSave={handleSaveChanges}
-                currentName={user?.username || ''}
-                currentAvatar={user?.avatar || ''}
-            />
-
-            {/* Password Edit Modal */}
-            <EditPasswordModal
-                isVisible={isPasswordModalVisible}
-                onClose={() => setPasswordModalVisible(false)}
-                onSave={handlePasswordChange}
-            />
-
-            <SubscriptionModal
-                isVisible={isSubscriptionModalVisible}
-                onClose={() => setSubscriptionModalVisible(false)}
-                onSelectPlan={(plan) => console.log(`Selected plan: ${plan}`)} // Handle selected plan
-            />
-        </View>
-        </TouchableWithoutFeedback>
+            </TouchableWithoutFeedback>
         </KeyboardAvoidingView>
     );
 };

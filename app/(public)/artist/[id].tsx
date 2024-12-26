@@ -98,7 +98,7 @@ const ArtistDetail = () => {
         { useNativeDriver: false }
     );
     const renderContent = () => (
-        <>
+        <View>
             <View style={styles.blank} />
             <View style={styles.main_section}>
                 <Animated.Text style={[
@@ -128,7 +128,7 @@ const ArtistDetail = () => {
                     </View>
                 </LinearGradient>
             </View>
-        </>
+        </View>
 
     );
 
