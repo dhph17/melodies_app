@@ -55,13 +55,6 @@ export default function PublicLayout() {
                     }}
                 />
                 <Tabs.Screen
-                    name="playlist/[id]"
-                    options={{
-                        title: "Profile",
-                        headerShown: false,
-                    }}
-                />
-                <Tabs.Screen
                     name="upload/index"
                     options={{
                         title: "Upload",
@@ -69,6 +62,14 @@ export default function PublicLayout() {
                     }}
                 />
                 <Tabs.Screen
+                    name="playlist/[id]"
+                    options={{
+                        title: "Profile",
+                        headerShown: false,
+                    }}
+                />
+                
+                {/* <Tabs.Screen
                     name="listen/index"
                     options={{
                         title: "Listen Index",
@@ -82,7 +83,7 @@ export default function PublicLayout() {
                         title: "Listen Player",
                         headerShown: false,
                     }}
-                />
+                /> */}
             </Tabs>
             <MiniPlayer />
             
