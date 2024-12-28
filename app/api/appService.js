@@ -21,17 +21,17 @@ export const fetchApiData = async (endpoint, method, body, token, params) => {
     ...(token && { 'Authorization': `Bearer ${token}` }),
   };
 
+  if (body instanceof FormData) {
+    headers['Content-Type'] = 'multipart/form-data';
+  } else {
+    headers['Content-Type'] = 'application/json';
+  }
+
   const options = {
     method,
     headers,
     ...(body && { body }),
   };
-
-  if (body instanceof FormData) {
-    delete headers['Content-Type'];
-  } else {
-    headers['Content-Type'] = 'application/json';
-  }
 
   try {
     const response = await fetch(url, options);

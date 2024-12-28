@@ -47,9 +47,10 @@ export interface DataSong {
     releaseDate: string;
     viewCount: number | null;
     createdAt: string;
-    album: DataAlbum[];
+    album: Array<DataAlbum>;
     artists: Array<Artist>;
     playCount: string;
+    image: string;
 }
 
 //user
@@ -59,6 +60,7 @@ export interface User {
     image: string | null;
     accountType: string;
     name: string;
+    email: string
 }
 
 //comment
@@ -71,7 +73,11 @@ export interface Comment {
     user: User;
     hasChild: number;
     myComment: boolean;
+    songId: string;
 }
+
+//playlist
+
 export interface PlaylistImage {
     image: string;
     size: number;
@@ -88,5 +94,95 @@ export interface DataPlaylist {
     totalSong: number;
     createdAt: string;
     songsOfPlaylist: DataSong[];
-    privacy: boolean
+    privacy: boolean;
+}
+
+// socket
+export interface DataCurrentSong {
+    song: DataSong,
+    isPlaying: boolean,
+    currentTime: number,
+}
+
+// genre
+
+export interface GenreData {
+    genreId: string;
+    name: string;
+}
+
+
+export interface UserRoom {
+    id: string;
+    username: string;
+    image: string | null;
+    accountType: string;
+    name: string;
+    host: boolean
+}
+
+
+export interface Message {
+    user: UserRoom,
+    message: string,
+    userSend: string
+}
+
+//notification
+export interface Notification {
+    id: string;
+    userId: string;
+    type: string;
+    message: string;
+    isRead: boolean;
+    from: string;
+    createdAt: string;
+    updatedAt: string;
+    report: Report
+}
+
+//report
+export interface Report {
+    id: string;
+    content: string;
+    userId: string;
+    status: string;
+    createdAt: string;
+    comment: Comment;
+}
+
+
+export interface UserPayment {
+    id: string;
+    username: string;
+    name: string;
+    email: string;
+    image: string;
+    status: string;
+    createdAt: string;
+}
+
+export interface Package {
+    id: string;
+    time: string;
+    fare: number;
+    description: string;
+    downloads: number;
+    uploads: number;
+    room: number;
+    name: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface Payment {
+    id: string;
+    startDate: string;
+    endDate: string;
+    status: string;
+    statusUse: boolean;
+    createdAt: string;
+    updatedAt: string;
+    user: UserPayment;
+    package: Package;
 }

@@ -155,8 +155,10 @@ const Profile = () => {
                         isVisible={isModalVisible}
                         onClose={() => setModalVisible(false)}
                         onSave={handleSaveChanges}
-                        currentName={user?.username}
-                        currentAvatar={user?.image || ''}
+                        currentName={user?.name}
+                        currentAvatar={user?.image ?? undefined}
+                        currentUsername={user?.username}
+                        currentEmail={user?.email}
                     />
 
                     <SubscriptionModal

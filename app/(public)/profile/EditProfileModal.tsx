@@ -3,6 +3,9 @@ import { Text, View, TextInput, TouchableOpacity, StyleSheet, Image, KeyboardAvo
 import Modal from 'react-native-modal';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import UserImage from '@/assets/images/placeholderUser.jpg'
+import * as ImagePicker from 'expo-image-picker';
+import { fetchApiData } from '@/app/api/appService';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface EditProfileModalProps {
   isVisible: boolean;
@@ -10,22 +13,72 @@ interface EditProfileModalProps {
   onSave: (newName: string, newAvatar: string) => void;
   currentName?: string;
   currentAvatar?: string;
+  currentUsername?: string;
+  currentEmail?: string
 }
 
-const EditProfileModal: React.FC<EditProfileModalProps> = ({ isVisible, onClose, onSave, currentName, currentAvatar }) => {
+const EditProfileModal: React.FC<EditProfileModalProps> = ({ isVisible, onClose, onSave, currentName, currentAvatar, currentUsername, currentEmail }) => {
   const [newName, setNewName] = useState(currentName);
+  const [newUsername, setNewUsername] = useState(currentUsername)
   const [newAvatar, setNewAvatar] = useState(currentAvatar);
+  const [selectedFile, setSelectedFile] = useState<any>(null);
 
   useEffect(() => {
     setNewName(currentName);
-  }, [currentName]);
+    setNewUsername(currentUsername);
+    setNewAvatar(currentAvatar)
+  }, [currentName, currentUsername, currentAvatar]);
 
-  const handleSaveChanges = () => {
-
+  const handleSaveChanges = async () => {
+    const accessToken = await AsyncStorage.getItem('accessToken');
+    if (accessToken) {
+      if (newName?.trim() === '' || newUsername?.trim() === '') {
+        alert('Username or Fullname cannot be left blank');
+        return;
+      }
+      const formData = new FormData();
+      const data = {
+        username: newUsername,
+        name: newName
+      }
+      formData.append('data', JSON.stringify(data));
+      if (selectedFile) {
+        formData.append('image', selectedFile);
+      }
+      console.log('selectedFile', selectedFile);
+      const result = await fetchApiData(`/api/user`, 'PATCH', formData, accessToken)
+      if (result.success) {
+        console.log(result.data);
+      } else {
+        console.log(result.error)
+      }
+    }
   };
 
-  const handleEditAvatar = () => {
-    setNewAvatar('https://via.placeholder.com/150');
+  const handleEditAvatar = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      quality: 1,
+      aspect: [1, 1]
+    });
+
+    if (!result.canceled) {
+      const imageUri = result.assets[0].uri;
+      setNewAvatar(imageUri);
+
+      const response = await fetch(imageUri);
+      const blob = await response.blob();
+
+      const file = {
+        uri: imageUri,
+        name: 'avatar.jpeg',
+        type: blob.type,
+      };
+      setSelectedFile(file);
+    } else {
+      alert('You did not select any image.');
+    }
   };
 
   return (
@@ -46,11 +99,11 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isVisible, onClose,
             {/* Header */}
             <View style={styles.header}>
               <TouchableOpacity onPress={onClose} style={styles.headerButton}>
-                <Text style={styles.cancelButton}>Hủy</Text>
+                <Text style={styles.cancelButton}>Cancel</Text>
               </TouchableOpacity>
-              <Text style={styles.modalTitle}>Chỉnh sửa hồ sơ</Text>
+              <Text style={styles.modalTitle}>Edit Profile</Text>
               <TouchableOpacity onPress={handleSaveChanges} style={styles.headerButton}>
-                <Text style={styles.saveButton}>Lưu</Text>
+                <Text style={styles.saveButton}>Save</Text>
               </TouchableOpacity>
             </View>
 
@@ -69,11 +122,11 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isVisible, onClose,
               </TouchableOpacity>
             </View>
 
-            {/* Name Input */}
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>Tên</Text>
+              <Text style={styles.label}>Name</Text>
               <TextInput
-                style={styles.input}
+                style={styles.inputDisabled}
+                editable={false}
                 value={newName}
                 onChangeText={setNewName}
               />
@@ -82,15 +135,15 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isVisible, onClose,
               <Text style={styles.label}>Username</Text>
               <TextInput
                 style={styles.input}
-                value={newName}
-                editable={false}
+                value={newUsername}
+                onChangeText={setNewUsername}
               />
             </View>
             <View style={styles.inputContainer}>
               <Text style={styles.label}>Email</Text>
               <TextInput
-                style={styles.input}
-                placeholder="email@example.com"
+                style={styles.inputDisabled}
+                value={currentEmail}
                 editable={false}
               />
             </View>
@@ -177,6 +230,12 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
   },
+  inputDisabled: {
+    backgroundColor: '#333',
+    color: '#a6a6a6',
+    padding: 10,
+    borderRadius: 5,
+  }
 });
 
 export default EditProfileModal;
