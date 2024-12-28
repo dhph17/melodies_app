@@ -15,6 +15,7 @@ import Tracklist from '@/app/player/tracklist';
 import CommentModal from './commentModal';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { decrypt } from '@/app/decode';
+import AddPlaylistModal from '@/app/player/playlistModal';
 
 const { height, width } = Dimensions.get('window');
 
@@ -38,6 +39,7 @@ const MainPlayer = () => {
     const [isPlaylistVisible, setIsPlaylistVisible] = useState(false);
 
     const [isCommentModalVisible, setIsCommentModalVisible] = useState(false);
+    const [isPlaylistModalVisible, setPlaylistModalVisible] = useState(false)
 
     const handleCommentButtonPress = () => {
         console.log("Opening Comment Modal");
@@ -179,6 +181,9 @@ const MainPlayer = () => {
                 )}
 
                 <View style={styles.controlsContainer}>
+                    <TouchableOpacity onPress={() => setPlaylistModalVisible(true)} style={styles.controlButton}>
+                        <AntDesign name="plus" size={30} color="#FF0099" />
+                    </TouchableOpacity>
                     <TouchableOpacity onPress={setRepeatMode} style={styles.controlButton}>
                         <Image
                             source={
@@ -223,6 +228,11 @@ const MainPlayer = () => {
                 visible={isCommentModalVisible}
                 onClose={() => setIsCommentModalVisible(false)}
                 idSong={currentTrack.id}
+            />
+            <AddPlaylistModal
+                idSong={currentTrack.id}
+                isVisible={isPlaylistModalVisible}
+                onClose={() => setPlaylistModalVisible(false)}
             />
         </ImageBackground>
     );

@@ -61,20 +61,6 @@ export default function PublicLayout() {
                         headerShown: false,
                     }}
                 />
-                <Tabs.Screen
-                    name="upload/index"
-                    options={{
-                        title: "Upload",
-                        headerShown: false,
-                    }}
-                />
-                <Tabs.Screen
-                    name="listen/index"
-                    options={{
-                        title: "Listen",
-                        headerShown: false,
-                    }}
-                />
             </Tabs>
             <MiniPlayer />
         </SafeAreaView>
