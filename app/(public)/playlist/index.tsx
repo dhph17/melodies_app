@@ -107,19 +107,16 @@ const Playlist = () => {
     () => (
       <View
         style={[
-          styles.container,
           { paddingBottom: currentTrack ? 150 : 70 },
         ]}
         className="flex flex-col gap-4 bg-primaryColorBg"
       >
         <Text className='text-white text-[1.2rem] font-semibold'>My private list</Text>
-        <View>
-          {
-            playlistPrivate?.map((playlist: DataPlaylist) => (
-              renderItem({ item: playlist })
-            ))
-          }
-        </View>
+        {
+          playlistPrivate?.map((playlist: DataPlaylist) => (
+            renderItem({ item: playlist })
+          ))
+        }
         <Text className='text-white text-[1.2rem] font-semibold'>My playlist</Text>
         {
           playlistPublic && playlistPublic?.map((playlist: DataPlaylist) => (
@@ -158,7 +155,7 @@ const Playlist = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#121212', padding: 10 },
+  container: { flex: 1, backgroundColor: '#121212', padding: 8 },
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -193,32 +190,11 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
   },
-  filterContainer: {
-    height: 50,
-    marginBottom: 25,
-  },
-  filters: {
-    flexDirection: 'row',
-  },
-  filterButton: {
-    marginRight: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-    backgroundColor: '#333',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  activeFilter: { backgroundColor: '#EE10B0' },
-  filterText: { color: '#fff', fontSize: 14 },
-  activeFilterText: { color: '#fff', fontWeight: 'bold' },
-  list: { paddingBottom: 100 },
   item: {
     backgroundColor: '#1F1F1F',
     padding: 8,
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 8,
     borderRadius: 5
   },
   icon: {

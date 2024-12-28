@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Text, View, TextInput, TouchableOpacity, StyleSheet, Image, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import Modal from 'react-native-modal';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -8,20 +8,24 @@ interface EditProfileModalProps {
   isVisible: boolean;
   onClose: () => void;
   onSave: (newName: string, newAvatar: string) => void;
-  currentName: string;
-  currentAvatar: string;
+  currentName?: string;
+  currentAvatar?: string;
 }
 
 const EditProfileModal: React.FC<EditProfileModalProps> = ({ isVisible, onClose, onSave, currentName, currentAvatar }) => {
   const [newName, setNewName] = useState(currentName);
   const [newAvatar, setNewAvatar] = useState(currentAvatar);
 
+  useEffect(() => {
+    setNewName(currentName);
+  }, [currentName]);
+
   const handleSaveChanges = () => {
-    onSave(newName, newAvatar);
+
   };
 
   const handleEditAvatar = () => {
-    setNewAvatar('https://via.placeholder.com/150'); 
+    setNewAvatar('https://via.placeholder.com/150');
   };
 
   return (
@@ -70,7 +74,6 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isVisible, onClose,
               <Text style={styles.label}>Tên</Text>
               <TextInput
                 style={styles.input}
-                placeholder="Tên người dùng"
                 value={newName}
                 onChangeText={setNewName}
               />
@@ -79,10 +82,11 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isVisible, onClose,
               <Text style={styles.label}>Username</Text>
               <TextInput
                 style={styles.input}
-                placeholder="John Cena"
+                value={newName}
                 editable={false}
               />
-            </View><View style={styles.inputContainer}>
+            </View>
+            <View style={styles.inputContainer}>
               <Text style={styles.label}>Email</Text>
               <TextInput
                 style={styles.input}

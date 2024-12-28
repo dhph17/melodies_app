@@ -156,7 +156,7 @@ const MainPlayer = () => {
                 {isLyrics ? (
                     <View style={styles.lyricsContainer}>
                         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-                            <Text style={styles.lyrics}>{lyrics}</Text>
+                            {/* <Text style={styles.lyrics}>{lyrics}</Text> */}
                         </ScrollView>
                     </View>
                 ) : (

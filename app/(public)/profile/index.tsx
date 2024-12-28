@@ -32,7 +32,6 @@ const Profile = () => {
                     }
                 }
             };
-
             fetchData();
         }, [])
     );
@@ -156,15 +155,8 @@ const Profile = () => {
                         isVisible={isModalVisible}
                         onClose={() => setModalVisible(false)}
                         onSave={handleSaveChanges}
-                        currentName={user?.username || ''}
+                        currentName={user?.username}
                         currentAvatar={user?.image || ''}
-                    />
-
-                    {/* Password Edit Modal */}
-                    <EditPasswordModal
-                        isVisible={isPasswordModalVisible}
-                        onClose={() => setPasswordModalVisible(false)}
-                        onSave={handlePasswordChange}
                     />
 
                     <SubscriptionModal

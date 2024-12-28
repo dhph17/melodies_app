@@ -10,7 +10,7 @@ import {
 import { Image } from "expo-image";
 import { useGlobalSearchParams, useRouter } from 'expo-router';
 import { LinearGradient } from "expo-linear-gradient";
-import { FontAwesome } from "@expo/vector-icons";
+import { AntDesign, FontAwesome } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { fetchApiData } from "@/app/api/appService";
 import { DataPlaylist, DataSong } from "@/types/interfaces";
@@ -19,6 +19,7 @@ import PlaylistImage from '@/assets/images/placeholderPlaylist.png'
 import SongImage from '@/assets/images/placeholderSong.jpg'
 import { getAllArtistsInfo, getPosterSong } from "@/utils/utils";
 import { usePlayback } from "@/app/provider/PlaybackContext";
+import AddSongModal from "@/app/(public)/playlist/AddSongModal";
 
 const ViewPlaylist = () => {
   const router = useRouter();
@@ -26,6 +27,7 @@ const ViewPlaylist = () => {
   const [dominantColor, setDominantColor] = useState<string>('rgba(0, 0, 0, 0)');
   const [playlist, setPlaylist] = useState<DataPlaylist>()
   const [songsOfPlaylist, setSongOfPlaylist] = useState<DataSong[]>([])
+  const [isAddSongModalVisible, setAddSongModalVisible] = useState(false);
   const { setCurrentSong, setWaitingList, currentTrack } = usePlayback()
 
   useEffect(() => {
@@ -86,17 +88,18 @@ const ViewPlaylist = () => {
     return timeParts.join(' ');
   }
 
+  const handleAddSong = () => {
+    setAddSongModalVisible(true)
+  }
+
   const handleBackClick = () => {
     router.push("/(public)/playlist");
   };
 
   return (
     <View
-      style={[styles.container,
-        // { paddingBottom: currentTrack ? 80 : 70 },
-      ]}
+      style={styles.container}
     >
-      {/* Header with Gradient */}
       <LinearGradient
         colors={[dominantColor, "#121212"]}
         style={styles.headerContainer}
@@ -110,8 +113,8 @@ const ViewPlaylist = () => {
             placeholder="Find in playlist"
             placeholderTextColor="rgba(255, 255, 255, 0.8)"
           />
-          <TouchableOpacity style={styles.iconButton}>
-            <FontAwesome name="sort" size={24} color="white" />
+          <TouchableOpacity style={styles.iconButton} onPress={handleAddSong}>
+            <AntDesign name="plus" size={20} color="white" />
           </TouchableOpacity>
         </View>
 
@@ -126,7 +129,6 @@ const ViewPlaylist = () => {
             {playlist?.description}
           </Text>
           <Text style={styles.likes}>{playlist?.totalSong ?? 0} {(playlist?.totalSong ?? 0) > 1 ? 'songs' : 'song'} <Text className="text-gray-300">•</Text> {playlist ? formatDuration(playlist.totalTime) : ''}</Text>
-
         </View>
       </LinearGradient>
 
@@ -155,11 +157,19 @@ const ViewPlaylist = () => {
                 ))}
               </Text>
             </View>
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={handleAddSong}
+            >
               <FontAwesome name="ellipsis-v" size={20} color="white" />
             </TouchableOpacity>
           </TouchableOpacity>
         )}
+      />
+      <AddSongModal
+        idPlaylist={id as string}
+        setSongOfPlaylist={setSongOfPlaylist}
+        isVisible={isAddSongModalVisible}
+        onClose={() => setAddSongModalVisible(false)}
       />
     </View>
   );
