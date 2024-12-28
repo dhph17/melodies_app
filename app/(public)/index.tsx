@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View, FlatList } from "react-native";
-import NetInfo from "@react-native-community/netinfo";
 import { useRouter } from "expo-router";
 import ListSong from "@/components/listSong";
 import { fetchApiData } from "@/app/api/appService";
@@ -18,13 +17,6 @@ const Main = () => {
   const [popularArtist, setPopularArtist] = useState();
 
   useEffect(() => {
-    // Check for internet connection
-    const unsubscribe = NetInfo.addEventListener((state) => {
-      if (!state.isConnected) {
-        router.replace("./offlineIndex");
-      }
-    });
-
     const fetchSong = async () => {
       try {
         const responses = await Promise.all([
@@ -62,11 +54,7 @@ const Main = () => {
         console.error("Error fetching songs:", error);
       }
     };
-
     fetchSong();
-
-    // Clean up the NetInfo listener
-    return () => unsubscribe();
   }, []);
 
   const renderContent = React.useMemo(
