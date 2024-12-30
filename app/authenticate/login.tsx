@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { useAppContext } from '@/app/provider/AppProvider';
 import { useRouter } from 'expo-router';
 import google from '../../assets/images/google.png';
 import { Image } from 'react-native';
@@ -13,6 +14,7 @@ interface LoginFormProps {
 
 const LoginForm: React.FC<LoginFormProps> = ({ toggleForm, setIsOTP }) => {
   const router = useRouter()
+  const { setAccessToken } = useAppContext()
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
@@ -34,6 +36,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ toggleForm, setIsOTP }) => {
         console.log('Success', 'Login successful');
         await AsyncStorage.setItem('accessToken', response.data.accessToken);
         await AsyncStorage.setItem('role', response.data.role);
+        setAccessToken(response.data.accessToken)
         router.push('/(public)')
       } else {
         Alert.alert('Errorrrr', response.error || 'Login failed');

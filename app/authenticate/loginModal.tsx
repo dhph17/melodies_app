@@ -1,50 +1,85 @@
-import React from 'react';
-import { Modal, Box, Typography, Button } from '@mui/material';
+import { useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { Modal, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 interface LoginModalProps {
-  open: boolean;
-  handleClose: () => void;
+  isVisible?: boolean;
 }
 
-const modalStyle = {
-  position: 'absolute' as const,
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 300,
-  bgcolor: 'background.paper',
-  boxShadow: 24,
-  borderRadius: 2,
-  p: 4,
-  textAlign: 'center',
-};
+const LoginModal: React.FC<LoginModalProps> = ({ isVisible = true }) => {
+  const router = useRouter();
+  const [open, setOpen] = useState(isVisible);
 
-const LoginModal: React.FC<LoginModalProps> = ({ open, handleClose }) => {
+  // Reset state khi prop thay đổi
+  useEffect(() => {
+    setOpen(isVisible);
+  }, [isVisible]);
+
+  const handleNavigation = () => {
+    setOpen(false);
+    router.push('/authenticate');
+  };
+
   return (
     <Modal
-      open={open}
-      onClose={handleClose}
-      aria-labelledby="login-modal-title"
-      aria-describedby="login-modal-description"
+      transparent={true}
+      visible={open}
+      animationType="slide"
+      onRequestClose={handleNavigation}
     >
-      <Box sx={modalStyle}>
-        <Typography id="login-modal-title" variant="h6" component="h2" gutterBottom>
-          You are not logged in
-        </Typography>
-        <Typography id="login-modal-description" sx={{ mb: 2 }}>
-          Please log in to access this feature.
-        </Typography>
-        <Button 
-          variant="contained" 
-          color="primary" 
-          onClick={handleClose} 
-          sx={{ mt: 2, borderRadius: 2 }}
-        >
-          Login Here
-        </Button>
-      </Box>
+      <View style={styles.overlay}>
+        <View style={styles.modalContainer}>
+          <Text style={styles.title}>You are not logged in</Text>
+          <Text style={styles.description}>Please log in to access this feature.</Text>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handleNavigation}
+          >
+            <Text style={styles.buttonText}>Login Here</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </Modal>
   );
 };
+
+const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    backgroundColor: 'black',
+    padding: 20,
+    borderRadius: 10,
+    width: '80%',
+    alignItems: 'center',
+  },
+  title: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  description: {
+    fontSize: 14,
+    color: 'gray',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  button: {
+    backgroundColor: '#3b82f6', // Đổi màu button cho phù hợp với theme
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+});
 
 export default LoginModal;

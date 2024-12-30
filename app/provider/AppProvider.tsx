@@ -1,17 +1,15 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
+import { PUBLIC_API_ENDPOINT } from '@/app/config'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { io, Socket } from "socket.io-client";
+import { Notification } from '@/types/interfaces';
+import { fetchNotification } from '@/utils/api';
 
 interface AppContextType {
-    showPlaylistMenu: boolean;
-    setShowPlaylistMenu: (show: boolean) => void;
-    search: string;
-    setSearch: (search: string) => void;
-    loading: boolean;
-    setLoading: (loading: boolean) => void;
-    role: string | null;
-    setRole: (role: string) => void;
     accessToken: string | null;
     setAccessToken: (token: string) => void;
+    listNotification: Notification[];
+    setListNotification: (noti: Notification[]) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -27,38 +25,26 @@ export const useAppContext = () => {
 export const AppProvider: React.FC<{
     children: ReactNode;
     initialAccessToken?: string;
-    initialRole?: string;
 }> = ({
     children,
     initialAccessToken = '',
-    initialRole = '',
 }) => {
-        const [loading, setLoading] = useState<boolean>(true);  // Start with loading set to true
-        const [showPlaylistMenu, setShowPlaylistMenu] = useState<boolean>(false);
-        const [search, setSearch] = useState<string>('');
-        const [role, setRole] = useState<string | null>(initialRole);
         const [accessToken, setAccessToken] = useState<string | null>(initialAccessToken);
+        const [socket, setSocket] = useState<Socket | null>(null);
+        const [listNotification, setListNotification] = useState<Notification[]>([])
 
         useEffect(() => {
             const loadData = async () => {
                 try {
-                    const storedRole = await AsyncStorage.getItem('role');
                     const storedAccessToken = await AsyncStorage.getItem('accessToken');
-
-                    if (storedRole) {
-                        setRole(storedRole);
-                    }
                     if (storedAccessToken) {
                         setAccessToken(storedAccessToken);
                     }
                     console.log(storedAccessToken)
-                    setLoading(false);  // Set loading to false once data is loaded
                 } catch (error) {
-                    console.error('Error loading data from AsyncStorage', error);
-                    setLoading(false);  // Ensure loading is set to false even on error
+
                 }
             };
-
             loadData();
         }, []);
 
@@ -67,16 +53,8 @@ export const AppProvider: React.FC<{
                 try {
                     if (accessToken) {
                         await AsyncStorage.setItem('accessToken', accessToken);
-                        console.log('ok access')
                     } else {
                         await AsyncStorage.removeItem('accessToken');
-                        console.log('remove access')
-                    }
-
-                    if (role) {
-                        await AsyncStorage.setItem('role', role);
-                    } else {
-                        await AsyncStorage.removeItem('role');
                     }
                 } catch (error) {
                     console.error('Error saving data to AsyncStorage', error);
@@ -84,19 +62,54 @@ export const AppProvider: React.FC<{
             };
 
             saveData();
-        }, [accessToken, role]);
+        }, [accessToken]);
+
+        useEffect(() => {
+            if (accessToken) {
+                const fetchAPINotification = async (accessToken: string) => {
+                    const listFetchNotification = await fetchNotification(accessToken)
+                    setListNotification(listFetchNotification)
+                }
+                fetchAPINotification(accessToken)
+                const newSocket = io(PUBLIC_API_ENDPOINT, {
+                    auth: { accessToken: accessToken },
+                });
+
+                newSocket.on("errTokenMising", (data) => {
+                    alert(data);
+                });
+
+                newSocket.on("paymentStatus", (data) => {
+                    console.log("payment", data);
+                });
+
+                newSocket.on("newNoti", (data: Notification) => {
+                    console.log("newNoti: ", data)
+                    setListNotification((prev) => [data, ...prev])
+                })
+
+                newSocket.on("disconnect", () => {
+                    console.log("Socket disconnected");
+                    // server lỗi -> router qua trang lỗi, 404,..... hoặc về lại login
+
+                    // router.push("/listenTogether");
+                })
+
+                setSocket(newSocket);
+
+                // Cleanup on Unmount or Token Change
+                return () => {
+                    newSocket.disconnect();
+                    setSocket(null);
+                };
+            }
+        }, [accessToken]);
 
         const value = {
-            showPlaylistMenu,
-            setShowPlaylistMenu,
-            search,
-            setSearch,
-            loading,
-            setLoading,
-            role,
-            setRole,
             accessToken,
             setAccessToken,
+            listNotification,
+            setListNotification,
         };
 
         return (

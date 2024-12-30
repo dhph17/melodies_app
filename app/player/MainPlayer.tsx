@@ -9,7 +9,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import * as FileSystem from 'expo-file-system';
 import { Asset } from 'expo-asset';
-import { formatTime, getAllArtistsInfo, getPosterSong } from '@/utils/utils';
+import { formatTimeDuration, getAllArtistsInfo, getPosterSong } from '@/utils/utils';
 import { Image } from 'expo-image';
 import Tracklist from '@/app/player/tracklist';
 import CommentModal from './commentModal';
@@ -174,8 +174,8 @@ const MainPlayer = () => {
                             thumbTintColor="#FF0099"
                         />
                         <View style={styles.timestampContainer}>
-                            <Text style={styles.timestampText}>{formatTime(positionMillis)}</Text>
-                            <Text style={styles.timestampText}>{formatTime(durationMillis)}</Text>
+                            <Text style={styles.timestampText}>{formatTimeDuration(positionMillis)}</Text>
+                            <Text style={styles.timestampText}>{formatTimeDuration(durationMillis)}</Text>
                         </View>
                     </View>
                 )}

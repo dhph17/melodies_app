@@ -6,6 +6,7 @@ import { AntDesign } from '@expo/vector-icons'
 import { fetchApiData } from '@/app/api/appService'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useComment } from '@/app/provider/CommentProvider'
+import { formatTime } from '@/utils/utils'
 
 const CommentPart = ({ item, onReply }: { item: Comment; onReply: (username: string, id: string, message: string) => void }) => {
     const [page, setPage] = useState<number>(1)
@@ -60,34 +61,6 @@ const CommentPart = ({ item, onReply }: { item: Comment; onReply: (username: str
         setIsHidden(false)
         setShowCmtChild(false)
         setCmtRemain(item?.hasChild ?? 0);
-    }
-
-    function formatTime(createdAt: string): string {
-        const standardizedDate = createdAt.replace(/(\d{2})\/(\d{2})\/(\d{4})/, '$3-$1-$2');
-        const now = new Date();
-        const createdDate = new Date(standardizedDate);
-
-        if (isNaN(createdDate.getTime())) {
-            return 'Invalid Time';
-        }
-
-        const diffInSeconds = Math.floor((now.getTime() - createdDate.getTime()) / 1000);
-
-        if (diffInSeconds < 60) {
-            return `${diffInSeconds} giây trước`;
-        } else if (diffInSeconds < 3600) {
-            const minutes = Math.floor(diffInSeconds / 60);
-            return `${minutes} phút trước`;
-        } else if (diffInSeconds < 86400) {
-            const hours = Math.floor(diffInSeconds / 3600);
-            return `${hours} tiếng trước`;
-        } else {
-            return createdDate.toLocaleDateString('vi-VN', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-            });
-        }
     }
 
     return (

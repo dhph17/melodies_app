@@ -3,7 +3,7 @@ import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native
 import { Image } from 'expo-image';
 import { DataSong } from '@/types/interfaces';
 import EvilIcons from '@expo/vector-icons/EvilIcons';
-import { formatTime, getAllArtistsInfo, getPosterSong } from '@/utils/utils';
+import { formatTime, formatTimeDuration, getAllArtistsInfo, getPosterSong } from '@/utils/utils';
 import { usePlayback } from '@/app/provider/PlaybackContext';
 
 interface ArtistPopularSongProps {
@@ -47,7 +47,7 @@ const ArtistPopularSong: React.FC<ArtistPopularSongProps> = ({ maintitle, subtit
             </View>
           </View>
         </View>
-        <Text style={styles.songTime}>{formatTime(item.duration)}</Text>
+        <Text style={styles.songTime}>{formatTimeDuration(item.duration)}</Text>
       </TouchableOpacity>
     );
   };

@@ -62,7 +62,35 @@ export const getPoster = (album: DataAlbum): string => {
 };
 
 //Format time
-export const formatTime = (duration: number) => {
+export function formatTime(createdAt: string): string {
+    const standardizedDate = createdAt.replace(/(\d{2})\/(\d{2})\/(\d{4})/, '$3-$1-$2');
+    const now = new Date();
+    const createdDate = new Date(standardizedDate);
+
+    if (isNaN(createdDate.getTime())) {
+        return 'Invalid Time';
+    }
+
+    const diffInSeconds = Math.floor((now.getTime() - createdDate.getTime()) / 1000);
+
+    if (diffInSeconds < 60) {
+        return `${diffInSeconds} giây trước`;
+    } else if (diffInSeconds < 3600) {
+        const minutes = Math.floor(diffInSeconds / 60);
+        return `${minutes} phút trước`;
+    } else if (diffInSeconds < 86400) {
+        const hours = Math.floor(diffInSeconds / 3600);
+        return `${hours} tiếng trước`;
+    } else {
+        return createdDate.toLocaleDateString('vi-VN', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+        });
+    }
+}
+
+export const formatTimeDuration = (duration: number) => {
     const min = Math.floor(duration / 1000 / 60);
     const sec = Math.floor((duration / 1000) % 60);
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -6,69 +6,62 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
-  ScrollView,
 } from 'react-native';
-import { useFocusEffect, useRouter } from 'expo-router';
+import { useFocusEffect, useRouter, useSegments } from 'expo-router';
 import UserImage from '@/assets/images/placeholderUser.jpg'
 import PlaylistImage from '@/assets/images/placeholderPlaylist.png'
 import { fetchApiData } from '@/app/api/appService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { DataPlaylist, User } from '@/types/interfaces';
 import { usePlayback } from '@/app/provider/PlaybackContext';
+import LoginModal from '@/app/authenticate/loginModal';
 
 const Playlist = () => {
   const router = useRouter();
+  const segments = useSegments();
   const { currentTrack } = usePlayback()
   const [user, setUser] = useState<User | null>(null);
   const [playlistPrivate, setPlaylistPrivate] = useState<DataPlaylist[]>()
   const [playlistPublic, setPlaylistPublic] = useState<DataPlaylist[]>()
+  const [isPrivatePage, setIsPrivatePage] = useState(true);
 
   useFocusEffect(
     useCallback(() => {
       const fetchData = async () => {
         const accessToken = await AsyncStorage.getItem('accessToken');
         if (accessToken) {
-          const result = await fetchApiData(`/api/user`, "GET", null, accessToken ?? null);
-          if (result.success) {
-            setUser(result.data.user);
+          setIsPrivatePage(false);
+
+          const userResult = await fetchApiData(`/api/user`, "GET", null, accessToken);
+          if (userResult.success) {
+            setUser(userResult.data.user);
           } else {
-            console.error("Get user error:", result.error);
+            console.error("Get user error:", userResult.error);
+          }
+
+          const playlistResult = await fetchApiData(
+            "/api/user/playlist",
+            "GET",
+            null,
+            accessToken,
+            { page: 1 }
+          );
+          if (playlistResult.success) {
+            const privatePlaylists = playlistResult.data.playlists.filter(
+              (playlist: DataPlaylist) => playlist.privacy
+            );
+            setPlaylistPrivate(privatePlaylists);
+            const publicPlaylists = playlistResult.data.playlists.filter(
+              (playlist: DataPlaylist) => !playlist.privacy
+            );
+            setPlaylistPublic(publicPlaylists);
           }
         }
       };
 
       fetchData();
-    }, [])
+    }, [segments])
   );
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const accessToken = await AsyncStorage.getItem('accessToken');
-      if (accessToken) {
-        const result = await fetchApiData(
-          "/api/user/playlist",
-          "GET",
-          null,
-          accessToken,
-          { page: 1 }
-        );
-        if (result.success) {
-          const privatePlaylists = result.data.playlists.filter(
-            (playlist: DataPlaylist) => playlist.privacy
-          );
-          setPlaylistPrivate(privatePlaylists);
-          const publicPlaylists = result.data.playlists.filter(
-            (playlist: DataPlaylist) => !playlist.privacy
-          );
-          setPlaylistPublic(publicPlaylists);
-        } else {
-
-        }
-      };
-    }
-
-    fetchData();
-  }, [])
 
   const handleAddPlaylist = async () => {
     const accessToken = await AsyncStorage.getItem('accessToken');
@@ -150,6 +143,7 @@ const Playlist = () => {
         renderItem={null}
         ListHeaderComponent={renderContent}
       />
+      {isPrivatePage && <LoginModal isVisible={isPrivatePage} />}
     </View>
   );
 };

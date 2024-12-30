@@ -6,6 +6,7 @@ import UserImage from '@/assets/images/placeholderUser.jpg'
 import * as ImagePicker from 'expo-image-picker';
 import { fetchApiData } from '@/app/api/appService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AntDesign } from '@expo/vector-icons';
 
 interface EditProfileModalProps {
   isVisible: boolean;
@@ -98,11 +99,11 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isVisible, onClose,
           <View style={styles.modalContent}>
             {/* Header */}
             <View style={styles.header}>
-              <TouchableOpacity onPress={onClose} style={styles.headerButton}>
-                <Text style={styles.cancelButton}>Cancel</Text>
+              <TouchableOpacity onPress={onClose}>
+                <AntDesign name="close" size={24} color="white" />
               </TouchableOpacity>
               <Text style={styles.modalTitle}>Edit Profile</Text>
-              <TouchableOpacity onPress={handleSaveChanges} style={styles.headerButton}>
+              <TouchableOpacity onPress={handleSaveChanges}>
                 <Text style={styles.saveButton}>Save</Text>
               </TouchableOpacity>
             </View>
@@ -175,9 +176,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
   },
-  headerButton: {
-    paddingHorizontal: 10,
-  },
   modalTitle: {
     color: '#fff',
     fontSize: 18,
@@ -223,6 +221,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     marginBottom: 5,
+    fontWeight: 500
   },
   input: {
     backgroundColor: '#333',

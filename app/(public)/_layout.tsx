@@ -34,6 +34,13 @@ export default function PublicLayout() {
                     }}
                 />
                 <Tabs.Screen
+                    name="notification/index"
+                    options={{
+                        title: "Notification",
+                        headerShown: false,
+                    }}
+                />
+                <Tabs.Screen
                     name="profile/index"
                     options={{
                         title: "Profile",
@@ -57,7 +64,7 @@ export default function PublicLayout() {
                 <Tabs.Screen
                     name="playlist/[id]"
                     options={{
-                        title: "Profile",
+                        title: "Playlist",
                         headerShown: false,
                     }}
                 />

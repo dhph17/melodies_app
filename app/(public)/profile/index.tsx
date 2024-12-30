@@ -122,31 +122,25 @@ const Profile = () => {
                         </View>
 
                         <View style={styles.section}>
-                            <Text style={styles.sectionTitle}>Tài khoản</Text>
-                            <SectionItem iconName="user" title="Chỉnh sửa hồ sơ" onPress={() => setModalVisible(true)} />
+                            <Text style={styles.sectionTitle}>Account</Text>
+                            <SectionItem iconName="user" title="Edit Profile" onPress={() => setModalVisible(true)} />
                         </View>
 
                         <View style={styles.section}>
-                            <Text style={styles.sectionTitle}>Đăng ký</Text>
-                            <SectionItem iconName="list" title="Các gói có sẵn" onPress={() => setSubscriptionModalVisible(true)} />
-                            <SectionItem iconName="edit" title="Quản lý gói đăng ký" />
-                            <SectionItem iconName="times" title="Hủy gói đăng ký" />
+                            <Text style={styles.sectionTitle}>Premium</Text>
+                            <SectionItem iconName="list" title="Packages available" onPress={() => setSubscriptionModalVisible(true)} />
+                            <SectionItem iconName="edit" title="Manage your subscriptions" />
                         </View>
 
                         <View style={styles.section}>
-                            <Text style={styles.sectionTitle}>Thanh toán</Text>
-                            <SectionItem iconName="history" title="Lịch sử đặt hàng" />
-                        </View>
-
-                        <View style={styles.section}>
-                            <Text style={styles.sectionTitle}>Bảo mật</Text>
+                            <Text style={styles.sectionTitle}>Security</Text>
                             <SectionItem
                                 iconName="lock"
-                                title="Đổi mật khẩu"
+                                title="Change Password"
                                 onPress={() => setPasswordModalVisible(true)}
                             />
-                            <SectionItem iconName="bell" title="Cài đặt thông báo" />
-                            <SectionItem iconName="sign-out" title="Đăng xuất" onPress={handleLogout} />
+                            <SectionItem iconName="bell" title="Setting notifications" />
+                            <SectionItem iconName="sign-out" title="Log out" onPress={handleLogout} />
                         </View>
                     </ScrollView>
 
@@ -180,7 +174,6 @@ const styles = StyleSheet.create({
     scrollContent: {
         paddingHorizontal: 20,
         paddingTop: 30,
-        paddingBottom: 150,
     },
     avatarContainer: {
         alignItems: 'center',

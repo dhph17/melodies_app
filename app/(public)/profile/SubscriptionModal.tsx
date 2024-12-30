@@ -1,3 +1,4 @@
+import { AntDesign } from '@expo/vector-icons';
 import React from 'react';
 import { Text, View, TouchableOpacity, StyleSheet } from 'react-native';
 import Modal from 'react-native-modal';
@@ -16,7 +17,7 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
 }) => {
   const handlePlanSelect = (plan: string) => {
     onSelectPlan(plan);
-    onClose();  // Close modal after selection
+    onClose;  // Close modal after selection
   };
 
   return (
@@ -30,16 +31,16 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
       <View style={styles.modalContent}>
         {/* Header */}
         <View style={styles.header}>
+          <Text style={styles.modalTitle}>Choose a subscription plan</Text>
           <TouchableOpacity onPress={onClose} style={styles.headerButton}>
-            <Text style={styles.cancelButton}>Hủy</Text>
+            <AntDesign name="close" size={24} color="white" />
           </TouchableOpacity>
-          <Text style={styles.modalTitle}>Chọn gói đăng ký</Text>
         </View>
 
         {/* Mini Plan */}
         <View style={[styles.planContainer, styles.miniPlan]}>
           <Text style={[styles.planTitle, styles.miniPlanTitle]}>Mini</Text>
-          <Text style={styles.planPrice}>10,000 VND/tuần</Text>
+          <Text style={styles.planPrice}>10,000 VND/week</Text>
           <Text style={styles.planDescription}>Perfect plan if you're just getting started with our product</Text>
           <View style={styles.planFeatures}>
             <Text style={styles.featureItem}>
@@ -47,6 +48,9 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
             </Text>
             <Text style={styles.featureItem}>
               <FontAwesome name="check" size={14} color="#3b82f6" style={styles.checkIcon} /> 10 songs download
+            </Text>
+            <Text style={styles.featureItem}>
+              <FontAwesome name="check" size={14} color="#3b82f6" style={styles.checkIcon} /> 10 songs upload
             </Text>
             <Text style={styles.featureItem}>
               <FontAwesome name="check" size={14} color="#3b82f6" style={styles.checkIcon} /> Listen with friends in real time (up to 3 people)
@@ -60,14 +64,17 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
         {/* Plus Plan */}
         <View style={[styles.planContainer, styles.plusPlan]}>
           <Text style={[styles.planTitle, styles.plusPlanTitle]}>Plus</Text>
-          <Text style={styles.planPrice}>99,000 VND/3 tháng</Text>
-          <Text style={styles.planDescription}>Best value for music lovers with unlimited access</Text>
+          <Text style={styles.planPrice}>99,000 VND/3 months</Text>
+          <Text style={styles.planDescription}>All Plus privileges plus Premium music library.</Text>
           <View style={styles.planFeatures}>
             <Text style={styles.featureItem}>
               <FontAwesome name="check" size={14} color="#3b82f6" style={styles.checkIcon} /> Listen to music without Ads
             </Text>
             <Text style={styles.featureItem}>
               <FontAwesome name="check" size={14} color="#3b82f6" style={styles.checkIcon} /> Unlimited music storage
+            </Text>
+            <Text style={styles.featureItem}>
+              <FontAwesome name="check" size={14} color="#3b82f6" style={styles.checkIcon} /> Unlimited songs upload
             </Text>
             <Text style={styles.featureItem}>
               <FontAwesome name="check" size={14} color="#3b82f6" style={styles.checkIcon} /> Listen with friends in real time (up to 10 people)
@@ -95,16 +102,18 @@ const styles = StyleSheet.create({
     padding: 20,
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
-    height: 700,
+    height: 750,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 20,
+    position: 'relative'
   },
   headerButton: {
-    paddingHorizontal: 10,
+    position: 'absolute',
+    right: 0
   },
   modalTitle: {
     color: '#fff',
@@ -112,10 +121,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     flex: 1, // Center the title
-  },
-  cancelButton: {
-    color: '#fff',
-    fontSize: 16,
   },
   planContainer: {
     marginBottom: 20,
@@ -143,11 +148,13 @@ const styles = StyleSheet.create({
     color: '#bbb',
     fontSize: 14,
     marginBottom: 15,
+    gap: 5
   },
   featureItem: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 5,
+    color: '#fff'
   },
   checkIcon: {
     marginRight: 10,
