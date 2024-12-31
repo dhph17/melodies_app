@@ -35,7 +35,6 @@ export const PlaybackProvider: React.FC<PlaybackProviderProps> = ({ children }) 
     const [waitingList, setWaitingListState] = useState<Array<DataSong>>([]);
     const [sound, setSound] = useState<Audio.Sound | null>(null);
     const [isPlaying, setIsPlaying] = useState(false);
-    const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
     const [positionMillis, setPositionMillis] = useState(0);
     const [durationMillis, setDurationMillis] = useState(0);
     const [repeatMode, setRepeatModeState] = useState<'off' | 'all' | 'single'>('off');
