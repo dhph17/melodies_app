@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from "react-native";
 import * as FileSystem from "expo-file-system";
-import * as DocumentPicker from "expo-document-picker";
 import { usePlayback } from "../provider/PlaybackContext"; // Ensure the correct path to PlaybackContext
 
 export interface DataSong {
   id: string;
   title: string;
   filePathAudio: string;
+  isLocal?: boolean;
 }
 
 const OfflineIndex = () => {
@@ -24,11 +24,15 @@ const OfflineIndex = () => {
     try {
       const files = await FileSystem.StorageAccessFramework.readDirectoryAsync(folderUri);
       const audioFiles = files.filter((file) => file.endsWith(".mp3") || file.endsWith(".wav"));
-      const songs = audioFiles.map((file, index) => ({
-        id: index.toString(),
-        title: file.split("/").pop()?.replace(".mp3", "").replace(".wav", "") || "Unknown",
-        filePathAudio: file,
-      }));
+      const songs = audioFiles.map((file, index) => {
+        const decodedPath = decodeURIComponent(file);
+        const songName = decodedPath.split("/").pop()?.replace(".mp3", "").replace(".wav", "") || "Unknown";
+        return {
+          id: index.toString(),
+          title: songName,
+          filePathAudio: file,
+        };
+      });
       setOfflineSongs(songs);
     } catch (error) {
       Alert.alert("Error", "Unable to fetch files from the folder.");
@@ -54,9 +58,9 @@ const OfflineIndex = () => {
   // Play selected song
   const handleSongPress = (item: DataSong) => {
     try {
-      // Extend the object with default or placeholder values
       setCurrentSong({
         ...item,
+        isLocal: true,
         duration: 0,
         lyric: "",
         privacy: false,
