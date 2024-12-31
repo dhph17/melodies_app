@@ -82,6 +82,13 @@ export default function PublicLayout() {
                     }}
                 />
                 <Tabs.Screen
+                    name="offlineIndex"
+                    options={{
+                        title: "Offline",
+                        headerShown: false,
+                    }}
+                />
+                <Tabs.Screen
                     name="artist/[id]"
                     options={{
                         title: "Profile",
