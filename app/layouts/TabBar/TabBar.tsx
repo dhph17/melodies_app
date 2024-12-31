@@ -1,24 +1,16 @@
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
-import React from 'react'
-import { AntDesign, Feather } from '@expo/vector-icons';
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
 import TabBarButton from './TabbarButton';
-
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 
-const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
+const TabBar = ({ state, descriptors, navigation, isOffline }: BottomTabBarProps & { isOffline: boolean }) => {
     const primaryColor = '#69BFFF';
     const greyColor = '#fde7f7';
+
     return (
         <View style={styles.tabbar}>
             {state.routes.map((route, index) => {
-                const { options } = descriptors[route.key];
-                const label =
-                    typeof options.tabBarLabel === 'string'
-                        ? options.tabBarLabel
-                        : options.title !== undefined
-                            ? options.title
-                            : route.name;
-
+                // Manual exclusions for specific routes
                 if (['_sitemap', '+not-found'].includes(route.name)) return null;
                 if (route.name === 'artist/[id]') return null;
                 if (route.name === 'playlist/ViewPlaylist') return null;
@@ -34,6 +26,18 @@ const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
                 if (route.name === 'listen/index') return null;
                 if (route.name === 'listen/MemberModal') return null;
                 if (route.name === 'listen/listenPlayer') return null;
+
+                // Exclude tabs dynamically based on offline state
+                if (isOffline && route.name !== 'offlineIndex') return null;
+                if (!isOffline && route.name === 'offlineIndex') return null;
+
+                const { options } = descriptors[route.key];
+                const label =
+                    typeof options.tabBarLabel === 'string'
+                        ? options.tabBarLabel
+                        : options.title !== undefined
+                        ? options.title
+                        : route.name.split('/')[0]; // Clean up route names for display
 
                 const isFocused = state.index === index;
 
@@ -62,15 +66,15 @@ const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
                         onPress={onPress}
                         onLongPress={onLongPress}
                         isFocused={isFocused}
-                        routeName={route.name as 'index' | 'discover/index' | 'playlist/index' | 'profile/index'}
+                        routeName={route.name as 'index' | 'search/index' | 'playlist/index' | 'profile/index' | 'upload/index'}
                         color={isFocused ? primaryColor : greyColor}
                         label={label}
                     />
-                )
+                );
             })}
         </View>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     tabbar: {
@@ -90,10 +94,6 @@ const styles = StyleSheet.create({
         shadowRadius: 0,
         elevation: 5,
     },
-    tabbarItem: {
-        flex: 1,
-        alignItems: 'center',
-    }
-})
+});
 
-export default TabBar
+export default TabBar;
