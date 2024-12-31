@@ -12,7 +12,7 @@ export interface DataSong {
 
 const OfflineIndex = () => {
   const [offlineSongs, setOfflineSongs] = useState<DataSong[]>([]);
-  const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
+  const selectedFolder = "content://com.android.externalstorage.documents/tree/primary%3ADownload%2FMusic";
   const { setCurrentSong } = usePlayback(); // Use the playback context
 
   useEffect(() => {
@@ -36,21 +36,6 @@ const OfflineIndex = () => {
       setOfflineSongs(songs);
     } catch (error) {
       Alert.alert("Error", "Unable to fetch files from the folder.");
-      console.error(error);
-    }
-  };
-
-  // Allow user to select a folder using StorageAccessFramework
-  const selectFolder = async () => {
-    try {
-      const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
-      if (permissions.granted) {
-        setSelectedFolder(permissions.directoryUri);
-      } else {
-        Alert.alert("Permission Denied", "You need to grant folder access to fetch songs.");
-      }
-    } catch (error) {
-      Alert.alert("Error", "Unable to select folder.");
       console.error(error);
     }
   };
@@ -82,9 +67,6 @@ const OfflineIndex = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Offline Songs</Text>
-      <TouchableOpacity style={styles.selectFolderButton} onPress={selectFolder}>
-        <Text style={styles.selectFolderText}>Select Folder</Text>
-      </TouchableOpacity>
       <FlatList
         data={offlineSongs}
         keyExtractor={(item) => item.id}

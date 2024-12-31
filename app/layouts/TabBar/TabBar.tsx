@@ -28,8 +28,8 @@ const TabBar = ({ state, descriptors, navigation, isOffline }: BottomTabBarProps
                 if (route.name === 'listen/listenPlayer') return null;
 
                 // Exclude tabs dynamically based on offline state
-                if (isOffline && route.name !== 'offlineIndex') return null;
-                if (!isOffline && route.name === 'offlineIndex') return null;
+                // if (isOffline && route.name !== 'offlineIndex') return null;
+                // if (!isOffline && route.name === 'offlineIndex') return null;
 
                 const { options } = descriptors[route.key];
                 const label =
