@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from "react-native";
+import { Image } from "expo-image";
 import * as FileSystem from "expo-file-system";
 import { usePlayback } from "../provider/PlaybackContext"; // Ensure the correct path to PlaybackContext
+import { FontAwesome } from "@expo/vector-icons";
 
 export interface DataSong {
   id: string;
@@ -75,7 +77,17 @@ const OfflineIndex = () => {
             style={styles.songItem}
             onPress={() => handleSongPress(item)}
           >
-            <Text style={styles.songTitle}>{item.title}</Text>
+            <Image
+              source={{ uri: "https://placehold.co/50x50" }} // Placeholder image for offline songs
+              style={styles.songImage}
+            />
+            <View style={styles.songInfo}>
+              <Text style={styles.songTitle}>{item.title}</Text>
+              <Text style={styles.songArtist}>Offline Artist</Text>
+            </View>
+            <TouchableOpacity>
+              <FontAwesome name="ellipsis-v" size={20} color="white" />
+            </TouchableOpacity>
           </TouchableOpacity>
         )}
         contentContainerStyle={{ paddingBottom: 80 }}
@@ -98,17 +110,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     color: "white",
   },
-  selectFolderButton: {
-    backgroundColor: "#FF0099",
-    padding: 10,
-    borderRadius: 8,
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  selectFolderText: {
-    color: "white",
-    fontSize: 16,
-  },
   songItem: {
     flexDirection: "row",
     alignItems: "center",
@@ -118,9 +119,22 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 10,
   },
+  songImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 4,
+    marginRight: 10,
+  },
+  songInfo: {
+    flex: 1,
+  },
   songTitle: {
     fontSize: 16,
     fontWeight: "bold",
     color: "white",
+  },
+  songArtist: {
+    fontSize: 14,
+    color: "#aaa",
   },
 });
