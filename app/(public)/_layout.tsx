@@ -1,14 +1,40 @@
+import React, { useState, useEffect } from 'react';
 import { Tabs } from 'expo-router';
 import TabBar from '@/app/layouts/TabBar/TabBar';
 import Header from '@/app/layouts/header/header';
 import MiniPlayer from '@/app/player/MiniPlayer';
-import { SafeAreaView, StyleSheet, View } from 'react-native';
+import { SafeAreaView, StyleSheet, View, Text } from 'react-native';
+import { useOffline } from '@/app/provider/OfflineProvider';
 
 export default function PublicLayout() {
+    const { isOffline } = useOffline()
+
+    if (isOffline) {
+        return (
+            <SafeAreaView style={styles.container}>
+                <Tabs
+                    tabBar={(props) => <TabBar {...props} isOffline={isOffline} />}
+                    screenOptions={{
+                        header: () => <Header />,
+                    }}
+                >
+                    <Tabs.Screen
+                        name="offlineIndex"
+                        options={{
+                            title: "Offline",
+                            headerShown: false,
+                        }}
+                    />
+                </Tabs>
+                <MiniPlayer />
+            </SafeAreaView>
+        );
+    }
+
     return (
         <SafeAreaView style={styles.container}>
             <Tabs
-                tabBar={(props) => <TabBar {...props} />}
+                tabBar={(props) => <TabBar {...props} isOffline={isOffline} />}
                 screenOptions={{
                     header: () => <Header />,
                 }}
@@ -44,6 +70,20 @@ export default function PublicLayout() {
                     name="profile/index"
                     options={{
                         title: "Profile",
+                        headerShown: false,
+                    }}
+                />
+                <Tabs.Screen
+                    name="upload/index"
+                    options={{
+                        title: "Upload",
+                        headerShown: false,
+                    }}
+                />
+                <Tabs.Screen
+                    name="offlineIndex"
+                    options={{
+                        title: "Offline",
                         headerShown: false,
                     }}
                 />

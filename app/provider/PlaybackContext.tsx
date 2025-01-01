@@ -6,6 +6,7 @@ import { Platform } from 'react-native';
 import { DataSong } from '@/types/interfaces';
 import { getMainArtistInfo } from '@/utils/utils';
 import { decrypt } from '@/app/decode';
+import { useOffline } from '@/app/provider/OfflineProvider';
 
 interface PlaybackProviderProps {
     children: ReactNode;
@@ -31,11 +32,11 @@ interface PlaybackContextType {
 const PlaybackContext = createContext<PlaybackContextType | undefined>(undefined);
 
 export const PlaybackProvider: React.FC<PlaybackProviderProps> = ({ children }) => {
+    const { isOffline } = useOffline()
     const [currentTrack, setCurrentTrackState] = useState<DataSong | null>(null);
     const [waitingList, setWaitingListState] = useState<Array<DataSong>>([]);
     const [sound, setSound] = useState<Audio.Sound | null>(null);
     const [isPlaying, setIsPlaying] = useState(false);
-    const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
     const [positionMillis, setPositionMillis] = useState(0);
     const [durationMillis, setDurationMillis] = useState(0);
     const [repeatMode, setRepeatModeState] = useState<'off' | 'all' | 'single'>('off');
@@ -69,7 +70,7 @@ export const PlaybackProvider: React.FC<PlaybackProviderProps> = ({ children }) 
             }
             if (currentTrack) {
                 const { sound: newSound } = await Audio.Sound.createAsync(
-                    { uri: `${decrypt(currentTrack.filePathAudio)}` },
+                    { uri: !isOffline ? `${decrypt(currentTrack.filePathAudio)}` : currentTrack.filePathAudio },
                     { shouldPlay: isPlaying },
                     (status) => {
                         if (status.isLoaded) {

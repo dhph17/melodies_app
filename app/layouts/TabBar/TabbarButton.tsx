@@ -9,7 +9,7 @@ interface TabBarButtonProps {
 
     isFocused: boolean;
 
-    routeName: 'index' | 'discover/index' | 'playlist/index' | 'profile/index' | 'notification/index';
+    routeName: 'index' | 'search/index' | 'playlist/index' | 'profile/index' | 'notification/index';
 
     color: string;
 

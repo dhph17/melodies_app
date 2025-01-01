@@ -1,43 +1,70 @@
 import React, { useEffect } from 'react';
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
-import { usePlayback } from '../provider/PlaybackContext';
-import { getMainArtistInfo } from '@/utils/utils';
+import { usePlayback } from '../provider/PlaybackContext'; // Import your PlaybackContext
 
-const MiniPlayerNotification: React.FC = () => {
-    const { currentTrack, isPlaying } = usePlayback(); // Subscribe to context
+const NotificationPlayer: React.FC = () => {
+    const {
+        currentTrack,
+        isPlaying,
+        togglePlayPause,
+        nextSong,
+        previousSong,
+    } = usePlayback();
 
+    // Configure notification channel for Android
     useEffect(() => {
-        if (Platform.OS === 'android') {
-            createNotification();
-        }
+        const configureNotifications = async () => {
+            if (Platform.OS === 'android') {
+                await Notifications.setNotificationChannelAsync('music', {
+                    name: 'Music Playback',
+                    importance: Notifications.AndroidImportance.HIGH,
+                    sound: null, // No sound for this channel
+                });
+            }
+        };
+
+        configureNotifications();
+    }, []);
+
+    // Update the notification when current track or playback state changes
+    useEffect(() => {
+        const updateNotification = async () => {
+            if (currentTrack) {
+                await Notifications.dismissAllNotificationsAsync();
+
+                await Notifications.scheduleNotificationAsync({
+                    content: {
+                        title: currentTrack.title,
+                        body: currentTrack.artists.map((artist) => artist.name).join(', '),
+                        categoryIdentifier: 'music',
+                    },
+                    trigger: null,
+                });
+            }
+        };
+
+        updateNotification();
     }, [currentTrack, isPlaying]);
 
-    const createNotification = async () => {
-        if (!currentTrack) {
-            // Clear notifications if no track is playing
-            await Notifications.dismissAllNotificationsAsync();
-            return;
-        }
+    // Handle notification actions
+    useEffect(() => {
+        const handleNotificationResponse = async (response: Notifications.NotificationResponse) => {
+            const { actionIdentifier } = response;
+            if (actionIdentifier === 'playPause') {
+                togglePlayPause();
+            } else if (actionIdentifier === 'next') {
+                nextSong();
+            } else if (actionIdentifier === 'previous') {
+                previousSong();
+            }
+        };
 
-        // Dismiss any existing notifications to prevent duplicates
-        await Notifications.dismissAllNotificationsAsync();
-
-        // Create a new notification
-        await Notifications.scheduleNotificationAsync({
-            content: {
-                title: currentTrack.title,
-                body: isPlaying
-                    ? `Playing ${getMainArtistInfo(currentTrack.artists)}`
-                    : `Paused ${getMainArtistInfo(currentTrack.artists)}`,
-                sound: false, // Disable notification sound
-                sticky: true, // Make it persistent on Android
-            },
-            trigger: null, // Trigger immediately
-        });
-    };
+        const subscription = Notifications.addNotificationResponseReceivedListener(handleNotificationResponse);
+        return () => subscription.remove();
+    }, [togglePlayPause, nextSong, previousSong]);
 
     return null;
 };
 
-export default MiniPlayerNotification;
+export default NotificationPlayer;

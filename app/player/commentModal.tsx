@@ -2,13 +2,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Modal, StyleSheet, FlatList } from 'react-native';
 import { fetchApiData } from '@/app/api/appService';
 import { fetchApiData as fetchApiDataAI } from '@/app/api/appServiceAI';
-import { Image } from 'expo-image';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AntDesign, Ionicons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { Comment } from '@/types/interfaces';
 import CommentPart from '@/components/commentPart';
 import { Svg, Path } from 'react-native-svg';
-import { CommentProvider } from '@/app/provider/CommentProvider';
 interface CommentModalProps {
   visible: boolean;
   onClose: () => void;
@@ -22,6 +20,8 @@ const CommentModal: React.FC<CommentModalProps> = ({ visible, onClose, idSong })
   const [comments, setComments] = useState<Comment[]>([]);
   const [replyTo, setReplyTo] = useState<string | null>(null);
   const [replyToId, setReplyToId] = useState<string | null>(null);
+  const [repliedComment, setRepliedComment] = useState<Comment>()
+  const [repliedId, setRepliedId] = useState<string | null>(null)
   const [replyToMessage, setReplyToMessage] = useState<string | null>(null);
   const [errorPost, setErrorPost] = useState<boolean>(false)
   const inputRef = useRef<TextInput>(null);
@@ -64,17 +64,22 @@ const CommentModal: React.FC<CommentModalProps> = ({ visible, onClose, idSong })
       if (response.success) {
         if (response.data.status === 'success') {
           if (replyToId) {
-
+            setRepliedId(replyToId)
+            setRepliedComment(response.data.comment)
           } else {
             setComments(prevComments => [response.data.comment, ...prevComments]);
           }
         } else {
+          console.log(response.error);
+
           setErrorPost(true)
           setTimeout(() => {
             setErrorPost(false);
           }, 5000);
         }
       } else {
+        console.log(response.error);
+
         setErrorPost(true)
         setTimeout(() => {
           setErrorPost(false);
@@ -95,7 +100,12 @@ const CommentModal: React.FC<CommentModalProps> = ({ visible, onClose, idSong })
             onEndReached={fetchComments}
             onEndReachedThreshold={0.5}
             renderItem={({ item }) => (
-              <CommentPart item={item} onReply={handleReply} />
+              <CommentPart
+                item={item}
+                onReply={handleReply}
+                replyId={repliedId === item.id ? repliedId : undefined}
+                commentReplied={repliedId === item.id ? repliedComment : undefined}
+              />
             )}
           />
           {
@@ -149,7 +159,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     width: '90%',
-    maxHeight: '80%',
+    height: '80%',
   },
   title: {
     fontSize: 18,

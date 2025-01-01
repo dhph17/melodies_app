@@ -42,6 +42,7 @@ export interface DataSong {
     duration: number;
     lyric: string;
     filePathAudio: string;
+    isLocal?: boolean;
     privacy: boolean;
     uploadUserId: string | null;
     releaseDate: string;

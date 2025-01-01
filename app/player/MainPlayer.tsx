@@ -42,7 +42,6 @@ const MainPlayer = () => {
     const [isPlaylistModalVisible, setPlaylistModalVisible] = useState(false)
 
     const handleCommentButtonPress = () => {
-        console.log("Opening Comment Modal");
         setIsCommentModalVisible(true);
     };
 

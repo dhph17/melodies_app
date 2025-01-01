@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { PlaybackProvider } from '@/app/provider/PlaybackContext';
 import '../global.css'
 import { AppProvider } from '@/app/provider/AppProvider';
+import { OfflineProvider } from '@/app/provider/OfflineProvider';
 
 SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
@@ -36,15 +37,17 @@ export default function RootLayout() {
                 backgroundColor={'#121212'}
             />
             <ThemeProvider value={DarkTheme}>
-                <AppProvider>
-                    <PlaybackProvider>
-                        <Stack initialRouteName="(public)">
-                            <Stack.Screen name="(public)" options={{ headerShown: false }} />
-                            <Stack.Screen name="authenticate" options={{ headerShown: false }} />
-                            <Stack.Screen name="player" options={{ headerShown: false }} />
-                        </Stack>
-                    </PlaybackProvider>
-                </AppProvider>
+                <OfflineProvider>
+                    <AppProvider>
+                        <PlaybackProvider>
+                            <Stack initialRouteName="(public)">
+                                <Stack.Screen name="(public)" options={{ headerShown: false }} />
+                                <Stack.Screen name="authenticate" options={{ headerShown: false }} />
+                                <Stack.Screen name="player" options={{ headerShown: false }} />
+                            </Stack>
+                        </PlaybackProvider>
+                    </AppProvider>
+                </OfflineProvider>
             </ThemeProvider>
         </SafeAreaView >
     );

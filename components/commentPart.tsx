@@ -5,29 +5,27 @@ import { Comment } from '@/types/interfaces'
 import { AntDesign } from '@expo/vector-icons'
 import { fetchApiData } from '@/app/api/appService'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useComment } from '@/app/provider/CommentProvider'
 import { formatTime } from '@/utils/utils'
 
-const CommentPart = ({ item, onReply }: { item: Comment; onReply: (username: string, id: string, message: string) => void }) => {
+const CommentPart = ({
+    item, onReply, replyId, commentReplied
+}: {
+    item: Comment; onReply: (username: string, id: string, message: string) => void; replyId?: string; commentReplied?: Comment
+}) => {
     const [page, setPage] = useState<number>(1)
     const [totalPage, setTotalPage] = useState<number>(100)
     const [childrenCmt, setChildrenCmt] = useState<Comment[]>([])
     const [cmtRemain, setCmtRemain] = useState<number>(item?.hasChild ?? 0)
     const [isHidden, setIsHidden] = useState<boolean>(false)
     const [showCmtChild, setShowCmtChild] = useState<boolean>(false)
-    // const {
-    //     isHidden,
-    //     setIsHidden,
-    //     cmtRemain,
-    //     setCmtRemain,
-    //     childrenCmt,
-    //     setChildrenCmt,
-    //     showCmtChild,
-    //     setShowCmtChild } = useComment()
 
-    // useEffect(() => {
+    useEffect(() => {
+        if (replyId && replyId === item.id && commentReplied) {
+            setChildrenCmt((prev) => [commentReplied, ...prev])
+            setShowCmtChild(true);
 
-    // }, )
+        }
+    }, [replyId]);
 
     const handleViewMoreComment = async () => {
         const accessToken = await AsyncStorage.getItem('accessToken');
