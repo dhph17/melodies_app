@@ -16,6 +16,8 @@ import CommentModal from './commentModal';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { decrypt } from '@/app/decode';
 import AddPlaylistModal from '@/app/player/playlistModal';
+import { fetchApiData } from '@/app/api/appService';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { height, width } = Dimensions.get('window');
 
@@ -56,53 +58,63 @@ const MainPlayer = () => {
             Alert.alert('Error', 'No track to download.');
             return;
         }
+        const accessToken = await AsyncStorage.getItem('accessToken');
+        if (accessToken) {
+            const response = await fetchApiData(`/api/user/download/${currentTrack.id}`, 'POST', null, accessToken)
+            if (response.success) {
+                try {
+                    const decryptedFilePath = decrypt(currentTrack.filePathAudio);
+                    if (!decryptedFilePath) {
+                        Alert.alert('Error', 'Unable to decrypt the audio file path.');
+                        return;
+                    }
+                    const asset = Asset.fromModule(decryptedFilePath);
+                    await asset.downloadAsync();
+                    const localUri = asset.localUri;
 
-        try {
-            const decryptedFilePath = decrypt(currentTrack.filePathAudio);
-            if (!decryptedFilePath) {
-                Alert.alert('Error', 'Unable to decrypt the audio file path.');
-                return;
-            }
-            const asset = Asset.fromModule(decryptedFilePath);
-            await asset.downloadAsync();
-            const localUri = asset.localUri;
+                    if (!localUri) {
+                        Alert.alert('Error', 'Unable to resolve local audio file.');
+                        return;
+                    }
 
-            if (!localUri) {
-                Alert.alert('Error', 'Unable to resolve local audio file.');
-                return;
-            }
+                    // Request permission to access the "Downloads" folder
+                    const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
+                    if (!permissions.granted) {
+                        Alert.alert('Permission Denied', 'You must grant permission to save the file.');
+                        return;
+                    }
 
-            // Request permission to access the "Downloads" folder
-            const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
-            if (!permissions.granted) {
-                Alert.alert('Permission Denied', 'You must grant permission to save the file.');
-                return;
-            }
+                    // Create the file in the selected directory
+                    const destFileName = `${currentTrack.title}.mp3`;
+                    const contentUri = await FileSystem.StorageAccessFramework.createFileAsync(
+                        permissions.directoryUri,
+                        destFileName,
+                        'audio/mpeg'
+                    );
 
-            // Create the file in the selected directory
-            const destFileName = `${currentTrack.title}.mp3`;
-            const contentUri = await FileSystem.StorageAccessFramework.createFileAsync(
-                permissions.directoryUri,
-                destFileName,
-                'audio/mpeg'
-            );
+                    // Read the file as Base64 and write it to the content URI
+                    const fileContent = await FileSystem.readAsStringAsync(localUri, {
+                        encoding: FileSystem.EncodingType.Base64,
+                    });
 
-            // Read the file as Base64 and write it to the content URI
-            const fileContent = await FileSystem.readAsStringAsync(localUri, {
-                encoding: FileSystem.EncodingType.Base64,
-            });
+                    await FileSystem.StorageAccessFramework.writeAsStringAsync(contentUri, fileContent, {
+                        encoding: FileSystem.EncodingType.Base64,
+                    });
 
-            await FileSystem.StorageAccessFramework.writeAsStringAsync(contentUri, fileContent, {
-                encoding: FileSystem.EncodingType.Base64,
-            });
-
-            Alert.alert('Download Complete', `Track saved successfully: ${destFileName}`);
-        } catch (error) {
-            if (error instanceof Error) {
-                Alert.alert('Download Failed', `Could not download the track: ${error.message}`);
+                    Alert.alert('Download Complete', `Track saved successfully: ${destFileName}`);
+                } catch (error) {
+                    if (error instanceof Error) {
+                        Alert.alert('Download Failed', `Could not download the track: ${error.message}`);
+                    } else {
+                        Alert.alert('Download Failed', 'An unknown error occurred.');
+                    }
+                }
             } else {
-                Alert.alert('Download Failed', 'An unknown error occurred.');
+                Alert.alert('Download Failed', response.error);
             }
+        } else {
+            Alert.alert('Download Failed', 'Premium account required');
+
         }
     };
 

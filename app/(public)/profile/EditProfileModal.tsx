@@ -126,8 +126,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isVisible, onClose,
             <View style={styles.inputContainer}>
               <Text style={styles.label}>Name</Text>
               <TextInput
-                style={styles.inputDisabled}
-                editable={false}
+                style={styles.input}
                 value={newName}
                 onChangeText={setNewName}
               />
@@ -135,7 +134,8 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isVisible, onClose,
             <View style={styles.inputContainer}>
               <Text style={styles.label}>Username</Text>
               <TextInput
-                style={styles.input}
+                editable={false}
+                style={styles.inputDisabled}
                 value={newUsername}
                 onChangeText={setNewUsername}
               />

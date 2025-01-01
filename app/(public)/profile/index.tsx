@@ -7,13 +7,16 @@ import { fetchApiData } from '@/app/api/appService';
 import { User } from "@/types/interfaces";
 import { useFocusEffect } from '@react-navigation/native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import EditProfileModal from './EditProfileModal';
 import EditPasswordModal from './EditPasswordModal';
 import SubscriptionModal from './SubscriptionModal';
 import UserImage from '@/assets/images/placeholderUser.jpg'
+import { usePlayback } from '@/app/provider/PlaybackContext';
 
 const Profile = () => {
     const router = useRouter();
+    const { currentTrack } = usePlayback()
     const [user, setUser] = useState<User | null>(null);
     const [isModalVisible, setModalVisible] = useState(false); // Profile edit modal
     const [isPasswordModalVisible, setPasswordModalVisible] = useState(false); // Password edit modal
@@ -103,14 +106,21 @@ const Profile = () => {
         >
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <View style={styles.container}>
-                    <ScrollView contentContainerStyle={styles.scrollContent}>
+                    <ScrollView contentContainerStyle={[styles.scrollContent, { paddingBottom: currentTrack && 150 }]}>
                         <View style={styles.avatarContainer}>
                             <Image
                                 source={user?.image ? { uri: user.image } : UserImage}
                                 style={styles.avatar}
                             />
                             {user ? (
-                                <Text style={styles.username}>{user.username}</Text>
+                                <View style={styles.containerNameType}>
+                                    {
+                                        user.accountType === 'PREMIUM' && (
+                                            <FontAwesome6 name="crown" size={24} color="#FACC15" />
+                                        )
+                                    }
+                                    <Text style={styles.username}>{user.username}</Text>
+                                </View>
                             ) : (
                                 <TouchableOpacity
                                     onPress={() => router.push('/authenticate')}
@@ -187,7 +197,6 @@ const styles = StyleSheet.create({
         borderColor: '#3b82f6',
     },
     username: {
-        marginTop: 10,
         fontSize: 18,
         color: '#fff',
         fontWeight: 'bold',
@@ -204,7 +213,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     section: {
-        marginBottom: 20,
+        marginBottom: 15,
     },
     sectionTitle: {
         fontSize: 18,
@@ -243,6 +252,11 @@ const styles = StyleSheet.create({
         fontSize: 16,
         textAlign: 'center',
     },
+    containerNameType: {
+        marginTop: 5,
+        flexDirection: 'column',
+        alignItems: 'center'
+    }
 });
 
 export default Profile;
