@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, FlatList, ScrollView, Dimensions, Animated, Tou
 import { useRouter, useGlobalSearchParams } from 'expo-router';
 import { ImageBackground } from 'expo-image';
 import tinycolor from "tinycolor2";
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { fetchApiData } from '@/app/api/appService';
 import { Artist, DataSong } from '@/types/interfaces';
 import ArtistPopularSong from '@/components/trendingSong';
@@ -97,7 +97,7 @@ const ArtistDetail = () => {
         [{ nativeEvent: { contentOffset: { y: scrollY } } }],
         { useNativeDriver: false }
     );
-    const renderContent = () => (
+    const renderContent = React.useMemo(() => (
         <View>
             <View style={styles.blank} />
             <View style={styles.main_section}>
@@ -129,8 +129,7 @@ const ArtistDetail = () => {
                 </LinearGradient>
             </View>
         </View>
-
-    );
+    ), [dataArtist, dataSongArtist, dataAlbumArtist]);
 
     return (
         <View style={styles.container}>

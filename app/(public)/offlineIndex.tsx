@@ -14,8 +14,8 @@ export interface DataSong {
 
 const OfflineIndex = () => {
   const [offlineSongs, setOfflineSongs] = useState<DataSong[]>([]);
-  const selectedFolder = "content://com.android.externalstorage.documents/tree/primary%3ADownload%2FMusic";
-  const { setCurrentSong } = usePlayback(); // Use the playback context
+  const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
+  const { setCurrentSong } = usePlayback();
 
   useEffect(() => {
     if (selectedFolder) fetchLocalSongs(selectedFolder);
@@ -38,6 +38,21 @@ const OfflineIndex = () => {
       setOfflineSongs(songs);
     } catch (error) {
       Alert.alert("Error", "Unable to fetch files from the folder.");
+      console.error(error);
+    }
+  };
+
+  // Allow user to select a folder using StorageAccessFramework
+  const selectFolder = async () => {
+    try {
+      const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
+      if (permissions.granted) {
+        setSelectedFolder(permissions.directoryUri);
+      } else {
+        Alert.alert("Permission Denied", "You need to grant folder access to fetch songs.");
+      }
+    } catch (error) {
+      Alert.alert("Error", "Unable to select folder.");
       console.error(error);
     }
   };
@@ -69,6 +84,9 @@ const OfflineIndex = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Offline Songs</Text>
+      <TouchableOpacity style={styles.selectFolderButton} onPress={selectFolder}>
+        <Text style={styles.selectFolderText}>Select Folder</Text>
+      </TouchableOpacity>
       <FlatList
         data={offlineSongs}
         keyExtractor={(item) => item.id}
@@ -136,5 +154,16 @@ const styles = StyleSheet.create({
   songArtist: {
     fontSize: 14,
     color: "#aaa",
+  },
+  selectFolderButton: {
+    backgroundColor: "#FF0099",
+    padding: 10,
+    borderRadius: 8,
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  selectFolderText: {
+    color: "white",
+    fontSize: 16,
   },
 });

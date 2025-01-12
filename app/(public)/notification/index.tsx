@@ -7,7 +7,10 @@ import { Notification as NotificationType, User } from '@/types/interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetchApiData } from '@/app/api/appService';
 import UserImage from '@/assets/images/placeholderUser.jpg'
-import EvilIcons from '@expo/vector-icons/EvilIcons';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import Entypo from '@expo/vector-icons/Entypo';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { formatTime } from '@/utils/utils';
 import { useAppContext } from '@/app/provider/AppProvider';
 import { fetchNotification } from '@/utils/api';
@@ -60,9 +63,18 @@ const Notification = () => {
                     listNotification.map((notification) => (
                         <View style={styles.itemNotification} key={notification.id}>
                             <View style={styles.notificationHeader}>
-                                <View>
-                                    <EvilIcons name="comment" size={40} color="white" />
-                                </View>
+                                {notification.type === "COMMENT" && (
+                                    <FontAwesome name="comment-o" size={30} color="white" />
+                                )}
+                                {notification.type === "SYSTEM" && (
+                                    <MaterialIcons name="system-security-update-good" size={30} color="white" />
+                                )}
+                                {notification.type === "PACKAGE" && (
+                                    <FontAwesome6 name="crown" size={30} color="white" />
+                                )}
+                                {notification.type === "PAYMENT" && (
+                                    <Entypo name="wallet" size={30} color="white" />
+                                )}
                                 <View style={styles.notificationDetail}>
                                     <View>
                                         <Text className='text-white font-bold text-[1.2rem]'>{notification.message}</Text>
@@ -139,10 +151,11 @@ const styles = StyleSheet.create({
     },
     notificationHeader: {
         flexDirection: 'row',
-        gap: 5
+        gap: 8
     },
     notificationDetail: {
         marginTop: 2,
+        paddingRight: 24
     },
     notificationDateTime: {
         alignSelf: 'flex-end'

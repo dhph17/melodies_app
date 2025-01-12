@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "melodies",
-    "slug": "melodies",
+    "name": "melodies_app",
+    "slug": "melodies_app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -17,7 +17,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/3844724.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.anonymous.melodies_app",
@@ -45,7 +45,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "8db6f584-51df-47d8-8c40-c3d67cb87323"
+        "projectId": "0b1077eb-fec6-4958-bdbb-4e2ac2d6f03a"
       }
     }
   }
